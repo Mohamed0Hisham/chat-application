@@ -17,13 +17,13 @@ const userSchema = new Schema(
 			minLength: 6,
 		},
 		friends: {
-			type: [Schema.ObjectId],
-			ref: User,
+			type: [Schema.Types.ObjectId],
+			ref: "User",
 			default: [],
 		},
 		conversation: {
-			type: [Schema.ObjectId],
-			ref: Conversations,
+			type: [Schema.Types.ObjectId],
+			ref: "Conversations",
 			default: [],
 		},
 	},
