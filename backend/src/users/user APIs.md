@@ -1,0 +1,27 @@
+### **API Endpoints**:
+
+- **POST /api/users/register**
+    - Register a new user.
+    - Request Body: `{ fullName, email, password }`
+    - Response: `{ userID, fullName, email }`
+- **POST /api/users/login**
+    - Authenticate a user and return a token (e.g., JWT).
+    - Request Body: `{ email, password }`
+    - Response: `{ token, userID, fullName, email }`
+- **GET /api/users/:userID**
+    - Fetch a user's profile.
+    - Response: `{ userID, fullName, email, friends, conversations }`
+- **PUT /api/users/:userID**
+    - Update a user's profile (e.g., full name or password).
+    - Request Body: `{ fullName, password }`
+    - Response: `{ userID, fullName, email }`
+- **GET /api/users/:userID/friends**
+    - Fetch a user's friends list.
+    - Response: `[ { friendID, fullName, email } ]`
+- **POST /api/users/:userID/friends**
+    - Add a friend to the user's friend list.
+    - Request Body: `{ friendID }`
+    - Response: `{ userID, friends }`
+- **DELETE /api/users/:userID/friends/:friendID**
+    - Remove a friend from the user's friend list.
+    - Response: `{ userID, friends }`
