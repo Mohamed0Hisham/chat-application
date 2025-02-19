@@ -1,4 +1,4 @@
-import app from "./app";
+import app from "./app.js";
 import { connect } from "mongoose";
 
 const PORT = process.env.PORT || 3000;

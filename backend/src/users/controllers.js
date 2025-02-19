@@ -42,6 +42,7 @@ export const registerUser = async (req, res) => {
 		});
 	}
 };
+
 export const login = async (req, res) => {
 	try {
 		const { email, password } = req.body;
@@ -62,7 +63,7 @@ export const login = async (req, res) => {
 			});
 		}
 
-		const { _id: userID, email: userEmail } = user;
+		const { _id: userID, email: userEmail, fullname } = user;
 		const token = jwt.sign({ userID, userEmail }, process.env.JWT_SECRET, {
 			expiresIn: "15m",
 		});
@@ -136,6 +137,12 @@ export const updateProfile = async (req, res) => {
 		}
 
 		if (req.body.password) {
+			if (validator.isLength(password, { min: 6 }) == false) {
+				return res.status(400).json({
+					success: false,
+					error: "invalid operation",
+				});
+			}
 			const hashedPassword = bcryptjs.hash(password, SALT);
 			req.body.password = hashedPassword;
 		}
