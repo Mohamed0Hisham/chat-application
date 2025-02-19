@@ -1,6 +1,20 @@
 import { Schema, model } from "mongoose";
 
-const conversationSchema = new Schema({}, { timestamps: true });
+const ConversationSchema = new Schema(
+	{
+		participants: {
+			type: [Schema.Types.ObjectId],
+			ref: "User",
+			required: true,
+		},
+		messages: {
+			type: [Schema.Types.ObjectId],
+			ref: "Message",
+			default: [],
+		},
+	},
+	{ timestamps: true }
+);
 
-const Conversation = model("conversation", conversationSchema);
+const Conversation = model("conversation", ConversationSchema);
 export default Conversation;
