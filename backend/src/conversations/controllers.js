@@ -172,4 +172,33 @@ export const updateConversationSetting = async (req, res) => {
 		});
 	}
 };
-export const deleteConversation = async (req, res) => {};
+export const deleteConversation = async (req, res) => {
+	try {
+		const { chatID } = req.params;
+		if (!validator.isMongoId(chatID)) {
+			return res.status(400).json({
+				success: false,
+				message: "invalid chat Id",
+			});
+		}
+
+		const result = await Chat.findByIdAndDelete(chatID);
+		if (!result) {
+			return res.status(404).json({
+				success: false,
+				message: "no such chat exist",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "chat deleted successfully",
+			data: result,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
