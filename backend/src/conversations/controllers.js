@@ -136,5 +136,40 @@ export const fetchUserConversations = async (req, res) => {
 		});
 	}
 };
-export const updateConversationSetting = async (req, res) => {};
+export const updateConversationSetting = async (req, res) => {
+	try {
+		const { participants } = req.body;
+		if (!Array.isArray(participants) || participants.length < 1) {
+			return res.status(400).json({
+				success: false,
+				message: "missing participants",
+			});
+		}
+
+		const { chatID } = req.params;
+		if (!validator.isMongoId(chatID)) {
+			return res.status(400).json({
+				success: false,
+				message: "invalid chat Id",
+			});
+		}
+
+		const update = await Chat.findByIdAndUpdate(
+			chatID,
+			{ participants },
+			{ new: true }
+		).lean();
+
+		return res.status(200).json({
+			success: true,
+			message: "conversation participants have been updated",
+			data: update,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
+};
 export const deleteConversation = async (req, res) => {};
