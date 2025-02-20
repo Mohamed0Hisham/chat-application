@@ -117,17 +117,17 @@ export const fetchUserConversations = async (req, res) => {
 			});
 		}
 
-		const userChats = await User.findById(userID)
+		const user = await User.findById(userID)
 			.populate("conversation")
 			.lean();
-		if (!Array.isArray(userChats) || userChats.length < 1) {
+		if (user.conversation.length < 1) {
 			return res.status(204).end();
 		}
 
 		return res.status(200).json({
 			success: true,
 			message: "user chats fetched",
-			data: userChats,
+			data: user.conversation,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -146,6 +146,9 @@ export const updateConversationSetting = async (req, res) => {
 			});
 		}
 
+		const set = new Set(participants);
+		const uniqueUsers = [...set];
+
 		const { chatID } = req.params;
 		if (!validator.isMongoId(chatID)) {
 			return res.status(400).json({
@@ -156,7 +159,7 @@ export const updateConversationSetting = async (req, res) => {
 
 		const update = await Chat.findByIdAndUpdate(
 			chatID,
-			{ participants },
+			{ participants: uniqueUsers },
 			{ new: true }
 		).lean();
 
