@@ -5,8 +5,8 @@ import Chat from "./models.js";
 
 export const createConversation = async (req, res) => {
 	const session = await startSession();
-	session.startTransaction();
 	try {
+		session.startTransaction();
 		const { participants } = req.body;
 
 		if (!Array.isArray(participants) || participants.length < 1) {
@@ -16,7 +16,7 @@ export const createConversation = async (req, res) => {
 			});
 		}
 
-		if (participants.length > 100) {
+		if (participants.length > 25) {
 			return res.status(400).json({
 				success: false,
 				message: "Maximum number of participants exceeded",
@@ -39,6 +39,15 @@ export const createConversation = async (req, res) => {
 				message: "One or more participants not found",
 			});
 		}
+
+		const duplicateChat = await Chat.findOne({ participants });
+		if (duplicateChat) {
+			return res.status(400).json({
+				success: false,
+				message: "there is a chat between these user already",
+			});
+		}
+
 		const newChat = await Chat.insertOne({ participants }, { session });
 
 		const updateOperations = participants.map((userID) => ({
@@ -49,15 +58,13 @@ export const createConversation = async (req, res) => {
 		}));
 		await User.bulkWrite(updateOperations, { session });
 
-		// Commit the transaction
 		await session.commitTransaction();
-
 		return res.status(201).json({
 			success: true,
 			message: "New chat created between users",
 			data: {
 				chatID: newChat._id,
-				participants: newChat.participants,
+				participants: users.map((user) => user.fullname),
 			},
 		});
 	} catch (error) {
@@ -67,7 +74,7 @@ export const createConversation = async (req, res) => {
 			message: error.message,
 		});
 	} finally {
-		if (session) session.endSession();
+		await session.endSession();
 	}
 };
 export const fetchConversation = async (req, res) => {};
