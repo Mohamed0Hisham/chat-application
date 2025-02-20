@@ -1,5 +1,13 @@
 import express from "express";
-import { addFriend, deleteFriend, fetchFriends, fetchProfile, login, registerUser, updateProfile } from "./controllers.js";
+import {
+	addFriend,
+	deleteFriend,
+	fetchFriends,
+	fetchProfile,
+	login,
+	registerUser,
+	updateProfile,
+} from "./controllers.js";
 
 const router = express.Router();
 

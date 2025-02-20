@@ -2,6 +2,7 @@ import validator from "validator";
 import User from "./models.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { startSession } from "mongoose";
 
 const SALT = 12;
 export const registerUser = async (req, res) => {
@@ -203,6 +204,9 @@ export const fetchFriends = async (req, res) => {
 	}
 };
 export const addFriend = async (req, res) => {
+	const session = await startSession();
+	session.startTransaction();
+
 	try {
 		const { userID } = req.params;
 		const { friendID } = req.body;
@@ -216,8 +220,8 @@ export const addFriend = async (req, res) => {
 			});
 		}
 
-		const user = await User.findById(userID);
-		const friend = await User.findById(friendID);
+		const user = await User.findById(userID).session(session);
+		const friend = await User.findById(friendID).session(session);
 		if (!user || !friend) {
 			return res.status(400).json({
 				success: false,
@@ -233,18 +237,24 @@ export const addFriend = async (req, res) => {
 		}
 
 		user.friends.push(friendID);
+		friend.friends.push(userID);
 		await user.save();
+		await friend.save();
 
+		await session.commitTransaction();
 		return res.status(200).json({
 			success: true,
 			message: "friend added successfully",
 			data: user.friends,
 		});
 	} catch (error) {
+		await session.abortTransaction();
 		return res.status(500).json({
 			success: false,
 			error: error.message,
 		});
+	} finally {
+		if (session) session.endSession();
 	}
 };
 export const deleteFriend = async (req, res) => {
