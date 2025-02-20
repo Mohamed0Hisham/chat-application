@@ -108,24 +108,33 @@ export const fetchConversation = async (req, res) => {
 	}
 };
 export const fetchUserConversations = async (req, res) => {
-	const { userID } = req.params;
-	if (!validator.isMongoId(userID)) {
-		return res.status(400).json({
+	try {
+		const { userID } = req.params;
+		if (!validator.isMongoId(userID)) {
+			return res.status(400).json({
+				success: false,
+				message: "invalid chat Id",
+			});
+		}
+
+		const userChats = await User.findById(userID)
+			.populate("conversation")
+			.lean();
+		if (!Array.isArray(userChats) || userChats.length < 1) {
+			return res.status(204).end();
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "user chats fetched",
+			data: userChats,
+		});
+	} catch (error) {
+		return res.status(500).json({
 			success: false,
-			message: "invalid chat Id",
+			message: error.message,
 		});
 	}
-
-	const userChats = await User.findById(userID).populate("conversation").lean();
-	if (!Array.isArray(userChats) || userChats.length < 1) {
-		return res.status(204).end();
-	}
-
-	return res.status(200).json({
-		success: true,
-		message: "user chats fetched",
-		data: userChats,
-	});
 };
 export const updateConversationSetting = async (req, res) => {};
 export const deleteConversation = async (req, res) => {};
