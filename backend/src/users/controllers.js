@@ -203,33 +203,36 @@ export const fetchFriends = async (req, res) => {
 		});
 	}
 };
+
 export const addFriend = async (req, res) => {
 	const session = await startSession();
-	session.startTransaction();
 
 	try {
+		session.startTransaction();
+
 		const { userID } = req.params;
 		const { friendID } = req.body;
+		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
+			return res.status(400).json({
+				success: false,
+				error: "Invalid operation",
+			});
+		}
+
+		const users = await User.find({ _id: { $in: [userID, friendID] } });
+		if (users.length !== 2) {
+			return res.status(400).json({
+				success: false,
+				error: "Invalid user or friend ID",
+			});
+		}
+		const user = users.find((u) => u._id.toString() === userID);
+		const friend = users.find((u) => u._id.toString() === friendID);
+
 		if (
-			validator.isMongoId(userID) == false ||
-			validator.isMongoId(friendID) == false
+			user.friends.includes(friendID) ||
+			friend.friends.includes(userID)
 		) {
-			return res.status(400).json({
-				success: false,
-				error: "invalid credentials",
-			});
-		}
-
-		const user = await User.findById(userID).session(session);
-		const friend = await User.findById(friendID).session(session);
-		if (!user || !friend) {
-			return res.status(400).json({
-				success: false,
-				error: "invalid operation",
-			});
-		}
-
-		if (user.friends.includes(friendID)) {
 			return res.status(400).json({
 				success: false,
 				error: "friend already added",
@@ -238,8 +241,7 @@ export const addFriend = async (req, res) => {
 
 		user.friends.push(friendID);
 		friend.friends.push(userID);
-		await user.save();
-		await friend.save();
+		await User.bulkSave([user, friend], { session });
 
 		await session.commitTransaction();
 		return res.status(200).json({
@@ -254,7 +256,7 @@ export const addFriend = async (req, res) => {
 			error: error.message,
 		});
 	} finally {
-		if (session) session.endSession();
+		session.endSession();
 	}
 };
 export const deleteFriend = async (req, res) => {
