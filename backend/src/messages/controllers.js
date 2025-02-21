@@ -65,25 +65,31 @@ export const fetchMsgs = async (req, res) => {
 			});
 		}
 
-		const chat = await Chat.findById(chatID)
-			.populate({
-				path: "messages",
-				select: "content",
-				options: { skip, limit, sort: { createdAt: -1 } },
-			})
-			.lean();
-
-		if (!chat) {
+		const chatExists = await Chat.exists({ _id: chatID });
+		if (!chatExists) {
 			return res.status(404).json({
 				success: false,
-				message: "no such chat exist",
+				message: "Chat not found",
 			});
 		}
 
+		const messages = await Msg.find({ chat: chatID })
+			.select("content createdAt senderID")
+			.sort({ createdAt: -1 })
+			.skip(skip)
+			.limit(limit)
+			.lean();
+		const totalMessages = await Msg.countDocuments({ chat: chatID });
+
 		return res.status(200).json({
 			success: true,
-			message: "messages fetched",
-			data: chat.messages,
+			message: "Messages fetched",
+			data: messages,
+			pagination: {
+				currentPage: page,
+				totalPages: Math.ceil(totalMessages / limit),
+				totalMessages,
+			},
 		});
 	} catch (error) {
 		return res.status(500).json({
