@@ -138,7 +138,11 @@ export const editMsg = async (req, res) => {
 			});
 		}
 
-		const result = await Msg.findByIdAndUpdate(msgID, { content }).lean();
+		const result = await Msg.findByIdAndUpdate(
+			msgID,
+			{ content },
+			{ new: true }
+		).lean();
 		if (!result) {
 			return res.status(404).json({
 				success: false,
