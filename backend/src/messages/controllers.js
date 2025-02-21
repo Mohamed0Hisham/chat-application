@@ -98,8 +98,38 @@ export const fetchMsgs = async (req, res) => {
 		});
 	}
 };
+
 export const editMsg = async (req, res) => {
 	try {
+		const { content } = req.body;
+		if (!content) {
+			return res.status(400).json({
+				success: false,
+				message: "can't send empty message",
+			});
+		}
+
+		const { msgID } = req.params;
+		if (!validator.isMongoId(msgID)) {
+			return res.status(400).json({
+				success: false,
+				message: "invalid ID sent",
+			});
+		}
+
+		const result = await Msg.findByIdAndUpdate(msgID, { content }).lean();
+		if (!result) {
+			return res.status(404).json({
+				success: false,
+				message: "no such message exist",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "message modified",
+			data: result,
+		});
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
