@@ -8,7 +8,7 @@ const msgSchema = new Schema(
 			required: true,
 		},
 		receiverID: {
-			type: Schema.Types.ObjectId,
+			type: [Schema.Types.ObjectId],
 			ref: "User",
 			required: true,
 		},
