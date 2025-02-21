@@ -1,6 +1,7 @@
 import Chat from "../conversations/models.js";
 import Msg from "./models.js";
 import validator from "validator";
+import { startSession } from "mongoose";
 
 export const sendMsg = async (req, res) => {
 	try {
@@ -138,11 +139,44 @@ export const editMsg = async (req, res) => {
 	}
 };
 export const deleteMsg = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction();
+
+		const { msgID } = req.params;
+		if (!validator.isMongoId(msgID)) {
+			return res.status(400).json({
+				success: false,
+				message: "invalid ID sent",
+			});
+		}
+
+		const result = await Msg.deleteOne({ _id: msgID }, { session });
+		if (!result.acknowledged || result.deletedCount !== 1) {
+			return res.status(404).json({
+				success: false,
+				message: "no such message exist",
+			});
+		}
+
+		await Chat.updateOne(
+			{ messages: msgID },
+			{ $pull: { messages: msgID } },
+			{ session }
+		);
+
+		await session.commitTransaction();
+		return res.status(200).json({
+			success: true,
+			message: "message deleted",
+		});
 	} catch (error) {
+		await session.abortTransaction();
 		return res.status(500).json({
 			success: false,
 			message: error.message,
 		});
+	} finally {
+		await session.endSession();
 	}
 };
