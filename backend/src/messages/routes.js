@@ -1,0 +1,10 @@
+import express from "express";
+
+const router = express.Router();
+
+router.post("/", sendMsg);
+router.get("/:chatID", fetchMsgs);
+router.put("/:msgID", editMsg);
+router.delete("/:msgID", deleteMsg);
+
+export default router;
