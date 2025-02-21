@@ -176,7 +176,10 @@ export const updateConversationSetting = async (req, res) => {
 	}
 };
 export const deleteConversation = async (req, res) => {
+	const session = await startSession();
 	try {
+		session.startTransaction();
+
 		const { chatID } = req.params;
 		if (!validator.isMongoId(chatID)) {
 			return res.status(400).json({
@@ -185,23 +188,34 @@ export const deleteConversation = async (req, res) => {
 			});
 		}
 
-		const result = await Chat.findByIdAndDelete(chatID);
-		if (!result) {
+		await User.updateMany(
+			{ conversation: chatID },
+			{ $pull: { conversation: chatID } },
+			{ session }
+		);
+
+		console.log(user);
+		const result = await Chat.deleteOne({ _id: chatID }).session(session);
+		if (!result.acknowledged && result.deletedCount === 0) {
 			return res.status(404).json({
 				success: false,
-				message: "no such chat exist",
+				message: "no such chat exists",
 			});
 		}
 
+		await session.commitTransaction();
 		return res.status(200).json({
 			success: true,
 			message: "chat deleted successfully",
 			data: result,
 		});
 	} catch (error) {
+		await session.abortTransaction();
 		return res.status(500).json({
 			success: false,
 			message: error.message,
 		});
+	} finally {
+		await session.endSession();
 	}
 };
