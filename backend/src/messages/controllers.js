@@ -50,6 +50,41 @@ export const sendMsg = async (req, res) => {
 };
 export const fetchMsgs = async (req, res) => {
 	try {
+		const { chatID } = req.params;
+
+		const limit = parseInt(req.query.limit) || 12;
+		const page = parseInt(req.query.page) || 1;
+		if (limit < 1) limit = 12;
+		if (page < 1) page = 1;
+		const skip = (page - 1) * limit;
+
+		if (!validator.isMongoId(chatID)) {
+			return res.status(400).json({
+				success: false,
+				message: "invalid ID sent",
+			});
+		}
+
+		const chat = await Chat.findById(chatID)
+			.populate({
+				path: "messages",
+				select: "content",
+				options: { skip, limit, sort: { createdAt: -1 } },
+			})
+			.lean();
+
+		if (!chat) {
+			return res.status(404).json({
+				success: false,
+				message: "no such chat exist",
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: "messages fetched",
+			data: chat.messages,
+		});
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
