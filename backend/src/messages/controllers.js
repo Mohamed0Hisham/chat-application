@@ -94,13 +94,13 @@ export const fetchMsgs = async (req, res) => {
 			});
 		}
 
-		const messages = await Msg.find({ chat: chatID })
+		const messages = await Msg.find({ chatID })
 			.select("content createdAt senderID")
 			.sort({ createdAt: -1 })
 			.skip(skip)
 			.limit(limit)
 			.lean();
-		const totalMessages = await Msg.countDocuments({ chat: chatID });
+		const totalMessages = await Msg.countDocuments({ chatID });
 
 		return res.status(200).json({
 			success: true,
