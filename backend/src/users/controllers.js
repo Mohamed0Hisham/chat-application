@@ -1,10 +1,11 @@
 import validator from "validator";
 import User from "./models.js";
 import bcryptjs from "bcryptjs";
-import jwt from "jsonwebtoken";
 import { startSession } from "mongoose";
+import { generateAccessToken, generateRefreshToken } from "../../utils/auth.js";
 
 const SALT = 12;
+const environment = process.env.ENVIRONMENT === production;
 export const registerUser = async (req, res) => {
 	try {
 		const { fullname, email, password } = req.body;
@@ -64,20 +65,21 @@ export const login = async (req, res) => {
 			});
 		}
 
-		const { _id: userID, email: userEmail, fullname } = user;
-		const token = jwt.sign({ userID, userEmail }, process.env.JWT_SECRET, {
-			expiresIn: "15m",
+		const accessToken = await generateAccessToken(user);
+		const refreshToken = await generateRefreshToken(user);
+
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: environment,
+			sameSite: "Strict",
+			path: "/api/auth/refresh",
 		});
 
 		return res.status(200).json({
 			success: true,
 			message: "Login in successfully",
 			token,
-			data: {
-				userID,
-				fullname,
-				email,
-			},
+			data: accessToken,
 		});
 	} catch (error) {
 		return res.status(500).json({
