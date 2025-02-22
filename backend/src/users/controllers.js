@@ -88,6 +88,11 @@ export const login = async (req, res) => {
 		});
 	}
 };
+export const logout = (req, res) => {
+	res.clearCookie("refreshToken", { path: "/api/auth/refresh" });
+	res.json({ message: "Logged out" });
+};
+
 export const fetchProfile = async (req, res) => {
 	try {
 		const { userID } = req.params;
