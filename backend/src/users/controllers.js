@@ -5,7 +5,7 @@ import { startSession } from "mongoose";
 import { generateAccessToken, generateRefreshToken } from "../../utils/auth.js";
 
 const SALT = 12;
-const environment = process.env.ENVIRONMENT === production;
+const environment = process.env.ENVIRONMENT === "production";
 export const registerUser = async (req, res) => {
 	try {
 		const { fullname, email, password } = req.body;
@@ -78,8 +78,7 @@ export const login = async (req, res) => {
 		return res.status(200).json({
 			success: true,
 			message: "Login in successfully",
-			token,
-			data: accessToken,
+			accessToken,
 		});
 	} catch (error) {
 		return res.status(500).json({
