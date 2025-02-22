@@ -15,6 +15,6 @@ app.use(cookieParser());
 app.use("/api/users", userRoutes);
 app.use("/api/conversations", isAuthenticated, conversationRoutes);
 app.use("/api/messages", isAuthenticated, messagesRoutes);
-app.post("/api/auth/refresh", refreshToken);
+app.post("/api/auth/refresh", isAuthenticated, refreshToken);
 
 export default app;
