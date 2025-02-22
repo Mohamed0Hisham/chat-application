@@ -9,16 +9,17 @@ import {
 	registerUser,
 	updateProfile,
 } from "./controllers.js";
+import { isAuthenticated } from "../../utils/auth.js";
 
 const router = express.Router();
 
 router.post("/register", registerUser);
 router.post("/login", login);
-router.post("/logout", logout);
-router.get("/:userID", fetchProfile);
-router.put("/:userID", updateProfile);
-router.get("/:userID/friends", fetchFriends);
-router.post("/:userID/friends", addFriend);
-router.delete("/:userID/friends/:friendID", deleteFriend);
+router.post("/logout", isAuthenticated, logout);
+router.get("/:userID", isAuthenticated, fetchProfile);
+router.put("/:userID", isAuthenticated, updateProfile);
+router.get("/:userID/friends", isAuthenticated, fetchFriends);
+router.post("/:userID/friends", isAuthenticated, addFriend);
+router.delete("/:userID/friends/:friendID", isAuthenticated, deleteFriend);
 
 export default router;
