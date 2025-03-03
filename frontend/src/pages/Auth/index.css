@@ -87,9 +87,6 @@ input {
 	font-weight: 400;
 	font-size: large;
 }
-.show-password {
-	cursor: pointer;
-}
 .options {
 	padding: 8px;
 	display: flex;

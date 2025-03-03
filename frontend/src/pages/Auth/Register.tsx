@@ -1,11 +1,22 @@
-import { AtSign, Lock } from "lucide-react";
+import { AtSign, Lock, SquareUserRound } from "lucide-react";
 import "./index.css";
 import { Link } from "react-router-dom";
 
-const Login = () => {
+const Register = () => {
 	return (
 		<section className="container">
 			<form className="form" action="">
+				<div className="form-field">
+					<label htmlFor="fullname">Fullname</label>
+					<div className="input-field">
+						<SquareUserRound />
+						<input
+							type="text"
+							id="fullname"
+							placeholder="Your fullname"
+						/>
+					</div>
+				</div>
 				<div className="form-field">
 					<label htmlFor="email">E-mail</label>
 					<div className="input-field">
@@ -34,12 +45,12 @@ const Login = () => {
 				<input
 					className="submit-button"
 					type="submit"
-					value="Sign In"
+					value="Sign Up"
 				/>
 				<p>
-					Don't have an account?{" "}
-					<Link className="register" to={"/register"}>
-						Sign Up
+					Already have an account?{" "}
+					<Link className="register" to="/login">
+						Sign In
 					</Link>
 				</p>
 			</form>
@@ -47,4 +58,4 @@ const Login = () => {
 	);
 };
 
-export default Login;
+export default Register;
