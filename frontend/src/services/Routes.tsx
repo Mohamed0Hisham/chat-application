@@ -15,9 +15,10 @@ const routes = createBrowserRouter([
 			{
 				index: true, // Default route
 				element: (
-					<ProtectedRoute>
-						<Dashboard />
-					</ProtectedRoute>
+					// <ProtectedRoute>
+					// 	<Dashboard />
+					// </ProtectedRoute>
+					<Dashboard />
 				),
 			},
 			{
