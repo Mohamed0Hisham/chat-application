@@ -1,13 +1,22 @@
 import { useEffect } from "react";
-import { useAuthStore } from "../store/authStore";
+import useAuthStore from "../store/Auth-Store";
 
 export const useAuth = () => {
-	const { user, token, isAuthenticated, login, logout, checkAuth } =
-		useAuthStore();
+	const {
+		user,
+		token,
+		isAuthenticated,
+		isLoading,
+		login,
+		logout,
+		checkAuth,
+	} = useAuthStore();
 
 	useEffect(() => {
-		checkAuth();
+		(async () => {
+			await checkAuth();
+		})();
 	}, [checkAuth]);
 
-	return { user, token, isAuthenticated, login, logout };
+	return { user, token, isAuthenticated, isLoading, login, logout };
 };
