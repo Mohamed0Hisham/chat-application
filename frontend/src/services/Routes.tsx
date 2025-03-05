@@ -4,7 +4,7 @@ import App from "../App";
 import NotFound from "../pages/error/404";
 import Login from "../pages/Auth/Login";
 import ProtectedRoute from "./ProtectedRoute";
-import Dashboard from "../components/chat/Dashboard";
+import Dashboard from "../pages/Chat/Dashboard";
 
 const routes = createBrowserRouter([
 	{

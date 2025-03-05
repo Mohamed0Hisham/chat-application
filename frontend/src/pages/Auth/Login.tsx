@@ -1,5 +1,5 @@
 import { AtSign, Lock } from "lucide-react";
-import "./index.css";
+import "./Auth.module.css";
 import { Link } from "react-router-dom";
 
 const Login = () => {
