@@ -1,7 +1,7 @@
-.container {
+.container-auth {
 	width: 100dvw;
 	height: 100dvh;
-	background-image: url("../../assets/SeaShore.jpg");
+	background-image: url("../../assets/SeaShore.avif");
 	background-repeat: no-repeat;
 	background-size: cover;
 	position: relative;

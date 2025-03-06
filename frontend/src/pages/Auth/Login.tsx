@@ -1,10 +1,10 @@
 import { AtSign, Lock } from "lucide-react";
-import "./Auth.module.css";
+import "./Auth.css";
 import { Link } from "react-router-dom";
 
 const Login = () => {
 	return (
-		<section className="container">
+		<section className="container-auth">
 			<form className="form" action="">
 				<div className="form-field">
 					<label htmlFor="email">E-mail</label>

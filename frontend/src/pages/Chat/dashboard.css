@@ -1,0 +1,13 @@
+.container-ch {
+	display: grid;
+	grid-template-columns: auto 1fr;
+}
+
+.sidebar-ch {
+	border: 2px solid black;
+	margin-left: auto;
+}
+
+.dashboard-ch {
+	border: 2px solid black;
+}

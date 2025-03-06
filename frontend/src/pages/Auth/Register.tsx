@@ -1,10 +1,10 @@
 import { AtSign, Lock, SquareUserRound } from "lucide-react";
-import "./Auth.module.css";
+import "./Auth.css";
 import { Link } from "react-router-dom";
 
 const Register = () => {
 	return (
-		<section className="container">
+		<section className="container-auth">
 			<form className="form" action="">
 				<div className="form-field">
 					<label htmlFor="fullname">Fullname</label>

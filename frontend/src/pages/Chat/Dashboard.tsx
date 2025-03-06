@@ -1,5 +1,6 @@
 import Sidebar from "../../components/layouts/sidebar";
-import "./dashboard.module.css"
+import "./dashboard.css";
+
 const Dashboard = () => {
 	return (
 		<section className="container">
