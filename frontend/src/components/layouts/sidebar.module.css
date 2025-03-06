@@ -18,6 +18,13 @@
 		padding: 0.5rem;
 	}
 }
+@media (min-width:2000px) {
+	.sidebar {
+		border: 1px dashed black;
+		height: 100vh;
+		padding: 3rem;
+	}
+}
 .searchField {
 	width: 100%;
 	height: 4rem;
@@ -31,6 +38,19 @@
 	padding-left: 20px;
 	font-size: 24px;
 	font-style: italic;
+}
+@media (min-width:2000px) {
+	.searchField {
+		height: 6rem;
+		border: 1px solid #000;
+		margin-bottom: 6rem;
+	}
+	.searchIn {
+		padding-left: 30px;
+		font-size: 44px;
+		font-weight: 700;
+		font-style: italic;
+	}
 }
 .IconField {
 	background-color: #e9ecef;
@@ -48,7 +68,14 @@
 .icon {
 	transform: scale(1.5);
 }
-
+@media (min-width:2000px) {
+	.IconField {
+		width: 128px;
+	}
+	.icon {
+		transform: scale(2);
+	}
+}
 .userList {
 	list-style: none;
 }
@@ -73,6 +100,21 @@
 	align-items: center;
 	justify-content: center;
 	gap: 18px;
+}
+@media (min-width:2000px) {
+	.user {
+		margin-bottom: 6rem;
+		transition: ease-in 250ms;
+		padding: 2rem;
+		border-radius: 2rem;
+	}
+	.avatar {
+		transform: scale(1.25);
+	}
+	.description {
+		transform: scale(2);
+		font-weight: 600;
+	}
 }
 .green,
 .red {
