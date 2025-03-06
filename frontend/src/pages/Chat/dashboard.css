@@ -6,10 +6,16 @@
 	border: 1px solid black;
 }
 
-.sidebar-ch {
-	height: 100%;
+@media (max-width:801px) {
+	.sidebar-ch {
+		width: 100dvw;
+	}
 }
-
 .dashboard-ch {
 	border-left: 2px solid black;
+}
+@media (max-width:801px) {
+	.dashboard-ch {
+		display:none;
+	}
 }

@@ -1,5 +1,5 @@
 // import { SearchIcon } from "lucide-react";
-import { Circle, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import s from "./sidebar.module.css";
 
 // interface User {
