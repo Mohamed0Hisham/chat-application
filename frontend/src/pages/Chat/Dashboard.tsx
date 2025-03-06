@@ -3,11 +3,11 @@ import "./dashboard.css";
 
 const Dashboard = () => {
 	return (
-		<section className="container">
-			<aside className="sidebar">
+		<section className="container-ch">
+			<aside className="sidebar-ch">
 				<Sidebar />
 			</aside>
-			<main className="dashboard">
+			<main className="dashboard-ch">
 				<h1>Dashboard</h1>
 			</main>
 		</section>
