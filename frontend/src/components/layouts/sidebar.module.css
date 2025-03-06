@@ -38,3 +38,40 @@ align-content: center;
 .icon{
     transform: scale(1.5);
 }
+
+.userList{
+	list-style: none;
+}
+.user{
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	margin-bottom: 1.5rem;
+	transition: ease-in 250ms;
+	padding: 4px;
+}
+.user:hover{
+	background-color: #ddd;
+}
+.avatar{
+	border-radius: 300px;
+	padding: 12px;
+	overflow: hidden;
+}
+.description{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+}
+.green, .red{
+	border-radius: 9999px;
+	width: 20px;
+	height: 20px;
+}
+.green{
+	background: #2aea2a;
+}
+.red{
+	background: #ff0000;
+}

@@ -67,33 +67,31 @@ const Sidebar = () => {
 				<div className={s.IconField}>
 					<Search className={s.icon} />
 				</div>
-					<input
-						className={s.searchIn}
-						type="search"
-						id="searchBar"
-						placeholder="search"
-					/>
+				<input
+					className={s.searchIn}
+					type="search"
+					id="searchBar"
+					placeholder="search"
+				/>
 			</div>
 			<ul className={s.userList}>
 				{users.map((user) => {
 					return (
-						<div className={s.user}>
+						<li className={s.user}>
 							<div className={s.avatar}>
 								<img src={user.avatarUrl} alt="avatar" />
 							</div>
 							<div className={s.description}>
 								<p>{user.fullname}</p>
 								{user.isOnline ? (
-									<span className={s.green}>
-										<Circle />
-									</span>
+									<div className={s.green}>
+									</div>
 								) : (
-									<span className={s.red}>
-										<Circle />
-									</span>
+									<div className={s.red}>
+									</div>
 								)}
 							</div>
-						</div>
+						</li>
 					);
 				})}
 			</ul>
