@@ -1,5 +1,6 @@
 import Sidebar from "../../components/layouts/sidebar";
 import "./dashboard.css";
+import Conversation from "./Conversation";
 
 const Dashboard = () => {
 	return (
@@ -7,8 +8,8 @@ const Dashboard = () => {
 			<aside className="sidebar-ch">
 				<Sidebar />
 			</aside>
-			<main className="dashboard-ch">
-				<h1>Dashboard</h1>
+			<main className="chat">
+				<Conversation />
 			</main>
 		</section>
 	);
