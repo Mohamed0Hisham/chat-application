@@ -26,6 +26,10 @@ const userSchema = new Schema(
 			ref: "conversation",
 			default: [],
 		},
+		isOnline: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	{ timestamps: true }
 );

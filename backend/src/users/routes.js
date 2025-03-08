@@ -3,6 +3,7 @@ import {
 	addFriend,
 	deleteFriend,
 	fetchFriends,
+	fetchFriend,
 	fetchProfile,
 	login,
 	logout,
@@ -19,6 +20,7 @@ router.post("/logout", isAuthenticated, logout);
 router.get("/:userID", isAuthenticated, fetchProfile);
 router.put("/:userID", isAuthenticated, updateProfile);
 router.get("/:userID/friends", isAuthenticated, fetchFriends);
+router.get("/:userID/friends/:friendID", isAuthenticated, fetchFriend);
 router.post("/:userID/friends", isAuthenticated, addFriend);
 router.delete("/:userID/friends/:friendID", isAuthenticated, deleteFriend);
 
