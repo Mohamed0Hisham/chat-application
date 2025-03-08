@@ -1,11 +1,18 @@
 /* Chat.module.css */
+.conv{
+	position: relative;
+	height: 100%;
+	/* display: grid;
+	grid-template-rows: 9fr 1fr; */
+}
 .chatContainer {
 	max-width: 90%;
 	margin: 20px auto;
-	height: 93dvh;
+	height: 90%;
 	overflow-y: auto;
 	padding: 20px;
 	font-size: 1.15rem;
+	border-bottom: 2px solid black;
 }
 .chatContainer {
 	scrollbar-width: none; /* Firefox */
@@ -17,12 +24,15 @@
 .msgIn{
 	position: absolute;
 	bottom: 0;
-	width: 66%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 100%;
 	height:10%;
 	display: grid;
 	grid-template-columns: auto 1fr auto auto;
 	align-items: center;
-	padding: 2rem 1rem 0.5rem 1rem;
+	padding-left: 2rem;
+	padding-right: 2rem;
 	gap: 2rem;
 }
 .send{

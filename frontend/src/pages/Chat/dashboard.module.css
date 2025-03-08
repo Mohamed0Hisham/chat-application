@@ -1,11 +1,20 @@
-.container-ch {
+.container {
 	width: 100%;
 	height: 100dvh;
 	display: grid;
-	grid-template-columns: 2fr 4fr;
+	grid-template-columns: auto 2fr 4fr;
 	border: 1px solid black;
 }
-
+.options{
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	height: fit-content;
+	gap: 3rem;
+	padding: 1rem;
+	font-size: 1.25rem;
+}
 @media (max-width:801px) {
 	.sidebar-ch {
 		width: 100dvw;

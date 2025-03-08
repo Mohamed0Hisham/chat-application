@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import api from "../utils/api";
+import api from "../services/api";
 
 type User = { userID: string; fullname: string; email: string };
 

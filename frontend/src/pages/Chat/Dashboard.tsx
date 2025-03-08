@@ -1,14 +1,20 @@
 import Sidebar from "../../components/layouts/sidebar";
-import "./dashboard.css";
+import styles from "./dashboard.module.css";
 import Conversation from "./Conversation";
 
 const Dashboard = () => {
 	return (
-		<section className="container-ch">
-			<aside className="sidebar-ch">
+		<section className={styles.container}>
+			<ul className={styles.options}>
+				<li>chat</li>
+				<li>groups</li>
+				<li>find</li>
+				<li>me</li>
+			</ul>
+			<aside className={styles.sidebar}>
 				<Sidebar />
 			</aside>
-			<main className="chat">
+			<main className={styles.chat}>
 				<Conversation />
 			</main>
 		</section>

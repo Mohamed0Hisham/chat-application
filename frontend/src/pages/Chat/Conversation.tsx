@@ -1,12 +1,12 @@
 // Chat.tsx
-import React, { useState } from "react";
+import  { useState,FC } from "react";
 import { SenderBubble } from "../../components/chat/SenderBubble";
 import { ReceiverBubble } from "../../components/chat/ReceiverBubble";
 import styles from "./Conversation.module.css";
 import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../../components/chat/MessageInput";
 
-const Chat: React.FC = () => {
+const Chat: FC = () => {
 	const [message, setMessage] = useState("");
 	return (
 		<div className={styles.conv}>

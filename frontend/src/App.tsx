@@ -1,10 +1,6 @@
 import { Outlet } from "react-router-dom";
 const App = () => {
-	return (
-		<main>
-			<Outlet />
-		</main>
-	);
+	return <Outlet />;
 };
 
 export default App;
