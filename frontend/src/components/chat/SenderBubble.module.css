@@ -37,3 +37,27 @@
 	opacity: 0.7;
 	margin-top: 5px;
 }
+@media (min-width: 2559px) {
+	.senderContainer {
+		margin: 20px 0;
+	}
+
+	.senderBubble {
+		max-width: 70%;
+		padding: 24px 36px;
+		border-radius: 20px;
+		font-size: 36px;
+	}
+
+	.senderBubble::after {
+		right: -20px;
+		bottom: 10px;
+		border-left: 20px solid #007bff;
+		border-top: 20px solid transparent;
+		border-bottom: 20px solid transparent;
+	}
+	.timestamp {
+		font-size: 1em;
+		opacity: 0.8;
+	}
+}
