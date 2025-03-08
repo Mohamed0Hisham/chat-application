@@ -14,6 +14,7 @@
 	gap: 3rem;
 	font-size: 1.25rem;
 	transition: ease-out 200ms;
+	padding: 0.5rem;
 }
 .options li {
 	cursor: pointer;
@@ -26,7 +27,12 @@
 .options li:hover {
 	background: #ddd;
 }
-
+@media (min-width: 2559px) {
+	.options li{
+		padding: 2rem;
+		font-size: 2.5rem;
+	}
+}
 @media (max-width: 801px) {
 	.sidebar-ch {
 		width: 100dvw;
