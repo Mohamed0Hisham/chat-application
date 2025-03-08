@@ -7,17 +7,23 @@ import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../../components/chat/MessageInput";
 
 const src = "https://img.icons8.com/?size=100&id=11730&format=png&color=000000";
+const user = {
+	fullname: "mohamed hisham",
+	isOnline: true,
+	avatar: src,
+};
 const Chat: FC = () => {
 	const [message, setMessage] = useState("");
+	const [friend, setFriend] = useState(user);
 	return (
 		<div className={styles.conv}>
 			<div className={styles.friend}>
 				<div className={styles.avatar}>
-					<img src={src} alt="avatar" />
+					<img src={friend.avatar} alt="avatar" />
 				</div>
 				<div className={styles.description}>
-					<p>your friend</p>
-					{true ? (
+					<p>{friend.fullname}</p>
+					{friend.isOnline ? (
 						<div className={styles.green}></div>
 					) : (
 						<div className={styles.red}></div>
@@ -25,46 +31,7 @@ const Chat: FC = () => {
 				</div>
 			</div>
 			<div className={styles.chatContainer}>
-				<ReceiverBubble
-					message="Hey! How's it going?"
-					timestamp="10:30 AM"
-				/>
-				<SenderBubble
-					message="Pretty good, thanks! How about you?"
-					timestamp="10:31 AM"
-				/>
-				<ReceiverBubble
-					message="Hey! How's it going?"
-					timestamp="10:30 AM"
-				/>
-				<SenderBubble
-					message="Pretty good, thanks! How about you?"
-					timestamp="10:31 AM"
-				/>
-				<ReceiverBubble
-					message="Hey! How's it going?"
-					timestamp="10:30 AM"
-				/>
-				<SenderBubble
-					message="Pretty good, thanks! How about you?"
-					timestamp="10:31 AM"
-				/>
-				<ReceiverBubble
-					message="Hey! How's it going?"
-					timestamp="10:30 AM"
-				/>
-				<SenderBubble
-					message="Pretty good, thanks! How about you?"
-					timestamp="10:31 AM"
-				/>
-				<ReceiverBubble
-					message="Hey! How's it going?"
-					timestamp="10:30 AM"
-				/>
-				<SenderBubble
-					message="Pretty good, thanks! How about you?"
-					timestamp="10:31 AM"
-				/>
+
 			</div>
 			<div className={styles.msgIn}>
 				<span className={styles.attach}>
