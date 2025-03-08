@@ -84,7 +84,8 @@
 	align-items: center;
 	justify-content: space-around;
 	margin-bottom: 1.5rem;
-	transition: ease-in 250ms;
+	transition: ease-out 200ms;
+	cursor: pointer;
 	padding: 4px;
 }
 .user:hover {

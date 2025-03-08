@@ -8,7 +8,7 @@ const Dashboard = () => {
 			<ul className={styles.options}>
 				<li>chat</li>
 				<li>groups</li>
-				<li>find</li>
+				<li>add</li>
 				<li>me</li>
 			</ul>
 			<aside className={styles.sidebar}>
