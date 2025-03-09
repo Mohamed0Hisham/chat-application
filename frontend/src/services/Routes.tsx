@@ -13,12 +13,11 @@ const routes = createBrowserRouter([
 		errorElement: <NotFound />,
 		children: [
 			{
-				index: true, // Default route
+				index: true,
 				element: (
-					// <ProtectedRoute>
-					// 	<Dashboard />
-					// </ProtectedRoute>
-					<Dashboard />
+					<ProtectedRoute>
+						<Dashboard />
+					</ProtectedRoute>
 				),
 			},
 			{

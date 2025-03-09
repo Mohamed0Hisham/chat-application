@@ -6,6 +6,11 @@
 	background-size: cover;
 	position: relative;
 }
+.error-message {
+	color: red;
+	font-size: 0.9rem;
+	margin: 0.5rem 0;
+}
 form {
 	position: absolute;
 	left: 50%;
