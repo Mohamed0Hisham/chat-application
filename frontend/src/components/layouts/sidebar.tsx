@@ -2,78 +2,18 @@
 import { Search } from "lucide-react";
 import s from "./sidebar.module.css";
 import useFriendStore from "../../store/friend";
-import { useEffect, useState } from "react";
-import api from "../../services/api";
-
-// interface User {
-// 	id: string;
-// 	fullname: string;
-// 	isOnline: boolean;
-// 	avatar: "string";
-// }
-
-const users = [
-	{
-		id: "1654156",
-		fullname: "Vincent Porter",
-		status: "left 7 mins ago",
-		isOnline: false,
-		avatarUrl:
-			"https://img.icons8.com/?size=100&id=11730&format=png&color=000000",
-	},
-	{
-		id: "1654156",
-		fullname: "Aiden Chavez",
-		status: "online",
-		isOnline: true,
-		avatarUrl:
-			"https://img.icons8.com/?size=100&id=11730&format=png&color=000000",
-	},
-	{
-		id: "1654156",
-		fullname: "Mike Thomas",
-		status: "online",
-		isOnline: true,
-		avatarUrl:
-			"https://img.icons8.com/?size=100&id=11730&format=png&color=000000",
-	},
-	{
-		id: "1654156",
-		fullname: "Christian Kelly",
-		status: "left 10 hours ago",
-		isOnline: false,
-		avatarUrl:
-			"https://img.icons8.com/?size=100&id=11730&format=png&color=000000",
-	},
-	{
-		id: "1654156",
-		fullname: "Monica Ward",
-		status: "online",
-		isOnline: true,
-		avatarUrl:
-			"https://img.icons8.com/?size=100&id=11730&format=png&color=000000",
-	},
-	{
-		id: "1654156",
-		fullname: "Dean Henry",
-		status: "offline since Oct 28",
-		isOnline: false,
-		avatarUrl:
-			"https://img.icons8.com/?size=100&id=11730&format=png&color=000000",
-	},
-];
+import { useEffect } from "react";
+import useMsgStore from "../../store/chat";
 
 const Sidebar = () => {
 	const { getFriends, friends, isLoading } = useFriendStore();
+	const { setChat } = useMsgStore();
 
 	useEffect(() => {
 		(async () => {
 			await getFriends();
 		})();
 	});
-	const selectHandler = ()=>{
-		
-	}
 	return (
 		<div className={s.sidebar}>
 			<div className={s.searchField}>
@@ -93,7 +33,13 @@ const Sidebar = () => {
 				) : (
 					friends.map((user) => {
 						return (
-							<li className={s.user} onClick={selectHandler}>
+							<li
+								className={s.user}
+								onClick={() => {
+									(async () => {
+										await setChat(user._id);
+									})();
+								}}>
 								<div className={s.avatar}>
 									<img src={user.avatar} alt="avatar" />
 								</div>

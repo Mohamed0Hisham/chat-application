@@ -12,7 +12,7 @@ import { isAuthenticated } from "../../utils/auth.js";
 const router = express.Router();
 
 router.post("/", createConversation);
-router.get("/:userID",isAuthenticated ,fetchConversation);
+router.get("/chat",isAuthenticated ,fetchConversation);
 router.get("/group",isAuthenticated ,fetchGroupConversation);
 router.get("/user/:userID", fetchUserConversations);
 router.put("/:chatID", updateConversationSetting);

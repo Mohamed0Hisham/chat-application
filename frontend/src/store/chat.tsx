@@ -12,7 +12,7 @@ interface ChatState {
 	isLoading: boolean;
 	chat: string;
 	getMsgsOfChat: (x: string) => Promise<Msg[] | undefined>;
-	setChat: () => Promise<void>;
+	setChat: (id:string) => Promise<void>;
 }
 
 const useMsgStore = create<ChatState>((set) => ({
@@ -31,10 +31,10 @@ const useMsgStore = create<ChatState>((set) => ({
 			set({ isLoading: false });
 		}
 	},
-	setChat: async () => {
+	setChat: async (id) => {
 		try {
 			set({ isLoading: true });
-			const chat: string = await api.get(`/conversations/`);
+			const chat: string = await api.get(`/conversations/chat?friendID=${id}`);
 			set({ chat, isLoading: false });
 		} catch (error) {
 			console.log(error);
