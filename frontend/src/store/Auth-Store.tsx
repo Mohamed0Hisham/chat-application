@@ -27,7 +27,7 @@ const useAuthStore = create<AuthState>((set) => ({
 		if (token && user) {
 			try {
 				const response = await api.get(
-					`/api/users/:${JSON.parse(user).userID}`,
+					`/api/users/${JSON.parse(user).userID}`,
 					{
 						headers: { Authorization: `Bearer ${token}` },
 					}

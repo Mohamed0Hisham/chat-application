@@ -13,9 +13,7 @@ export const useAuth = () => {
 	} = useAuthStore();
 
 	useEffect(() => {
-		(async () => {
-			await checkAuth();
-		})();
+		checkAuth();
 	}, [checkAuth]);
 
 	return { user, token, isAuthenticated, isLoading, login, logout };
