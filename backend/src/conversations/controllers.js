@@ -125,6 +125,70 @@ export const fetchConversation = async (req, res) => {
 		});
 	}
 };
+export const fetchGroupConversation = async (req, res) => {
+	try {
+		// Extract userIDs from query parameters (e.g., "id1,id2,id3")
+		const { userIDs } = req.query;
+		if (!userIDs) {
+			return res.status(400).json({
+				success: false,
+				message: "userIDs query parameter is required",
+			});
+		}
+
+		// Split into an array and ensure at least two users
+		const ids = userIDs.split(",");
+		if (ids.length < 2) {
+			return res.status(400).json({
+				success: false,
+				message: "at least two user IDs are required for a group chat",
+			});
+		}
+
+		// Validate each ID as a MongoDB ObjectId
+		for (const id of ids) {
+			if (!validator.isMongoId(id)) {
+				return res.status(400).json({
+					success: false,
+					message: "invalid user ID",
+				});
+			}
+		}
+
+		// Check if all users exist in the database
+		const users = await User.find({ _id: { $in: ids } }).lean();
+		if (users.length !== ids.length) {
+			return res.status(404).json({
+				success: false,
+				message: "one or more users not found",
+			});
+		}
+
+		// Find a chat that includes all specified participants
+		const chat = await Chat.findOne({
+			participants: { $all: ids },
+		}).lean();
+
+		if (!chat) {
+			return res.status(404).json({
+				success: false,
+				message: "no chat found with the specified participants",
+			});
+		}
+
+		// Return the chat
+		return res.status(200).json({
+			success: true,
+			message: "chat fetched successfully",
+			data: chat,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: "an error occurred while fetching the chat",
+		});
+	}
+};
 export const fetchUserConversations = async (req, res) => {
 	try {
 		const { userID } = req.params;
