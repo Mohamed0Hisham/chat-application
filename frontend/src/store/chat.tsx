@@ -34,7 +34,7 @@ const useMsgStore = create<ChatState>((set) => ({
 	setChat: async () => {
 		try {
 			set({ isLoading: true });
-			const chat: string = await api.get(`/messages/`);
+			const chat: string = await api.get(`/conversations/`);
 			set({ chat, isLoading: false });
 		} catch (error) {
 			console.log(error);

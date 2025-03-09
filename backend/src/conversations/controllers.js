@@ -79,19 +79,12 @@ export const createConversation = async (req, res) => {
 };
 export const fetchConversation = async (req, res) => {
 	try {
-		const { userID } = req.params;
+		const userID = req.user._id.toString();
 		const { friendID } = req.query;
 		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
 			return res.status(400).json({
 				success: false,
 				message: "invalid users Id",
-			});
-		}
-
-		if (req.user._id.toString() !== userID) {
-			return res.status(403).json({
-				success: false,
-				message: "unauthorized access",
 			});
 		}
 
