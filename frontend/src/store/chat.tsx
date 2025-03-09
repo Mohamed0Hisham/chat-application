@@ -2,13 +2,13 @@ import { create } from "zustand";
 import api from "../services/api";
 
 type Msg = {
+    _id?:string
 	content: string;
 	createdAt: Date;
 	senderID: string;
-	receiverID: string;
 };
 interface ChatState {
-	messages?: Msg[];
+	messages: Msg[];
 	isLoading: boolean;
 	chat: string;
 	getMsgsOfChat: (x: string) => Promise<Msg[] | undefined>;
@@ -16,7 +16,7 @@ interface ChatState {
 }
 
 const useMsgStore = create<ChatState>((set) => ({
-	messages: undefined,
+	messages: [],
 	isLoading: false,
 	chat: "",
 
