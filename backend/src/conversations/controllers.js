@@ -79,31 +79,49 @@ export const createConversation = async (req, res) => {
 };
 export const fetchConversation = async (req, res) => {
 	try {
-		const { chatID } = req.params;
-		if (!validator.isMongoId(chatID)) {
+		const { userID } = req.params;
+		const { friendID } = req.query;
+		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
 			return res.status(400).json({
 				success: false,
-				message: "invalid chat Id",
+				message: "invalid users Id",
 			});
 		}
 
-		const chat = await Chat.findById(chatID).lean();
-		if (!chat) {
-			return res.status(404).json({
+		if (req.user._id.toString() !== userID) {
+			return res.status(403).json({
 				success: false,
-				message: "no such chat exist",
+				message: "unauthorized access",
 			});
 		}
+
+		const user = await User.findById(userID).lean();
+		const friend = await User.findById(friendID).lean();
+		if (!user || !friend) {
+			return res.status(404).json({
+				success: false,
+				message: "invalid id passed",
+			});
+		}
+
+		const chatID = await Chat.findOne({
+			participants: { $all: [userID, friendID] },
+		})
+			.select("_id")
+			.lean();
 
 		return res.status(200).json({
 			success: true,
 			message: "chat fetched",
-			data: chat,
+			data: chatID,
 		});
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
-			message: error.message,
+			message:
+				process.env.NODE_ENV === "production"
+					? "Server error"
+					: error.message,
 		});
 	}
 };
