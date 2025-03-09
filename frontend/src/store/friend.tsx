@@ -10,43 +10,51 @@ type Friend = {
 };
 interface FriendState {
 	user?: { userID: string; fullname: string };
-	friend?: Friend;
+	friend: Friend | null;
 	friends: Friend[];
 	isLoading: boolean;
+	error: string | null;
 	getFriend: (x: string) => Promise<void>;
 	setFriend: (x: Friend) => void;
 	getFriends: () => Promise<void>;
+	clearError: () => void;
 }
+const isError = (error: unknown): error is Error => {
+	return error instanceof Error;
+};
 
 const useFriendStore = create<FriendState>((set, get) => ({
-	user: useAuthStore()?.user,
-	friend: undefined,
+	friend: null,
 	friends: [],
 	isLoading: false,
+	error: null,
 
 	getFriend: async (friendID: string) => {
-		set({ isLoading: true });
+		set({ isLoading: true, error: null });
 		try {
+			const user = useAuthStore.getState().user;
+			if (!user?.userID) {
+				set({ error: "Not authenticated" });
+				return;
+			}
+
 			const friend: Friend = await api.get(
-				`/users/${get().user?.userID}/friends/${friendID}`
+				`/users/${user?.userID}/friends/${friendID}`
 			);
 			set({
 				friend,
-				isLoading: true,
+				isLoading: false,
+				error: null,
 			});
 		} catch (error) {
-			console.error(error);
-			set({ friend: undefined, isLoading: false });
+			if (isError(error)) {
+				set({ error: error.message, isLoading: false, friend: null });
+			} else {
+				set({ error: "An unknown error occurred" });
+			}
 		}
 	},
-	setFriend: async (friend: Friend) => {
-		try {
-			set({ isLoading: true, friend });
-		} catch (error) {
-			console.error(error);
-			set({ friend: undefined, isLoading: false });
-		}
-	},
+	setFriend: (friend) => set({ friend }),
 	getFriends: async () => {
 		set({ isLoading: true });
 		try {
@@ -58,10 +66,18 @@ const useFriendStore = create<FriendState>((set, get) => ({
 				isLoading: true,
 			});
 		} catch (error) {
-			console.error(error);
-			set({ friends: undefined, isLoading: false });
+			if (isError(error)) {
+				set({ error: error.message });
+			} else {
+				set({
+					error: "An unknown error occurred",
+					friends: [],
+					isLoading: false,
+				});
+			}
 		}
 	},
+	clearError: () => set({ error: null }),
 }));
 
 export default useFriendStore;
