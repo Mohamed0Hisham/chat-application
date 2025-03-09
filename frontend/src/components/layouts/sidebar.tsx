@@ -6,7 +6,7 @@ import { useEffect } from "react";
 import useMsgStore from "../../store/chat";
 
 const Sidebar = () => {
-	const { getFriends, friends, isLoading } = useFriendStore();
+	const { getFriends, friends, isLoading, setFriend } = useFriendStore();
 	const { setChat } = useMsgStore();
 
 	useEffect(() => {
@@ -38,6 +38,7 @@ const Sidebar = () => {
 								onClick={() => {
 									(async () => {
 										await setChat(user._id);
+										setFriend(user);
 									})();
 								}}>
 								<div className={s.avatar}>

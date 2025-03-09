@@ -2,13 +2,19 @@ import { create } from "zustand";
 import api from "../services/api";
 import useAuthStore from "./Auth-Store";
 
-type Friend = { _id: string; fullname: string; isOnline: boolean, avatar:string };
+type Friend = {
+	_id: string;
+	fullname: string;
+	isOnline: boolean;
+	avatar: string;
+};
 interface FriendState {
 	user?: { userID: string; fullname: string };
 	friend?: Friend;
 	friends: Friend[];
 	isLoading: boolean;
 	getFriend: (x: string) => Promise<void>;
+	setFriend: (x: Friend) => void;
 	getFriends: () => Promise<void>;
 }
 
@@ -30,7 +36,15 @@ const useFriendStore = create<FriendState>((set, get) => ({
 			});
 		} catch (error) {
 			console.error(error);
-			set({ friend: undefined, friends: undefined, isLoading: false });
+			set({ friend: undefined, isLoading: false });
+		}
+	},
+	setFriend: async (friend: Friend) => {
+		try {
+			set({ isLoading: true, friend });
+		} catch (error) {
+			console.error(error);
+			set({ friend: undefined, isLoading: false });
 		}
 	},
 	getFriends: async () => {
@@ -45,7 +59,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 			});
 		} catch (error) {
 			console.error(error);
-			set({ friend: undefined, friends: undefined, isLoading: false });
+			set({ friends: undefined, isLoading: false });
 		}
 	},
 }));
