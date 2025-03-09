@@ -1,24 +1,28 @@
 import { create } from "zustand";
 import api from "../services/api";
+import useAuthStore from "./Auth-Store";
 
 type Friend = { _id: string; fullname: string; isOnline: boolean };
 interface FriendState {
+	user?: { userID: string; fullname: string; email: string };
 	friend?: Friend;
 	friends?: Friend[];
 	isLoading: boolean;
-	getFriend: () => Promise<void>;
+	getFriend: (x: string) => Promise<void>;
 	getFriends: () => Promise<void>;
 }
-const useFriendStore = create<FriendState>((set) => ({
+
+const useFriendStore = create<FriendState>((set, get) => ({
+	user: useAuthStore()?.user,
 	friend: undefined,
 	friends: undefined,
 	isLoading: false,
 
-	getFriend: async () => {
+	getFriend: async (friendID: string) => {
 		set({ isLoading: true });
 		try {
 			const friend: Friend = await api.get(
-				"/users/:userID/friends/:friendID"
+				`/users/${get().user?.userID}/friends/${friendID}`
 			);
 			set({
 				friend,
@@ -32,7 +36,9 @@ const useFriendStore = create<FriendState>((set) => ({
 	getFriends: async () => {
 		set({ isLoading: true });
 		try {
-			const friends: Friend[] = await api.get("/users/:userID/friends");
+			const friends: Friend[] = await api.get(
+				`/users/${get().user?.userID}/friends`
+			);
 			set({
 				friends,
 				isLoading: true,
