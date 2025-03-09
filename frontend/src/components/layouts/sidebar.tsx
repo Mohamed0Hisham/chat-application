@@ -1,6 +1,9 @@
 // import { SearchIcon } from "lucide-react";
 import { Search } from "lucide-react";
 import s from "./sidebar.module.css";
+import useFriendStore from "../../store/friend";
+import { useEffect, useState } from "react";
+import api from "../../services/api";
 
 // interface User {
 // 	id: string;
@@ -61,6 +64,16 @@ const users = [
 ];
 
 const Sidebar = () => {
+	const { getFriends, friends, isLoading } = useFriendStore();
+
+	useEffect(() => {
+		(async () => {
+			await getFriends();
+		})();
+	});
+	const selectHandler = ()=>{
+		
+	}
 	return (
 		<div className={s.sidebar}>
 			<div className={s.searchField}>
@@ -75,25 +88,27 @@ const Sidebar = () => {
 				/>
 			</div>
 			<ul className={s.userList}>
-				{users.map((user) => {
-					return (
-						<li className={s.user}>
-							<div className={s.avatar}>
-								<img src={user.avatarUrl} alt="avatar" />
-							</div>
-							<div className={s.description}>
-								<p>{user.fullname}</p>
-								{user.isOnline ? (
-									<div className={s.green}>
-									</div>
-								) : (
-									<div className={s.red}>
-									</div>
-								)}
-							</div>
-						</li>
-					);
-				})}
+				{isLoading ? (
+					<p>loading</p>
+				) : (
+					friends.map((user) => {
+						return (
+							<li className={s.user} onClick={selectHandler}>
+								<div className={s.avatar}>
+									<img src={user.avatar} alt="avatar" />
+								</div>
+								<div className={s.description}>
+									<p>{user.fullname}</p>
+									{user.isOnline ? (
+										<div className={s.green}></div>
+									) : (
+										<div className={s.red}></div>
+									)}
+								</div>
+							</li>
+						);
+					})
+				)}
 			</ul>
 		</div>
 	);

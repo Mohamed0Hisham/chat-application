@@ -1,7 +1,7 @@
 // Chat.tsx
 import { useState, FC } from "react";
-import { SenderBubble } from "../../components/chat/SenderBubble";
-import { ReceiverBubble } from "../../components/chat/ReceiverBubble";
+// import { SenderBubble } from "../../components/chat/SenderBubble";
+// import { ReceiverBubble } from "../../components/chat/ReceiverBubble";
 import styles from "./Conversation.module.css";
 import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../../components/chat/MessageInput";
@@ -30,9 +30,7 @@ const Chat: FC = () => {
 					)}
 				</div>
 			</div>
-			<div className={styles.chatContainer}>
-
-			</div>
+			<div className={styles.chatContainer}>{}</div>
 			<div className={styles.msgIn}>
 				<span className={styles.attach}>
 					<Paperclip className={styles.attachIcon} />

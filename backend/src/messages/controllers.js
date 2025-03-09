@@ -95,7 +95,7 @@ export const fetchMsgs = async (req, res) => {
 		}
 
 		const messages = await Msg.find({ chatID })
-			.select("content createdAt senderID")
+			.select("content createdAt senderID receiverID")
 			.sort({ createdAt: -1 })
 			.skip(skip)
 			.limit(limit)

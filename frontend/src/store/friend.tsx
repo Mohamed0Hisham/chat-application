@@ -2,11 +2,11 @@ import { create } from "zustand";
 import api from "../services/api";
 import useAuthStore from "./Auth-Store";
 
-type Friend = { _id: string; fullname: string; isOnline: boolean };
+type Friend = { _id: string; fullname: string; isOnline: boolean, avatar:string };
 interface FriendState {
-	user?: { userID: string; fullname: string; email: string };
+	user?: { userID: string; fullname: string };
 	friend?: Friend;
-	friends?: Friend[];
+	friends: Friend[];
 	isLoading: boolean;
 	getFriend: (x: string) => Promise<void>;
 	getFriends: () => Promise<void>;
@@ -15,7 +15,7 @@ interface FriendState {
 const useFriendStore = create<FriendState>((set, get) => ({
 	user: useAuthStore()?.user,
 	friend: undefined,
-	friends: undefined,
+	friends: [],
 	isLoading: false,
 
 	getFriend: async (friendID: string) => {
