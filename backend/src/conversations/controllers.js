@@ -106,7 +106,7 @@ export const fetchConversation = async (req, res) => {
 		return res.status(200).json({
 			success: true,
 			message: "chat fetched",
-			data: chatID,
+			chat: chatID._id,
 		});
 	} catch (error) {
 		return res.status(500).json({

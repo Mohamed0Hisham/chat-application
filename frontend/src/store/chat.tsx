@@ -39,12 +39,14 @@ const useMsgStore = create<ChatState>((set) => ({
 		const { token } = useAuthStore.getState();
 		try {
 			set({ isLoading: true });
-			const chat: string = await api.get(
+			const response = await api.get(
 				`/conversations/chat?friendID=${id}`,
 				{
 					headers: { Authorization: `Bearer ${token}` },
 				}
 			);
+			console.log(response.data);
+			const { chat } = response.data;
 			set({ chat, isLoading: false });
 		} catch (error) {
 			console.log(error);

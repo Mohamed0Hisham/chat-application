@@ -83,9 +83,11 @@ const Chat: FC = () => {
 										},
 									],
 								}));
+								console.log(user)
 								await api.post(
 									`/messages/${chat}`,
 									{
+										senderID: user._id,
 										content,
 									},
 									{
