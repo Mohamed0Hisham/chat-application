@@ -1,12 +1,12 @@
 .container {
 	max-width: 800px;
-	margin: 2rem auto;
-	padding: 2rem;
+	max-height: 80vh;
+	margin:0 auto;
+	/* padding: 2rem; */
 	background: #ffffff;
 	border-radius: 20px;
 	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-	/* position: relative; */
-	/* display: block; */
+	position: relative;
 	overflow-y: auto;
 }
 
@@ -40,9 +40,9 @@
 	border-radius: 12px;
 	border: 1px solid #e2e8f0;
 	transition: box-shadow 0.3s ease;
-	margin-bottom: 2rem;
 	position: sticky;
-	bottom: 0;
+	top: 0;
+	z-index: 2;
 }
 
 .searchForm:focus-within {
@@ -86,9 +86,10 @@
 .userList {
 	list-style: none;
 	padding: 0;
-	width: 300px;
-	margin-left: 50%;
-	margin-top: 7rem;
+	margin: 0 auto; /* Center it instead */
+	width: 100%; /* Use full width or a reasonable max-width */
+	max-width: 300px; /* Optional: constrain if desired */
+	margin-top: 2rem; /* Reduce from 7rem if needed */
 }
 
 .user {

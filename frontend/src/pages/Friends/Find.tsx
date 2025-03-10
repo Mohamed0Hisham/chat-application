@@ -82,7 +82,7 @@ const Find = () => {
 				<h1>Find Your Friends</h1>
 				<p>Type a name or email to search</p>
 			</header>
-			<section className={styles.container}>
+			<div className={styles.container}>
 				<form
 					className={styles.searchForm}
 					onSubmit={(e) => e.preventDefault()}>
@@ -125,7 +125,7 @@ const Find = () => {
 						<li className={styles.noResults}>No friends found</li>
 					)}
 				</ul>
-			</section>
+			</div>
 		</>
 	);
 };
