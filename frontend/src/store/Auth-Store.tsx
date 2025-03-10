@@ -9,6 +9,7 @@ interface AuthState {
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	checkAuth: () => Promise<void>;
+	register: (a: string, b: string, c: string) => Promise<void>;
 	login: (email: string, password: string) => Promise<void>;
 	logout: () => void;
 }
@@ -47,6 +48,25 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				localStorage.removeItem("user");
 			}
 		} else {
+			set({
+				user: undefined,
+				token: undefined,
+				isAuthenticated: false,
+				isLoading: false,
+			});
+		}
+	},
+	register: async (fullname, email, password) => {
+		set({ isLoading: true });
+		try {
+			await api.post(`/users/register`, {
+				email,
+				password,
+				fullname,
+			});
+			set({ isLoading: false });
+		} catch (error) {
+			console.error(error);
 			set({
 				user: undefined,
 				token: undefined,

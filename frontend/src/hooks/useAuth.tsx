@@ -8,6 +8,7 @@ export const useAuth = () => {
 		isAuthenticated,
 		isLoading,
 		login,
+		register,
 		logout,
 		checkAuth,
 	} = useAuthStore();
@@ -16,5 +17,5 @@ export const useAuth = () => {
 		checkAuth();
 	}, [checkAuth]);
 
-	return { user, token, isAuthenticated, isLoading, login, logout };
+	return { user, token, isAuthenticated, isLoading, login, logout, register };
 };
