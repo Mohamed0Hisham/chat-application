@@ -1,5 +1,5 @@
 import { AtSign, Lock, SquareUserRound } from "lucide-react";
-import "./Auth.css";
+import styles from "./Auth.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
@@ -11,7 +11,7 @@ const Register = () => {
 	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
 	const [isCompleted, setIsCompleted] = useState(false);
-	const { register,isLoading } = useAuth();
+	const { register, isLoading } = useAuth();
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
@@ -41,11 +41,11 @@ const Register = () => {
 	}, [isCompleted, navigate]);
 
 	return (
-		<section className="container-auth">
-			<form className="form" onSubmit={handleSubmit}>
-				<div className="form-field">
+		<section className={styles.containerAuth}>
+			<form className={styles.form} onSubmit={handleSubmit}>
+				<div className={styles.formField}>
 					<label htmlFor="fullname">Fullname</label>
-					<div className="input-field">
+					<div className={styles.inputField}>
 						<SquareUserRound />
 						<input
 							type="text"
@@ -56,9 +56,9 @@ const Register = () => {
 						/>
 					</div>
 				</div>
-				<div className="form-field">
+				<div className={styles.formField}>
 					<label htmlFor="email">E-mail</label>
-					<div className="input-field">
+					<div className={styles.inputField}>
 						<AtSign />
 						<input
 							type="email"
@@ -69,9 +69,9 @@ const Register = () => {
 						/>
 					</div>
 				</div>
-				<div className="form-field">
+				<div className={styles.formField}>
 					<label htmlFor="password">Password</label>
-					<div className="input-field">
+					<div className={styles.inputField}>
 						<Lock />
 						<input
 							type="password"
@@ -81,16 +81,16 @@ const Register = () => {
 						/>
 					</div>
 				</div>
-				{error && <p className="error-message">{error}</p>}
+				{error && <p className={styles.errorMessage}>{error}</p>}
 				<input
-					className="submit-button"
+					className={styles.submitButton}
 					type="submit"
 					value="Sign Up"
 					disabled={isLoading}
 				/>
 				<p>
 					Already have an account?{" "}
-					<Link className="register" to="/login">
+					<Link className={styles.register} to="/login">
 						Sign In
 					</Link>
 				</p>

@@ -1,5 +1,5 @@
 import { AtSign, Lock } from "lucide-react";
-import "./Auth.css";
+import styles from "./Auth.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
@@ -7,7 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [error, setError] = useState<string | null>(null); // Local error state
+	const [error, setError] = useState<string | null>(null);
 	const { login, isLoading } = useAuth();
 	const navigate = useNavigate();
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -40,11 +40,11 @@ const Login = () => {
 	}, [isLoggedIn, navigate]);
 
 	return (
-		<section className="container-auth">
-			<form className="form" onSubmit={handleSubmit}>
-				<div className="form-field">
+		<section className={styles.containerAuth}>
+			<form className={styles.form} onSubmit={handleSubmit}>
+				<div className={styles.formField}>
 					<label htmlFor="email">E-mail</label>
-					<div className="input-field">
+					<div className={styles.inputField}>
 						<AtSign />
 						<input
 							type="email"
@@ -55,9 +55,9 @@ const Login = () => {
 						/>
 					</div>
 				</div>
-				<div className="form-field">
+				<div className={styles.formField}>
 					<label htmlFor="password">Password</label>
-					<div className="input-field">
+					<div className={styles.inputField}>
 						<Lock />
 						<input
 							type="password"
@@ -67,8 +67,8 @@ const Login = () => {
 						/>
 					</div>
 				</div>
-				{error && <p className="error-message">{error}</p>}
-				<div className="options">
+				{error && <p className={styles.errorMessage}>{error}</p>}
+				<div className={styles.options}>
 					<div>
 						<input
 							type="checkbox"
@@ -77,18 +77,20 @@ const Login = () => {
 						/>
 						<span>Remember me</span>
 					</div>
-					<button className="reset-password" disabled={isLoading}>
+					<button
+						className={styles.resetPassword}
+						disabled={isLoading}>
 						Forgot Password?
 					</button>
 				</div>
 				<input
-					className="submit-button"
+					className={styles.submitButton}
 					type="submit"
 					value={isLoading ? "Signing In..." : "Sign In"}
 				/>
 				<p>
 					Don't have an account?{" "}
-					<Link className="register" to={"/register"}>
+					<Link className={styles.register} to={"/register"}>
 						Sign Up
 					</Link>
 				</p>

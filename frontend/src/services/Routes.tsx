@@ -5,6 +5,7 @@ import NotFound from "../pages/error/404";
 import Login from "../pages/Auth/Login";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../pages/Chat/Dashboard";
+import Find from "../pages/Friends/Find";
 
 const routes = createBrowserRouter([
 	{
@@ -12,6 +13,10 @@ const routes = createBrowserRouter([
 		element: <App />,
 		errorElement: <NotFound />,
 		children: [
+			{
+				index:true,
+				element:<Find/>
+			},
 			{
 				path: "/register",
 				element: <Register />,
