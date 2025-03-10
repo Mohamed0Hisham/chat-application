@@ -6,9 +6,18 @@ import messagesRoutes from "./src/messages/routes.js";
 import { refreshToken } from "./utils/refreshToken.js";
 import { isAuthenticated } from "./utils/auth.js";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 configDotenv();
 const app = express();
+app.use(
+	cors({
+		origin: "http://localhost:5173", // Your frontend origin
+		credentials: true, // Allow cookies/credentials
+		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Allowed methods
+		allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+	})
+);
 app.use(express.json());
 app.use(cookieParser());
 

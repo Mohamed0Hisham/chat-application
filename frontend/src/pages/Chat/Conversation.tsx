@@ -8,13 +8,13 @@ import { MessageInput } from "../../components/chat/MessageInput";
 import useFriendStore from "../../store/friend";
 import api from "../../services/api";
 import useMsgStore from "../../store/chat";
-import useAuthStore from "../../store/Auth-Store";
+import { useAuth } from "../../hooks/useAuth";
 
 const Chat: FC = () => {
 	const [content, setContent] = useState("");
 	const { friend } = useFriendStore();
 	const { chat, isLoading, messages } = useMsgStore();
-	const { user } = useAuthStore();
+	const { user, token } = useAuth();
 	return (
 		<div className={styles.conv}>
 			<div className={styles.friend}>
@@ -34,7 +34,7 @@ const Chat: FC = () => {
 				{isLoading
 					? ""
 					: messages.map((msg) => {
-							if (msg.senderID === user?.userID) {
+							if (msg.senderID === user?._id) {
 								return (
 									<SenderBubble
 										key={msg._id}
@@ -78,14 +78,22 @@ const Chat: FC = () => {
 										{
 											_id: tempId,
 											content,
-											senderID: user.userID,
+											senderID: user._id,
 											createdAt: new Date(),
 										},
 									],
 								}));
-								await api.post(`/messages/${chat}`, {
-									content,
-								});
+								await api.post(
+									`/messages/${chat}`,
+									{
+										content,
+									},
+									{
+										headers: {
+											Authorization: `Bearer ${token}`,
+										},
+									}
+								);
 								setContent("");
 							} catch (error) {
 								console.log("failed to send message", error);

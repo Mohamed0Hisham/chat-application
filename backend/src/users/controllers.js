@@ -57,7 +57,9 @@ export const login = async (req, res) => {
 				error: "invalid credentials",
 			});
 		}
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ email })
+			.select("_id fullname email")
+			.lean();
 		if (!user) {
 			return res.status(400).json({
 				success: false,
@@ -79,6 +81,7 @@ export const login = async (req, res) => {
 			success: true,
 			message: "Login in successfully",
 			accessToken,
+			user,
 		});
 	} catch (error) {
 		return res.status(500).json({

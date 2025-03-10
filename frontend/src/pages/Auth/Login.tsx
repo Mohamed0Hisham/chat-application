@@ -1,30 +1,29 @@
 import { AtSign, Lock } from "lucide-react";
 import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null); // Local error state
-	const { login, isLoading, isAuthenticated } = useAuth();
+	const { login, isLoading } = useAuth();
 	const navigate = useNavigate();
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-	// Handle form submission
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
-		setError(null); // Clear previous errors
+		setError(null);
 
-		// Basic validation
 		if (!email || !password) {
 			setError("Please fill in all fields");
 			return;
 		}
 
 		try {
-			await login(email, password); // Call login from useAuth
-			navigate("/dashboard"); // Redirect on success
+			await login(email, password);
+			setIsLoggedIn(true);
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -34,11 +33,12 @@ const Login = () => {
 		}
 	};
 
-	// Redirect if already authenticated
-	if (isAuthenticated) {
-		navigate("/dashboard");
-		return null; // Avoid rendering the form
-	}
+	useEffect(() => {
+		if (isLoggedIn) {
+			navigate("/dashboard");
+		}
+	}, [isLoggedIn, navigate]);
+
 	return (
 		<section className="container-auth">
 			<form className="form" onSubmit={handleSubmit}>
@@ -70,10 +70,16 @@ const Login = () => {
 				{error && <p className="error-message">{error}</p>}
 				<div className="options">
 					<div>
-						<input type="checkbox" id="remember" disabled={isLoading}/>
+						<input
+							type="checkbox"
+							id="remember"
+							disabled={isLoading}
+						/>
 						<span>Remember me</span>
 					</div>
-					<button className="reset-password" disabled={isLoading}>Forgot Password?</button>
+					<button className="reset-password" disabled={isLoading}>
+						Forgot Password?
+					</button>
 				</div>
 				<input
 					className="submit-button"

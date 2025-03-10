@@ -13,7 +13,7 @@ const Sidebar = () => {
 		(async () => {
 			await getFriends();
 		})();
-	});
+	}, [getFriends]);
 	return (
 		<div className={s.sidebar}>
 			<div className={s.searchField}>
@@ -34,6 +34,7 @@ const Sidebar = () => {
 					friends.map((user) => {
 						return (
 							<li
+								key={user._id}
 								className={s.user}
 								onClick={() => {
 									(async () => {

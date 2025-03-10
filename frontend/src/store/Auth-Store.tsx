@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import api from "../services/api";
 
-type User = { userID: string; fullname: string; email: string };
+type User = { _id: string; fullname: string; email: string };
 
 interface AuthState {
 	user?: User;
@@ -13,7 +13,7 @@ interface AuthState {
 	logout: () => void;
 }
 
-const useAuthStore = create<AuthState>((set) => ({
+const useAuthStore = create<AuthState>((set, get) => ({
 	user: undefined,
 	token: undefined,
 	isAuthenticated: false,
@@ -26,12 +26,9 @@ const useAuthStore = create<AuthState>((set) => ({
 
 		if (token && user) {
 			try {
-				const response = await api.get(
-					`/api/users/${JSON.parse(user).userID}`,
-					{
-						headers: { Authorization: `Bearer ${token}` },
-					}
-				);
+				const response = await api.get(`/users/${get().user?._id}`, {
+					headers: { Authorization: `Bearer ${token}` },
+				});
 				set({
 					user: response.data, // Update with fresh user data
 					token,
@@ -61,24 +58,21 @@ const useAuthStore = create<AuthState>((set) => ({
 	login: async (email, password) => {
 		try {
 			set({ isLoading: true });
-			const response = await api.post("/api/users/login", {
+			const response = await api.post("/users/login", {
 				email,
 				password,
-			});
-			const { token, userID, fullname, email: userEmail } = response.data;
+			},);
+			const { accessToken: token, user } = response.data;
 
 			localStorage.setItem("token", token);
-			localStorage.setItem(
-				"user",
-				JSON.stringify({ userID, fullname, email: userEmail })
-			);
+			localStorage.setItem("user", JSON.stringify(user));
 			set({
-				user: { userID, fullname, email: userEmail },
+				user: user,
 				token,
 				isAuthenticated: true,
 				isLoading: false,
 			});
-		} catch (error:unknown) {
+		} catch (error: unknown) {
 			set({ isLoading: false });
 			console.error("Login failed:", error);
 			throw error instanceof Error ? error : new Error("Login failed");

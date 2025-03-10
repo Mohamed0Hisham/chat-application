@@ -1,8 +1,9 @@
 import Sidebar from "../../components/layouts/sidebar";
 import styles from "./dashboard.module.css";
 import Conversation from "./Conversation";
-
+import { useAuth } from "../../hooks/useAuth";
 const Dashboard = () => {
+	const { isAuthenticated } = useAuth();
 	return (
 		<section className={styles.container}>
 			<ul className={styles.options}>
@@ -15,7 +16,11 @@ const Dashboard = () => {
 				<Sidebar />
 			</aside>
 			<main className={styles.chat}>
-				<Conversation />
+				{isAuthenticated ? (
+					<Conversation />
+				) : (
+					<p>select a friend to start conversation</p>
+				)}
 			</main>
 		</section>
 	);
