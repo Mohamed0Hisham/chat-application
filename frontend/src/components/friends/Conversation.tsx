@@ -1,16 +1,16 @@
 // Chat.tsx
 import { useState, FC } from "react";
-import { SenderBubble } from "../../components/chat/SenderBubble";
-import { ReceiverBubble } from "../../components/chat/ReceiverBubble";
-import styles from "./Conversation.module.css";
+import { SenderBubble } from "../chat/SenderBubble";
+import { ReceiverBubble } from "../chat/ReceiverBubble";
+import styles from "./conversation.module.css";
 import { Paperclip, SendHorizonal, Smile } from "lucide-react";
-import { MessageInput } from "../../components/chat/MessageInput";
+import { MessageInput } from "../chat/MessageInput";
 import useFriendStore from "../../store/friend";
 import api from "../../services/api";
 import useMsgStore from "../../store/chat";
 import { useAuth } from "../../hooks/useAuth";
 
-const Chat: FC = () => {
+const Conversation: FC = () => {
 	const [content, setContent] = useState("");
 	const { friend } = useFriendStore();
 	const { chat, isLoading, messages } = useMsgStore();
@@ -83,7 +83,7 @@ const Chat: FC = () => {
 										},
 									],
 								}));
-								console.log(user)
+								console.log(user);
 								await api.post(
 									`/messages/${chat}`,
 									{
@@ -114,4 +114,4 @@ const Chat: FC = () => {
 	);
 };
 
-export default Chat;
+export default Conversation;

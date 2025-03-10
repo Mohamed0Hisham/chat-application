@@ -1,0 +1,10 @@
+@media (max-width: 801px) {
+	.chat {
+		display: none;
+	}
+}
+
+.chat {
+	height: 100%;
+	overflow-y: auto;
+}

@@ -2,12 +2,92 @@
 import { Search } from "lucide-react";
 import s from "./sidebar.module.css";
 import useFriendStore from "../../store/friend";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useMsgStore from "../../store/chat";
 
 const Sidebar = () => {
-	const { getFriends, friends, isLoading, setFriend } = useFriendStore();
+	const { getFriends, isLoading, setFriend } = useFriendStore();
 	const { setChat } = useMsgStore();
+	const [searchQuery, setSearchQuery] = useState("");
+
+	const friends = [
+		{
+			_id: "1",
+			fullname: "John Doe",
+			avatar: "https://randomuser.me/api/portraits/men/1.jpg",
+			isOnline: true,
+		},
+		{
+			_id: "2",
+			fullname: "Jane Smith",
+			avatar: "https://randomuser.me/api/portraits/women/2.jpg",
+		},
+		{
+			_id: "3",
+			fullname: "Alex Carter",
+			avatar: "https://randomuser.me/api/portraits/men/3.jpg",
+		},
+		{
+			_id: "4",
+			fullname: "Emily Brown",
+			avatar: "https://randomuser.me/api/portraits/women/4.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+			isOnline: false,
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+		{
+			_id: "5",
+			fullname: "Michael Lee",
+			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
+		},
+	];
+	// Filter friends based on search
+	const filteredFriends = friends.filter((friend) =>
+		friend.fullname.toLowerCase().includes(searchQuery.toLowerCase())
+	);
 
 	useEffect(() => {
 		(async () => {
@@ -25,11 +105,18 @@ const Sidebar = () => {
 					type="search"
 					id="searchBar"
 					placeholder="search"
+					value={searchQuery}
+					onChange={(e) => setSearchQuery(e.target.value)}
 				/>
 			</div>
 			<ul className={s.userList}>
 				{isLoading ? (
-					<p>loading</p>
+					<p>Loading...</p>
+				) : filteredFriends.length === 0 ? (
+					<div className={s.emptyState}>
+						<p>No friends found</p>
+						<small>Try searching by name</small>
+					</div>
 				) : (
 					friends.map((user) => {
 						return (
@@ -43,8 +130,12 @@ const Sidebar = () => {
 										setFriend(user);
 									})();
 								}}>
-								<div className={s.avatar}>
-									<img src={user.avatar} alt="avatar" />
+								<div>
+									<img
+										className={s.avatar}
+										src={user.avatar}
+										alt="avatar"
+									/>
 								</div>
 								<div className={s.description}>
 									<p>{user.fullname}</p>

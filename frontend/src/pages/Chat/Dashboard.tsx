@@ -1,27 +1,15 @@
+// Dashboard.tsx - Updated layout container
 import Sidebar from "../../components/layouts/sidebar";
 import styles from "./dashboard.module.css";
-import Conversation from "./Conversation";
-import useFriendStore from "../../store/friend";
+import Options from "../../components/layouts/Options";
+
 const Dashboard = () => {
-	const { friend } = useFriendStore();
 	return (
 		<section className={styles.container}>
-			<ul className={styles.options}>
-				<li>chat</li>
-				<li>groups</li>
-				<li>add</li>
-				<li>me</li>
-			</ul>
+			<Options />
 			<aside className={styles.sidebar}>
 				<Sidebar />
 			</aside>
-			<main className={styles.chat}>
-				{friend ? (
-					<Conversation />
-				) : (
-					<p>select a friend to start conversation</p>
-				)}
-			</main>
 		</section>
 	);
 };
