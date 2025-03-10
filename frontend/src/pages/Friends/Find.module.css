@@ -33,6 +33,8 @@
 
 .searchForm {
 	display: flex;
+	flex-direction: column;
+	align-items: center;
 	gap: 12px;
 	width: 100%;
 	background: #f8fafc;
@@ -71,13 +73,17 @@
 	background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 	border: none;
 	border-radius: 8px;
-	cursor: pointer;
 	transition: all 0.3s ease;
-	display: flex;
-	align-items: center;
-	gap: 8px;
-}
 
+	max-width: 20%;
+}
+@media (max-width:500px) {
+	.searchButton {
+		padding: 4px 8px;
+		font-size: 12px;
+		font-weight: 600;
+	}
+}
 .searchButton:hover {
 	transform: translateY(-1px);
 	box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
