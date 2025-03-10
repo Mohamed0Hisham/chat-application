@@ -43,7 +43,7 @@ const Login = () => {
 		<section className={styles.containerAuth}>
 			<form className={styles.form} onSubmit={handleSubmit}>
 				<div className={styles.formField}>
-					<label htmlFor="email">E-mail</label>
+					<label className={styles.label} htmlFor="email">E-mail</label>
 					<div className={styles.inputField}>
 						<AtSign />
 						<input
@@ -52,11 +52,12 @@ const Login = () => {
 							placeholder="example@gmail.com"
 							onChange={(e) => setEmail(e.target.value)}
 							disabled={isLoading}
+							className={styles.input}
 						/>
 					</div>
 				</div>
 				<div className={styles.formField}>
-					<label htmlFor="password">Password</label>
+					<label className={styles.label} htmlFor="password">Password</label>
 					<div className={styles.inputField}>
 						<Lock />
 						<input
@@ -64,6 +65,7 @@ const Login = () => {
 							id="password"
 							onChange={(e) => setPassword(e.target.value)}
 							disabled={isLoading}
+							className={styles.input}
 						/>
 					</div>
 				</div>
@@ -74,6 +76,7 @@ const Login = () => {
 							type="checkbox"
 							id="remember"
 							disabled={isLoading}
+							className={styles.input}
 						/>
 						<span>Remember me</span>
 					</div>

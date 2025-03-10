@@ -51,7 +51,7 @@
 	width: 100%;
 }
 
-label {
+.label {
 	align-self: self-start;
 	margin-bottom: 4px;
 	font-weight: 600;
@@ -59,7 +59,7 @@ label {
 }
 
 @media (max-width: 499px) {
-	label {
+	.label {
 		align-self: self-start;
 		margin-bottom: 4px;
 		font-weight: 600;
@@ -89,11 +89,11 @@ label {
 	}
 }
 
-.inputField input:focus {
+.inputField .input:focus {
 	outline: none;
 }
 
-input {
+.input {
 	width: 100%;
 	border: none;
 	padding: 6px 12px;

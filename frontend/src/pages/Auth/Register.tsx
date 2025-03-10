@@ -44,7 +44,7 @@ const Register = () => {
 		<section className={styles.containerAuth}>
 			<form className={styles.form} onSubmit={handleSubmit}>
 				<div className={styles.formField}>
-					<label htmlFor="fullname">Fullname</label>
+					<label className={styles.label} htmlFor="fullname">Fullname</label>
 					<div className={styles.inputField}>
 						<SquareUserRound />
 						<input
@@ -53,11 +53,12 @@ const Register = () => {
 							placeholder="Your fullname"
 							onChange={(e) => setFullname(e.target.value)}
 							disabled={isLoading}
+							className={styles.input}
 						/>
 					</div>
 				</div>
 				<div className={styles.formField}>
-					<label htmlFor="email">E-mail</label>
+					<label className={styles.label} htmlFor="email">E-mail</label>
 					<div className={styles.inputField}>
 						<AtSign />
 						<input
@@ -66,11 +67,12 @@ const Register = () => {
 							placeholder="example@gmail.com"
 							onChange={(e) => setEmail(e.target.value)}
 							disabled={isLoading}
+							className={styles.input}
 						/>
 					</div>
 				</div>
 				<div className={styles.formField}>
-					<label htmlFor="password">Password</label>
+					<label className={styles.label} htmlFor="password">Password</label>
 					<div className={styles.inputField}>
 						<Lock />
 						<input
@@ -78,6 +80,7 @@ const Register = () => {
 							id="password"
 							onChange={(e) => setPassword(e.target.value)}
 							disabled={isLoading}
+							className={styles.input}
 						/>
 					</div>
 				</div>
@@ -87,6 +90,7 @@ const Register = () => {
 					type="submit"
 					value="Sign Up"
 					disabled={isLoading}
+					
 				/>
 				<p>
 					Already have an account?{" "}
