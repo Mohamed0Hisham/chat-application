@@ -1,9 +1,9 @@
 import Sidebar from "../../components/layouts/sidebar";
 import styles from "./dashboard.module.css";
 import Conversation from "./Conversation";
-import { useAuth } from "../../hooks/useAuth";
+import useFriendStore from "../../store/friend";
 const Dashboard = () => {
-	const { isAuthenticated } = useAuth();
+	const { friend } = useFriendStore();
 	return (
 		<section className={styles.container}>
 			<ul className={styles.options}>
@@ -16,7 +16,7 @@ const Dashboard = () => {
 				<Sidebar />
 			</aside>
 			<main className={styles.chat}>
-				{isAuthenticated ? (
+				{friend ? (
 					<Conversation />
 				) : (
 					<p>select a friend to start conversation</p>
