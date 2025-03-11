@@ -5,13 +5,13 @@ import {
 	deleteFriend,
 	fetchFriend,
 	fetchFriends,
-	fetchRequets,
+	fetchRequests,
 	sendFriendRequest,
 } from "./controllers.js";
 
 const router = express.Router();
 
-router.get("/requests", isAuthenticated, fetchRequets);
+router.get("/requests", isAuthenticated, fetchRequests);
 router.post("/accept", isAuthenticated, addFriend);
 router.post("/request/:friendID", isAuthenticated, sendFriendRequest);
 router.get("/:userID/friends", isAuthenticated, fetchFriends);
