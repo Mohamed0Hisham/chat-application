@@ -14,8 +14,8 @@ const routes = createBrowserRouter([
 		errorElement: <NotFound />,
 		children: [
 			{
-				index:true,
-				element:<Find/>
+				path: "/add",
+				element: <Find />,
 			},
 			{
 				path: "/register",

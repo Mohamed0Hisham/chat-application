@@ -1,6 +1,9 @@
+import { isError } from "../../services/isError";
+import useFriendStore from "../../store/friend";
 import styles from "./Find.module.css";
 
 const Find = () => {
+	const { sendFriendRequest, isLoading } = useFriendStore();
 	// Using the fake data you provided earlier
 	const friends = [
 		{
@@ -28,53 +31,18 @@ const Find = () => {
 			fullname: "Michael Lee",
 			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
 		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
 	];
-	const isLoading = false;
+	const handleAddFriend = async (id: string) => {
+		try {
+			await sendFriendRequest(id);
+		} catch (error) {
+			if (isError(error)) {
+				console.log(error.message);
+			}
+			console.log("failed to send add request");
+			return;
+		}
+	};
 
 	return (
 		<>
@@ -115,7 +83,11 @@ const Find = () => {
 											{user.fullname}
 										</p>
 									</div>
-									<button className={styles.actionButton}>
+									<button
+										onClick={() =>
+											handleAddFriend(user._id)
+										}
+										className={styles.actionButton}>
 										Add Friend
 									</button>
 								</div>

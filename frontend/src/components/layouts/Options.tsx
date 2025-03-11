@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styles from "./Options.module.css";
 import { MessageSquare, Users, Plus, User } from "lucide-react";
 
@@ -12,10 +13,12 @@ const Options = () => {
 				<Users className={styles.icon} />
 				groups
 			</li>
-			<li aria-label="Add friends or chats">
-				<Plus className={styles.icon} />
-				add
-			</li>
+			<Link to="/add" className={styles.link}>
+				<li aria-label="Add friends or chats">
+					<Plus className={styles.icon} />
+					add
+				</li>
+			</Link>
 			<li aria-label="My profile">
 				<User className={styles.icon} />
 				me

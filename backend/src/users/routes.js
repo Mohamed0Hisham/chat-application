@@ -22,6 +22,7 @@ router.put("/:userID", isAuthenticated, updateProfile);
 router.get("/:userID/friends", isAuthenticated, fetchFriends);
 router.get("/:userID/friends/:friendID", isAuthenticated, fetchFriend);
 router.post("/:userID/friends", isAuthenticated, addFriend);
+router.post("/friendrequest", isAuthenticated, sendFriendRequest);
 router.delete("/:userID/friends/:friendID", isAuthenticated, deleteFriend);
 
 export default router;

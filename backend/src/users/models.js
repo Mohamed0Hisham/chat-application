@@ -30,6 +30,11 @@ const userSchema = new Schema(
 			type: Boolean,
 			default: false,
 		},
+		requests: {
+			type: [Schema.Types.ObjectId],
+			ref: "User",
+			default: [],
+		},
 	},
 	{ timestamps: true }
 );

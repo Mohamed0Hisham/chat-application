@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import api from "../services/api";
 import useAuthStore from "./Auth-Store";
+import { isError } from "../services/isError";
 
 type Friend = {
 	_id: string;
@@ -16,11 +17,9 @@ interface FriendState {
 	getFriend: (x: string) => Promise<void>;
 	setFriend: (x: Friend) => void;
 	getFriends: () => Promise<void>;
+	sendFriendRequest: (s: string) => Promise<void>;
 	clearError: () => void;
 }
-const isError = (error: unknown): error is Error => {
-	return error instanceof Error;
-};
 
 const useFriendStore = create<FriendState>((set) => ({
 	friend: null,
@@ -45,15 +44,16 @@ const useFriendStore = create<FriendState>((set) => ({
 			);
 			set({
 				friend,
-				isLoading: false,
 				error: null,
 			});
 		} catch (error) {
 			if (isError(error)) {
-				set({ error: error.message, isLoading: false, friend: null });
+				set({ error: error.message, friend: null });
 			} else {
 				set({ error: "An unknown error occurred" });
 			}
+		} finally {
+			set({ isLoading: false });
 		}
 	},
 	setFriend: (friend) => set({ friend }),
@@ -70,7 +70,6 @@ const useFriendStore = create<FriendState>((set) => ({
 			const friends = response.data.data;
 			set({
 				friends,
-				isLoading: false,
 			});
 		} catch (error) {
 			if (isError(error)) {
@@ -79,9 +78,32 @@ const useFriendStore = create<FriendState>((set) => ({
 				set({
 					error: "An unknown error occurred",
 					friends: [],
-					isLoading: false,
 				});
 			}
+		} finally {
+			set({ isLoading: false });
+		}
+	},
+	sendFriendRequest: async (userID: string) => {
+		set({ isLoading: true });
+		try {
+			const { user } = useAuthStore.getState();
+			if (!user) {
+				return;
+			}
+			await api.post(
+				`/users/friendrequest?to=${userID} from=${user._id}`
+			);
+		} catch (error) {
+			if (isError(error)) {
+				set({ error: error.message });
+			} else {
+				set({
+					error: "An unknown error occurred",
+				});
+			}
+		} finally {
+			set({ isLoading: false });
 		}
 	},
 	clearError: () => set({ error: null }),
