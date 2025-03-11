@@ -6,6 +6,7 @@ import Login from "../pages/Auth/Login";
 import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../pages/Chat/Dashboard";
 import Find from "../pages/Friends/Find";
+import Requests from "../pages/Friends/Requests";
 
 const routes = createBrowserRouter([
 	{
@@ -16,6 +17,10 @@ const routes = createBrowserRouter([
 			{
 				path: "/add",
 				element: <Find />,
+			},
+			{
+				path: "/requests",
+				element: <Requests />,
 			},
 			{
 				path: "/register",
