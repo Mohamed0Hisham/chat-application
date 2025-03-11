@@ -137,8 +137,8 @@ const Sidebar = () => {
 										alt="avatar"
 									/>
 								</div>
-								<div className={s.description}>
-									<p>{user.fullname}</p>
+								<div >
+									<p className={s.description}>{user.fullname}</p>
 									{user.isOnline ? (
 										<div className={s.green}></div>
 									) : (

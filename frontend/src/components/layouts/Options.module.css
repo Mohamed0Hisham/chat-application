@@ -91,3 +91,26 @@
 		height: 20px;
 	}
 }
+@media (max-width: 501px) {
+	.options{
+		padding: 0;
+	}
+	.options li{
+		transform: scale(0.75);
+		font-size: 1rem;
+		padding: 1rem;
+	}
+	.options li:hover {
+		background: rgba(79, 70, 229, 0.9);
+		color: white;
+		transform: translateX(2px);
+		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+		transform: scale(0.9);
+	}
+	.options li:active {
+		transform: translateX(2px);
+	}
+	.options li:hover .icon {
+		transform: rotate(-10deg) scale(1);
+	}
+}
