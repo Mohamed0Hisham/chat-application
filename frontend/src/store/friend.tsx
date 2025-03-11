@@ -86,8 +86,11 @@ const useFriendStore = create<FriendState>((set) => ({
 	},
 	sendFriendRequest: async (userID: string) => {
 		set({ isLoading: true, error: null });
+		const { token } = useAuthStore.getState();
 		try {
-			await api.post(`/users/friendrequest?to=${userID}`);
+			await api.post(`/users/friendrequest?to=${userID}`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
 		} catch (error) {
 			if (isError(error)) {
 				set({ error: error.message });
