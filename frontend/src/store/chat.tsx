@@ -22,11 +22,11 @@ const useMsgStore = create<ChatState>((set) => ({
 	chat: "",
 
 	getMsgsOfChat: async (chatID) => {
-		const { token } = useAuthStore.getState();
+		const { accessToken } = useAuthStore.getState();
 		try {
 			set({ isLoading: true });
 			const msgs: Msg[] = await api.get(`/messages/${chatID}`, {
-				headers: { Authorization: `Bearer ${token}` },
+				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 			set({ messages: msgs, isLoading: false });
 			return msgs;
@@ -36,13 +36,13 @@ const useMsgStore = create<ChatState>((set) => ({
 		}
 	},
 	setChat: async (id) => {
-		const { token } = useAuthStore.getState();
+		const { accessToken } = useAuthStore.getState();
 		try {
 			set({ isLoading: true });
 			const response = await api.get(
 				`/conversations/chat?friendID=${id}`,
 				{
-					headers: { Authorization: `Bearer ${token}` },
+					headers: { Authorization: `Bearer ${accessToken}` },
 				}
 			);
 			console.log(response.data);

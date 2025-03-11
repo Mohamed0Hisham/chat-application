@@ -7,6 +7,7 @@ interface AuthState {
 	user?: User;
 	accessToken?: string;
 	isLoading: boolean;
+	isAuthenticated: boolean;
 	checkAuth: () => Promise<void>;
 	register: (a: string, b: string, c: string) => Promise<void>;
 	login: (email: string, password: string) => Promise<void>;
@@ -18,12 +19,16 @@ const useAuthStore = create<AuthState>((set, get) => ({
 	user: undefined,
 	accessToken: undefined,
 	isLoading: false,
+	isAuthenticated: false,
 
 	checkAuth: async () => {
-		set({ isLoading: true });
+		set({
+			isLoading: true,
+		});
+
 		const token = localStorage.getItem("accessToken");
 		const userString = localStorage.getItem("user");
-	
+
 		if (token && userString) {
 			try {
 				const storedUser = JSON.parse(userString);
@@ -32,25 +37,23 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				});
 				set({
 					user: response.data.data,
-					isLoading: false,
+					accessToken: token,
+					isAuthenticated: true,
 				});
 			} catch (error) {
-				console.error(error);
+				console.error("check auth method failed", error);
 				set({
 					user: undefined,
 					accessToken: undefined,
-					isLoading: false,
+					isAuthenticated: false,
 				});
 				localStorage.removeItem("accessToken");
 				localStorage.removeItem("user");
 			}
-		} else {
-			set({
-				user: undefined,
-				accessToken: undefined,
-				isLoading: false,
-			});
 		}
+		set({
+			isLoading: false,
+		});
 	},
 	register: async (fullname, email, password) => {
 		set({ isLoading: true });
@@ -62,17 +65,15 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			});
 			set({ isLoading: false });
 		} catch (error) {
-			console.error(error);
+			console.error("failed to register the user:", error);
 			set({
-				user: undefined,
-				accessToken: undefined,
 				isLoading: false,
 			});
 		}
 	},
 	login: async (email, password) => {
 		try {
-			set({ isLoading: true });
+			set({ isLoading: true, isAuthenticated: false });
 			const response = await api.post("/users/login", {
 				email,
 				password,
@@ -84,12 +85,17 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			set({
 				user: user,
 				accessToken,
-				isLoading: false,
+				isAuthenticated: true,
 			});
 		} catch (error: unknown) {
+			console.error("login failed", error);
+			set({
+				user: undefined,
+				accessToken: undefined,
+				isAuthenticated: false,
+			});
+		} finally {
 			set({ isLoading: false });
-			console.error("Login failed:", error);
-			throw error instanceof Error ? error : new Error("Login failed");
 		}
 	},
 	logout: async () => {
@@ -104,6 +110,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			user: undefined,
 			accessToken: undefined,
 			isLoading: false,
+			isAuthenticated: false,
 		});
 	},
 	refreshAccessToken: async () => {
