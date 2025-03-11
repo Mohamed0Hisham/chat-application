@@ -1,4 +1,7 @@
+import { startSession } from "mongoose";
+import validator from "validator";
 import User from "../users/models.js";
+
 export const fetchRequets = async (req, res) => {
 	try {
 		const user = req.user;
@@ -134,10 +137,10 @@ export const sendFriendRequest = async (req, res) => {
 };
 export const addFriend = async (req, res) => {
 	const session = await startSession();
+	session.startTransaction();
 
 	try {
-		const user = req.user;
-		const userID = user._id;
+		const userID = req.user._id;
 		const { friendID } = req.body;
 		if (!validator.isMongoId(friendID)) {
 			return res.status(400).json({
@@ -146,9 +149,9 @@ export const addFriend = async (req, res) => {
 			});
 		}
 
-		session.startTransaction();
-
 		const friend = await User.findById(friendID).session(session);
+		const user = await User.findById(userID).session(session);
+
 		if (
 			user.friends.includes(friendID) ||
 			friend.friends.includes(userID)
@@ -167,7 +170,6 @@ export const addFriend = async (req, res) => {
 		return res.status(200).json({
 			success: true,
 			message: "friend request accepted successfully",
-			data: user.friends,
 		});
 	} catch (error) {
 		await session.abortTransaction();

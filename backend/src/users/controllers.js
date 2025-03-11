@@ -1,7 +1,6 @@
 import validator from "validator";
 import User from "./models.js";
 import bcryptjs from "bcryptjs";
-import { startSession } from "mongoose";
 import { generateAccessToken, generateRefreshToken } from "../../utils/auth.js";
 
 const SALT = 12;

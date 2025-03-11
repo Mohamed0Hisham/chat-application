@@ -1,11 +1,6 @@
 import express from "express";
 import {
-	addFriend,
-	deleteFriend,
-	fetchFriends,
-	fetchFriend,
 	fetchProfile,
-	sendFriendRequest,
 	login,
 	logout,
 	registerUser,

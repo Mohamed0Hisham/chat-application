@@ -12,7 +12,7 @@ import {
 const router = express.Router();
 
 router.get("/requests", isAuthenticated, fetchRequets);
-router.post("/:userID/friends", isAuthenticated, addFriend);
+router.post("/accept", isAuthenticated, addFriend);
 router.post("/friendrequest", isAuthenticated, sendFriendRequest);
 router.get("/:userID/friends", isAuthenticated, fetchFriends);
 router.get("/:userID/friends/:friendID", isAuthenticated, fetchFriend);
