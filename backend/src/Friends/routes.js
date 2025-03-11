@@ -1,6 +1,6 @@
 import express from "express"
-import { isAuthenticated } from "../../utils/auth";
-import { fetchRequets } from "./controllers";
+import { isAuthenticated } from "../../utils/auth.js";
+import { fetchRequets } from "./controllers.js";
 
 const router = express.Router();
 
