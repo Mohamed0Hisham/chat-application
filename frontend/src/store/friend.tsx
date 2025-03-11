@@ -18,7 +18,7 @@ interface FriendState {
 	setFriend: (x: Friend) => void;
 	getFriends: () => Promise<void>;
 	sendFriendRequest: (s: string) => Promise<void>;
-	clearError: () => void;
+	fetchRequests: () => Promise<void>;
 }
 
 const useFriendStore = create<FriendState>((set) => ({
@@ -108,7 +108,24 @@ const useFriendStore = create<FriendState>((set) => ({
 			set({ isLoading: false });
 		}
 	},
-	clearError: () => set({ error: null }),
+	fetchRequests: async () => {
+		set({isLoading:true})
+		try {
+			const { user, accessToken } = useAuthStore.getState();
+
+			const response =  await api.get(`/users/friends/requests`)
+		} catch (error) {
+			if (isError(error)) {
+				set({ error: error.message });
+			} else {
+				set({
+					error: "An unknown error occurred",
+				});
+			}
+		}finally {
+			set({ isLoading: false });
+		}
+	}
 }));
 
 export default useFriendStore;

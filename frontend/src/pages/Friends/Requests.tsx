@@ -1,5 +1,6 @@
-import React from "react";
 import styles from "./Requests.module.css";
+import useFriendStore from "../../store/friend";
+import { FC } from "react";
 
 // Sample data for demonstration (replace with real data from your backend)
 const requests = [
@@ -23,8 +24,9 @@ const requests = [
 
 const isLoading = false; // Toggle to true to see the loading state
 
-const Requests: React.FC = () => {
-	return (
+const Requests: FC = () => {
+const {} = useFriendStore();
+    return (
 		<div className={styles.container}>
 			<header className={styles.header}>
 				<h1>Friend Requests</h1>
