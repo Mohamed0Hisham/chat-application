@@ -159,7 +159,7 @@ export const sendFriendRequest = async (req, res) => {
 		await session.endSession();
 	}
 };
-export const addFriend = async (req, res) => {
+export const acceptFriend = async (req, res) => {
 	const session = await startSession();
 	session.startTransaction();
 
