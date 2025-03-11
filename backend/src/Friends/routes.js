@@ -1,9 +1,21 @@
-import express from "express"
+import express from "express";
 import { isAuthenticated } from "../../utils/auth.js";
-import { fetchRequets } from "./controllers.js";
+import {
+	addFriend,
+	deleteFriend,
+	fetchFriend,
+	fetchFriends,
+	fetchRequets,
+	sendFriendRequest,
+} from "./controllers.js";
 
 const router = express.Router();
 
-router.get("/requests", isAuthenticated, fetchRequets)
+router.get("/requests", isAuthenticated, fetchRequets);
+router.post("/:userID/friends", isAuthenticated, addFriend);
+router.post("/friendrequest", isAuthenticated, sendFriendRequest);
+router.get("/:userID/friends", isAuthenticated, fetchFriends);
+router.get("/:userID/friends/:friendID", isAuthenticated, fetchFriend);
+router.delete("/:userID/friends/:friendID", isAuthenticated, deleteFriend);
 
-export default router
+export default router;
