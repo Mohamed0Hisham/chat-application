@@ -9,6 +9,12 @@ type Friend = {
 	isOnline: boolean;
 	avatar: string;
 };
+type Request = {
+	fullname: string;
+	email: string;
+	avatar: string;
+	createdAt: Date;
+};
 interface FriendState {
 	friend: Friend | null;
 	friends: Friend[];
@@ -18,7 +24,8 @@ interface FriendState {
 	setFriend: (x: Friend) => void;
 	getFriends: () => Promise<void>;
 	sendFriendRequest: (s: string) => Promise<void>;
-	fetchRequests: () => Promise<void>;
+	fetchRequests: () => Promise<Request[] | null>;
+	acceptRequest: (id: string) => Promise<void>;
 }
 
 const useFriendStore = create<FriendState>((set) => ({
@@ -87,10 +94,10 @@ const useFriendStore = create<FriendState>((set) => ({
 	sendFriendRequest: async (userID: string) => {
 		set({ isLoading: true, error: null });
 		const { accessToken } = useAuthStore.getState();
-		console.log(accessToken);
+
 		try {
 			await api.post(
-				`/users/friendrequest?to=${userID}`,
+				`/friends/request/${userID}`,
 				{},
 				{
 					headers: { Authorization: `Bearer ${accessToken}` },
@@ -109,11 +116,16 @@ const useFriendStore = create<FriendState>((set) => ({
 		}
 	},
 	fetchRequests: async () => {
-		set({isLoading:true})
+		set({ isLoading: true, error: null });
 		try {
-			const { user, accessToken } = useAuthStore.getState();
+			const { accessToken } = useAuthStore.getState();
 
-			const response =  await api.get(`/users/friends/requests`)
+			const response = await api.get(`/friends/requests`, {
+				headers: { Authorization: `Bearer ${accessToken}` },
+			});
+
+			const requests = response.data;
+			return requests;
 		} catch (error) {
 			if (isError(error)) {
 				set({ error: error.message });
@@ -122,10 +134,36 @@ const useFriendStore = create<FriendState>((set) => ({
 					error: "An unknown error occurred",
 				});
 			}
-		}finally {
+		} finally {
 			set({ isLoading: false });
 		}
-	}
+	},
+	acceptRequest: async (id: string) => {
+		set({ isLoading: true, error: null });
+		try {
+			const { accessToken } = useAuthStore.getState();
+
+			await api.post(
+				`/friends/accept`,
+				{
+					friendID: id,
+				},
+				{
+					headers: { Authorization: `Bearer ${accessToken}` },
+				}
+			);
+		} catch (error) {
+			if (isError(error)) {
+				set({ error: error.message });
+			} else {
+				set({
+					error: "An unknown error occurred",
+				});
+			}
+		} finally {
+			set({ isLoading: false });
+		}
+	},
 }));
 
 export default useFriendStore;

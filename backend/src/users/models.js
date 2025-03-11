@@ -30,6 +30,10 @@ const userSchema = new Schema(
 			type: Boolean,
 			default: false,
 		},
+		avatar: {
+			type: String,
+			default: "https://randomuser.me/api/portraits/men/1.jpg",
+		},
 		requests: {
 			type: [Schema.Types.ObjectId],
 			ref: "User",
