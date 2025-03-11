@@ -258,32 +258,54 @@ export const fetchFriend = async (req, res) => {
 		});
 	}
 };
+export const sendFriendRequest = async (req, res) => {
+	try {
+		const user = req.user;
+		const friendID = req.query.to;
 
+		if (!validator.isMongoId(friendID)) {
+			return res.status(400).json({
+				success: false,
+				error: "Invalid ID",
+			});
+		}
+
+		await User.findByIdAndUpdate(
+			user._id,
+			{
+				requests: { $addToSet: friendID },
+			},
+			{ session }
+		);
+
+		return res.status(204).json({
+			success: true,
+			message: "friend request sent",
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			error: error.message,
+		});
+	}
+};
 export const addFriend = async (req, res) => {
 	const session = await startSession();
 
 	try {
-		session.startTransaction();
-
-		const { userID } = req.params;
+		const user = req.user;
+		const userID = user._id;
 		const { friendID } = req.body;
-		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
+		if (!validator.isMongoId(friendID)) {
 			return res.status(400).json({
 				success: false,
 				error: "Invalid operation",
 			});
 		}
 
-		const users = await User.find({ _id: { $in: [userID, friendID] } });
-		if (users.length !== 2) {
-			return res.status(400).json({
-				success: false,
-				error: "Invalid user or friend ID",
-			});
-		}
-		const user = users.find((u) => u._id.toString() === userID);
-		const friend = users.find((u) => u._id.toString() === friendID);
+		session.startTransaction();
 
+		const friend = await User.findById(friendID).session(session);
 		if (
 			user.friends.includes(friendID) ||
 			friend.friends.includes(userID)
@@ -301,7 +323,7 @@ export const addFriend = async (req, res) => {
 		await session.commitTransaction();
 		return res.status(200).json({
 			success: true,
-			message: "friend added successfully",
+			message: "friend request accepted successfully",
 			data: user.friends,
 		});
 	} catch (error) {

@@ -85,15 +85,9 @@ const useFriendStore = create<FriendState>((set) => ({
 		}
 	},
 	sendFriendRequest: async (userID: string) => {
-		set({ isLoading: true });
+		set({ isLoading: true, error: null });
 		try {
-			const { user } = useAuthStore.getState();
-			if (!user) {
-				return;
-			}
-			await api.post(
-				`/users/friendrequest?to=${userID} from=${user._id}`
-			);
+			await api.post(`/users/friendrequest?to=${userID}`);
 		} catch (error) {
 			if (isError(error)) {
 				set({ error: error.message });

@@ -5,6 +5,7 @@ import {
 	fetchFriends,
 	fetchFriend,
 	fetchProfile,
+	sendFriendRequest,
 	login,
 	logout,
 	registerUser,

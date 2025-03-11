@@ -4,7 +4,6 @@ import styles from "./Find.module.css";
 
 const Find = () => {
 	const { sendFriendRequest, isLoading } = useFriendStore();
-	// Using the fake data you provided earlier
 	const friends = [
 		{
 			_id: "1",
