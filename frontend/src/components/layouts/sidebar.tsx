@@ -37,52 +37,6 @@ const Sidebar = () => {
 			fullname: "Michael Lee",
 			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
 		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-			isOnline: false,
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
 	];
 	// Filter friends based on search
 	const filteredFriends = friends.filter((friend) =>
@@ -110,15 +64,8 @@ const Sidebar = () => {
 				/>
 			</div>
 			<ul className={s.userList}>
-				{isLoading ? (
-					<p>Loading...</p>
-				) : filteredFriends.length === 0 ? (
-					<div className={s.emptyState}>
-						<p>No friends found</p>
-						<small>Try searching by name</small>
-					</div>
-				) : (
-					friends.map((user) => {
+				{!isLoading &&
+					filteredFriends.map((user) => {
 						return (
 							<li
 								key={user._id}
@@ -137,8 +84,10 @@ const Sidebar = () => {
 										alt="avatar"
 									/>
 								</div>
-								<div >
-									<p className={s.description}>{user.fullname}</p>
+								<div>
+									<p className={s.description}>
+										{user.fullname}
+									</p>
 									{user.isOnline ? (
 										<div className={s.green}></div>
 									) : (
@@ -147,8 +96,7 @@ const Sidebar = () => {
 								</div>
 							</li>
 						);
-					})
-				)}
+					})}
 			</ul>
 		</div>
 	);
