@@ -91,8 +91,15 @@ export const login = async (req, res) => {
 	}
 };
 export const logout = (req, res) => {
-	res.clearCookie("refreshToken", { path: "/api/auth/refresh" });
-	res.json({ message: "Logged out" });
+	res.clearCookie("refreshToken", {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "Strict",
+		path: "/api/auth/refresh",
+	});
+	return res
+		.status(200)
+		.json({ success: true, message: "Logged out successfully" });
 };
 
 export const fetchProfile = async (req, res) => {

@@ -5,24 +5,25 @@ type User = { _id: string; fullname: string; email: string };
 
 interface AuthState {
 	user?: User;
-	token?: string;
+	accessToken?: string;
 	isAuthenticated: boolean;
 	isLoading: boolean;
 	checkAuth: () => Promise<void>;
 	register: (a: string, b: string, c: string) => Promise<void>;
 	login: (email: string, password: string) => Promise<void>;
-	logout: () => void;
+	logout: () => Promise<void>;
+	refreshAccessToken: () => Promise<void>;
 }
 
 const useAuthStore = create<AuthState>((set, get) => ({
 	user: undefined,
-	token: undefined,
+	accessToken: undefined,
 	isAuthenticated: false,
 	isLoading: false,
 
 	checkAuth: async () => {
 		set({ isLoading: true });
-		const token = localStorage.getItem("token");
+		const token = localStorage.getItem("accessToken");
 		const user = localStorage.getItem("user");
 
 		if (token && user) {
@@ -32,7 +33,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				});
 				set({
 					user: response.data.data,
-					token,
 					isAuthenticated: true,
 					isLoading: false,
 				});
@@ -40,17 +40,17 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				console.error(error);
 				set({
 					user: undefined,
-					token: undefined,
+					accessToken: undefined,
 					isAuthenticated: false,
 					isLoading: false,
 				});
-				localStorage.removeItem("token");
+				localStorage.removeItem("accessToken");
 				localStorage.removeItem("user");
 			}
 		} else {
 			set({
 				user: undefined,
-				token: undefined,
+				accessToken: undefined,
 				isAuthenticated: false,
 				isLoading: false,
 			});
@@ -69,7 +69,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			console.error(error);
 			set({
 				user: undefined,
-				token: undefined,
+				accessToken: undefined,
 				isAuthenticated: false,
 				isLoading: false,
 			});
@@ -82,13 +82,13 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				email,
 				password,
 			});
-			const { accessToken: token, user } = response.data;
+			const { accessToken, user } = response.data;
 
-			localStorage.setItem("token", token);
+			localStorage.setItem("accessToken", accessToken);
 			localStorage.setItem("user", JSON.stringify(user));
 			set({
 				user: user,
-				token,
+				accessToken,
 				isAuthenticated: true,
 				isLoading: false,
 			});
@@ -98,15 +98,35 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			throw error instanceof Error ? error : new Error("Login failed");
 		}
 	},
-	logout: () => {
-		localStorage.removeItem("token");
+	logout: async () => {
+		try {
+			await api.post("/api/users/logout");
+		} catch (error) {
+			console.error("Logout failed:", error);
+		}
+		localStorage.removeItem("accessToken");
 		localStorage.removeItem("user");
 		set({
 			user: undefined,
-			token: undefined,
+			accessToken: undefined,
 			isAuthenticated: false,
 			isLoading: false,
 		});
+	},
+	refreshAccessToken: async () => {
+		try {
+			set({ isLoading: true });
+			const response = await api.post("/api/auth/refresh");
+			const { accessToken } = response.data;
+
+			localStorage.setItem("accessToken", accessToken);
+			set({ accessToken, isLoading: false });
+			return accessToken;
+		} catch (error) {
+			console.error("Token refresh failed:", error);
+			get().logout();
+			throw error;
+		}
 	},
 }));
 

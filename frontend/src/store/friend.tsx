@@ -30,7 +30,7 @@ const useFriendStore = create<FriendState>((set) => ({
 	getFriend: async (friendID: string) => {
 		set({ isLoading: true, error: null });
 		try {
-			const { user, token } = useAuthStore.getState();
+			const { user, accessToken } = useAuthStore.getState();
 			if (!user?._id) {
 				set({ error: "Not authenticated" });
 				return;
@@ -39,7 +39,7 @@ const useFriendStore = create<FriendState>((set) => ({
 			const friend: Friend = await api.get(
 				`/users/${user?._id}/friends/${friendID}`,
 				{
-					headers: { Authorization: `Bearer ${token}` },
+					headers: { Authorization: `Bearer ${accessToken}` },
 				}
 			);
 			set({
@@ -60,12 +60,12 @@ const useFriendStore = create<FriendState>((set) => ({
 	getFriends: async () => {
 		set({ isLoading: true });
 		try {
-			const { user, token } = useAuthStore.getState();
+			const { user, accessToken } = useAuthStore.getState();
 			if (!user) {
 				return;
 			}
 			const response = await api.get(`/users/${user._id}/friends`, {
-				headers: { Authorization: `Bearer ${token}` },
+				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 			const friends = response.data.data;
 			set({
@@ -86,11 +86,16 @@ const useFriendStore = create<FriendState>((set) => ({
 	},
 	sendFriendRequest: async (userID: string) => {
 		set({ isLoading: true, error: null });
-		const { token } = useAuthStore.getState();
+		const { accessToken } = useAuthStore.getState();
+		console.log(accessToken);
 		try {
-			await api.post(`/users/friendrequest?to=${userID}`, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
+			await api.post(
+				`/users/friendrequest?to=${userID}`,
+				{},
+				{
+					headers: { Authorization: `Bearer ${accessToken}` },
+				}
+			);
 		} catch (error) {
 			if (isError(error)) {
 				set({ error: error.message });
