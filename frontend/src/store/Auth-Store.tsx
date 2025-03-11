@@ -6,7 +6,6 @@ type User = { _id: string; fullname: string; email: string };
 interface AuthState {
 	user?: User;
 	accessToken?: string;
-	isAuthenticated: boolean;
 	isLoading: boolean;
 	checkAuth: () => Promise<void>;
 	register: (a: string, b: string, c: string) => Promise<void>;
@@ -18,22 +17,21 @@ interface AuthState {
 const useAuthStore = create<AuthState>((set, get) => ({
 	user: undefined,
 	accessToken: undefined,
-	isAuthenticated: false,
 	isLoading: false,
 
 	checkAuth: async () => {
 		set({ isLoading: true });
 		const token = localStorage.getItem("accessToken");
-		const user = localStorage.getItem("user");
-
-		if (token && user) {
+		const userString = localStorage.getItem("user");
+	
+		if (token && userString) {
 			try {
-				const response = await api.get(`/users/${get().user?._id}`, {
+				const storedUser = JSON.parse(userString);
+				const response = await api.get(`/users/${storedUser._id}`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 				set({
 					user: response.data.data,
-					isAuthenticated: true,
 					isLoading: false,
 				});
 			} catch (error) {
@@ -41,7 +39,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				set({
 					user: undefined,
 					accessToken: undefined,
-					isAuthenticated: false,
 					isLoading: false,
 				});
 				localStorage.removeItem("accessToken");
@@ -51,7 +48,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			set({
 				user: undefined,
 				accessToken: undefined,
-				isAuthenticated: false,
 				isLoading: false,
 			});
 		}
@@ -70,7 +66,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			set({
 				user: undefined,
 				accessToken: undefined,
-				isAuthenticated: false,
 				isLoading: false,
 			});
 		}
@@ -89,7 +84,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			set({
 				user: user,
 				accessToken,
-				isAuthenticated: true,
 				isLoading: false,
 			});
 		} catch (error: unknown) {
@@ -109,7 +103,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		set({
 			user: undefined,
 			accessToken: undefined,
-			isAuthenticated: false,
 			isLoading: false,
 		});
 	},
