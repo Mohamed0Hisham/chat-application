@@ -105,9 +105,11 @@ export const fetchFriend = async (req, res) => {
 	}
 };
 export const sendFriendRequest = async (req, res) => {
+	const session = await startSession();
+	session.startTransaction();
 	try {
-		const user = req.user;
-		const friendID = req.query.to;
+		const userID = req.user._id;
+		const { friendID } = req.params;
 
 		if (!validator.isMongoId(friendID)) {
 			return res.status(400).json({
@@ -116,23 +118,46 @@ export const sendFriendRequest = async (req, res) => {
 			});
 		}
 
+		if (userID === friendID) {
+			return res.status(400).json({
+				success: false,
+				error: "Cannot send friend request to yourself",
+			});
+		}
+
+		const friend = await User.findById(friendID).session(session);
+		const user = await User.findById(userID).session(session);
+		if (
+			user.friends.includes(friendID) ||
+			friend.friends.includes(userID)
+		) {
+			return res.status(400).json({
+				success: false,
+				error: "friend already added",
+			});
+		}
+
 		await User.findByIdAndUpdate(
-			user._id,
+			friendID,
 			{
-				requests: { $addToSet: friendID },
+				$addToSet: { requests: user._id },
 			},
 			{ session }
 		);
 
-		return res.status(204).json({
+		await session.commitTransaction();
+		return res.status(200).json({
 			success: true,
-			message: "friend request sent",
+			message: "Friend request sent",
 		});
 	} catch (error) {
+		await session.abortTransaction();
 		return res.status(500).json({
 			success: false,
 			error: error.message,
 		});
+	} finally {
+		await session.endSession();
 	}
 };
 export const addFriend = async (req, res) => {
