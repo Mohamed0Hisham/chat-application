@@ -205,6 +205,60 @@ export const acceptFriend = async (req, res) => {
 		await session.endSession();
 	}
 };
+
+export const declineFriend = async (req, res) => {
+	const session = await startSession();
+	session.startTransaction();
+
+	try {
+		const userID = req.user._id;
+		const { friendID } = req.body;
+		if (!validator.isMongoId(friendID)) {
+			return res.status(400).json({
+				success: false,
+				error: "Invalid operation",
+			});
+		}
+
+		const friend = await User.findById(friendID).session(session).lean();
+		if (!friend) {
+			return res.status(404).json({
+				success: false,
+				message: "can't find a user with this id",
+			});
+		}
+
+		const user = await User.findById(userID).session(session);
+		const initialLength = user.requests.length;
+		user.requests = user.requests.filter(
+			(reqId) => reqId.toString() !== friendID
+		);
+
+		if (user.requests.length === initialLength) {
+			await session.abortTransaction();
+			return res.status(404).json({
+				success: false,
+				message: "Friend request not found",
+			});
+		}
+
+		await user.save({ session });
+		await session.commitTransaction();
+		return res.status(200).json({
+			success: true,
+			message: "friend request declined successfully",
+		});
+	} catch (error) {
+		await session.abortTransaction();
+		return res.status(500).json({
+			success: false,
+			error: error.message,
+		});
+	} finally {
+		await session.endSession();
+	}
+};
+
 export const deleteFriend = async (req, res) => {
 	const session = await startSession();
 	try {
