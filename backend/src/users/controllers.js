@@ -5,6 +5,74 @@ import { generateAccessToken, generateRefreshToken } from "../../utils/auth.js";
 
 const SALT = 12;
 const environment = process.env.ENVIRONMENT === "production";
+
+export const findUsers = async (req, res) => {
+	try {
+		const { email: rawEmail, fullname: rawFullName } = req.query;
+		const currentUserId = req.user._id;
+
+		const email = rawEmail?.trim().toLowerCase();
+		const fullname = rawFullName?.trim().replace(/\s+/g, " ");
+
+		if (email && fullname) {
+			return res.status(400).json({
+				success: false,
+				error: "Search by either email or fullname, not both.",
+			});
+		}
+
+		if (!email && !fullname) {
+			return res.status(400).json({
+				success: false,
+				error: "Please provide a valid email or fullname.",
+			});
+		}
+
+		let query = { _id: { $ne: currentUserId } }; // Exclude current user
+		const projection = { _id: 1, fullname: 1, avatar: 1 };
+
+		let sort = {};
+		if (email) {
+			if (!validator.isEmail(email)) {
+				return res.status(400).json({
+					success: false,
+					error: "Invalid email format.",
+				});
+			}
+			query.email = email;
+		} else {
+			if (validator.isEmpty(fullname)) {
+				return res.status(400).json({
+					success: false,
+					error: "Fullname cannot be empty.",
+				});
+			}
+			// query.$text = { $search: fullname };
+			query.$text = { $search: `"${fullname}"` };
+			projection.score = { $meta: "textScore" };
+			sort = { score: { $meta: "textScore" } };
+		}
+
+		const users = await User.find(query, projection)
+			.sort(sort)
+			.limit(20)
+			.lean();
+
+		// Add to successful search response
+		console.info(`User search: ${email || fullname} by ${currentUserId}`);
+		return res.status(200).json({
+			success: true,
+			results: users,
+		});
+	} catch (error) {
+		console.error("Search Error:", error.message);
+		return res.status(500).json({
+			success: false,
+			error: "Server error processing your request.",
+		});
+	}
+};
+
 export const registerUser = async (req, res) => {
 	try {
 		const { fullname, email, password } = req.body;

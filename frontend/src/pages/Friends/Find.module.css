@@ -51,7 +51,15 @@
 	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+.inputWrapper {
+	position: relative;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
 .searchInput {
+	outline: none;
 	flex: 1;
 	padding: 12px 18px;
 	font-size: 1rem;
@@ -59,7 +67,32 @@
 	background: transparent;
 	border-radius: 8px;
 	color: #334155;
+	width: 100%;
+	text-align: center;
 }
+
+.spinner {
+	position: absolute;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 16px;
+	height: 16px;
+	border: 2px solid transparent;
+	border-top: 2px solid #333;
+	border-radius: 50%;
+	animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+	from {
+		transform: translateY(-50%) rotate(0deg);
+	}
+	to {
+		transform: translateY(-50%) rotate(360deg);
+	}
+}
+
 
 .searchInput::placeholder {
 	color: #94a3b8;
@@ -107,6 +140,7 @@
 	transition: all 0.2s ease;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
 	align-content: center;
+	width: fit-content;
 }
 
 .user:hover {

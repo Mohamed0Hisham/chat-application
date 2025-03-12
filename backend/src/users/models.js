@@ -42,5 +42,31 @@ const userSchema = new Schema(
 	},
 	{ timestamps: true }
 );
+// Compound index for text search with exclusion
+userSchema.index(
+	{
+		fullname: "text",
+		_id: 1,
+	},
+	{
+		weights: {
+			fullname: 10,
+		},
+		name: "user_search_index",
+	}
+);
+
+// Unique email index with collation
+userSchema.index(
+	{ email: 1 },
+	{
+		unique: true,
+		collation: {
+			locale: "en",
+			strength: 2,
+		},
+	}
+);
+
 const User = model("User", userSchema);
 export default User;

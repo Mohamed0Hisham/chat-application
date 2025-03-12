@@ -1,45 +1,67 @@
+import { useEffect, useState } from "react";
 import { isError } from "../../services/isError";
 import useFriendStore from "../../store/friend";
 import styles from "./Find.module.css";
 
+type Friend = {
+	_id: string;
+	fullname: string;
+	isOnline?: boolean;
+	avatar: string;
+};
+
 const Find = () => {
-	const { sendFriendRequest, isLoading } = useFriendStore();
-	const friends = [
-		{
-			_id: "1",
-			fullname: "John Doe",
-			avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-		},
-		{
-			_id: "2",
-			fullname: "Jane Smith",
-			avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-		},
-		{
-			_id: "3",
-			fullname: "Alex Carter",
-			avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-		},
-		{
-			_id: "4",
-			fullname: "Emily Brown",
-			avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-	];
+	const { sendFriendRequest, isLoading, findUsers } = useFriendStore();
+	const [result, setResult] = useState<Friend[]>([]);
+	const [query, setQuery] = useState<string>("");
+	const [debouncedQuery, setDebouncedQuery] = useState<string>("");
+	const [pendingRequests, setPendingRequests] = useState<Set<string>>(
+		new Set()
+	);
+
+	// Debounce effect: updates debouncedQuery after user stops typing for 500ms
+	useEffect(() => {
+		const handler = setTimeout(() => {
+			setDebouncedQuery(query);
+		}, 500);
+
+		return () => clearTimeout(handler);
+	}, [query]);
+
+	useEffect(() => {
+		if (!debouncedQuery) {
+			setResult([]); // Clear results when input is empty
+			return;
+		}
+
+		const fetchUsers = async () => {
+			try {
+				// Detect if the input is an email or a name
+				const isEmail = debouncedQuery.includes("@");
+				const params = isEmail
+					? { email: debouncedQuery }
+					: { fullname: debouncedQuery };
+
+				const result = await findUsers(params); // Pass the correct query param
+				setResult(result);
+			} catch (error) {
+				console.error("Failed to fetch users:", error);
+			}
+		};
+
+		fetchUsers();
+	}, [debouncedQuery, findUsers]);
+
 	const handleAddFriend = async (id: string) => {
+		setPendingRequests((prev) => new Set(prev.add(id)));
 		try {
 			await sendFriendRequest(id);
-		} catch (error) {
-			if (isError(error)) {
-				console.log(error.message);
-			}
-			console.log("failed to send add request");
-			return;
+		} finally {
+			setPendingRequests((prev) => {
+				const next = new Set(prev);
+				next.delete(id);
+				return next;
+			});
 		}
 	};
 
@@ -53,22 +75,24 @@ const Find = () => {
 				<form
 					className={styles.searchForm}
 					onSubmit={(e) => e.preventDefault()}>
-					<input
-						type="search"
-						id="search"
-						placeholder="e.g. John Doe or john@example.com"
-						className={styles.searchInput}
-						aria-label="Search for friends by name or email"
-					/>
-					<button type="submit" className={styles.searchButton}>
-						Search
-					</button>
+					<div className={styles.inputWrapper}>
+						<input
+							type="search"
+							id="search"
+							placeholder="e.g. John Doe or john@example.com"
+							className={styles.searchInput}
+							aria-label="Search for friends by name or email"
+							value={query}
+							onChange={(e) => setQuery(e.target.value)}
+						/>
+						{isLoading && <span className={styles.spinner}></span>}
+					</div>
 				</form>
 				<ul className={styles.userList}>
 					{isLoading ? (
 						<li className={styles.loading}>Loading friends...</li>
-					) : friends.length > 0 ? (
-						friends.map((user) => (
+					) : result.length > 0 ? (
+						result.map((user) => (
 							<li key={user._id} className={styles.user}>
 								<div className={styles.userContent}>
 									<div className={styles.avatar}>
@@ -83,11 +107,11 @@ const Find = () => {
 										</p>
 									</div>
 									<button
-										onClick={() =>
-											handleAddFriend(user._id)
-										}
+										disabled={pendingRequests.has(user._id)}
 										className={styles.actionButton}>
-										Add Friend
+										{pendingRequests.has(user._id)
+											? "Sending..."
+											: "Add Friend"}
 									</button>
 								</div>
 							</li>

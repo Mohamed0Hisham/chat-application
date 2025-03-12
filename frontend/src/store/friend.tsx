@@ -6,7 +6,7 @@ import { isError } from "../services/isError";
 type Friend = {
 	_id: string;
 	fullname: string;
-	isOnline: boolean;
+	isOnline?: boolean;
 	avatar: string;
 };
 type Request = {
@@ -16,6 +16,7 @@ type Request = {
 	avatar: string;
 	createdAt: Date;
 };
+type SearchQuery = { email?: string; fullname?: string } | null;
 interface FriendState {
 	friend: Friend | null;
 	friends: Friend[];
@@ -28,6 +29,9 @@ interface FriendState {
 	fetchRequests: () => Promise<Request[]>;
 	acceptRequest: (id: string) => Promise<void>;
 	declineRequest: (id: string) => Promise<void>;
+	findUsers: (
+		q: { email?: string; fullname?: string } | null
+	) => Promise<Friend[]>;
 }
 
 const useFriendStore = create<FriendState>((set) => ({
@@ -42,7 +46,6 @@ const useFriendStore = create<FriendState>((set) => ({
 			const { user, accessToken } = useAuthStore.getState();
 			if (!user?._id) {
 				set({ error: "Not authenticated" });
-				return;
 			}
 
 			const friend: Friend = await api.get(
@@ -166,7 +169,7 @@ const useFriendStore = create<FriendState>((set) => ({
 			set({ isLoading: false });
 		}
 	},
-	declineRequest:async (id:string) => {
+	declineRequest: async (id: string) => {
 		set({ isLoading: true, error: null });
 		try {
 			const { accessToken } = useAuthStore.getState();
@@ -191,7 +194,33 @@ const useFriendStore = create<FriendState>((set) => ({
 		} finally {
 			set({ isLoading: false });
 		}
-	}
+	},
+	
+	findUsers: async (query: SearchQuery) => {
+		set({ isLoading: true, error: null });
+		try {
+			// Ensure only valid params are added
+			const params = new URLSearchParams();
+			if (query?.email) params.append("email", query.email);
+			if (query?.fullname) params.append("fullname", query.fullname);
+
+			const response = await api.get(`/users/all?${params.toString()}`);
+
+			const searchResult: Friend[] = response.data.results;
+			return searchResult;
+		} catch (error) {
+			if (isError(error)) {
+				set({ error: error.message });
+			} else {
+				set({
+					error: "An unknown error occurred",
+				});
+			}
+			return [];
+		} finally {
+			set({ isLoading: false });
+		}
+	},
 }));
 
 export default useFriendStore;
