@@ -8,9 +8,8 @@ const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
-	const { login, isLoading } = useAuth();
+	const { login, isLoading,isAuthenticated } = useAuth();
 	const navigate = useNavigate();
-	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
@@ -23,7 +22,6 @@ const Login = () => {
 
 		try {
 			await login(email, password);
-			setIsLoggedIn(true);
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -34,10 +32,10 @@ const Login = () => {
 	};
 
 	useEffect(() => {
-		if (isLoggedIn) {
+		if (isAuthenticated) {
 			navigate("/dashboard");
 		}
-	}, [isLoggedIn, navigate]);
+	}, [isAuthenticated, navigate]);
 
 	return (
 		<section className={styles.containerAuth}>
