@@ -213,8 +213,8 @@ const useFriendStore = create<FriendState>((set, get) => ({
 		}
 
 		set({ isLoading: true, error: null });
-
 		try {
+			const { accessToken } = useAuthStore.getState();
 			// Update search history
 			set({ searchHistory: [...searchHistory, now] });
 			// Ensure only valid params are added
@@ -224,6 +224,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 
 			const response = await api.get(`/users/all?${params.toString()}`, {
 				signal,
+				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 
 			const searchResult: Friend[] = response.data.results;
