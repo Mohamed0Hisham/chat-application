@@ -9,6 +9,7 @@ interface AuthState {
 	accessToken?: string;
 	isLoading: boolean;
 	isAuthenticated: boolean;
+	isLoggingOut: boolean;
 	checkAuth: () => Promise<void>;
 	register: (a: string, b: string, c: string) => Promise<void>;
 	login: (email: string, password: string) => Promise<void>;
@@ -31,6 +32,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 	accessToken: undefined,
 	isLoading: false,
 	isAuthenticated: false,
+	isLoggingOut: false,
 
 	checkAuth: async () => {
 		set({
@@ -106,6 +108,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		}
 	},
 	logout: async () => {
+		set({ isLoggingOut: true });
 		try {
 			await api.post("/users/logout", undefined, {
 				headers: { Authorization: get().accessToken },
@@ -125,11 +128,10 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			set(clearAuthState());
 			useFriendStore.getState().friends = [];
 
-			// Force DOM-level reset
-			setTimeout(() => {
-				window.location.href = "/login";
-			}, 50); // Tiny delay ensures state clears before reload
-			// Force full reset
+			// Wait for React to finish rendering
+			await new Promise((resolve) => setTimeout(resolve, 50));
+
+			// Hard redirect
 			window.location.href = "/login";
 		}
 	},
