@@ -6,38 +6,10 @@ import { useEffect, useState } from "react";
 import useMsgStore from "../../store/chat";
 
 const Sidebar = () => {
-	const { getFriends, isLoading, setFriend } = useFriendStore();
+	const { getFriends, isLoading, setFriend, friends } = useFriendStore();
 	const { setChat } = useMsgStore();
 	const [searchQuery, setSearchQuery] = useState("");
 
-	const friends = [
-		{
-			_id: "1",
-			fullname: "John Doe",
-			avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-			isOnline: true,
-		},
-		{
-			_id: "2",
-			fullname: "Jane Smith",
-			avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-		},
-		{
-			_id: "3",
-			fullname: "Alex Carter",
-			avatar: "https://randomuser.me/api/portraits/men/3.jpg",
-		},
-		{
-			_id: "4",
-			fullname: "Emily Brown",
-			avatar: "https://randomuser.me/api/portraits/women/4.jpg",
-		},
-		{
-			_id: "5",
-			fullname: "Michael Lee",
-			avatar: "https://randomuser.me/api/portraits/men/5.jpg",
-		},
-	];
 	// Filter friends based on search
 	const filteredFriends = friends.filter((friend) =>
 		friend.fullname.toLowerCase().includes(searchQuery.toLowerCase())

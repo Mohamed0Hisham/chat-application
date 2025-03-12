@@ -25,18 +25,13 @@ export const fetchRequests = async (req, res) => {
 		});
 	}
 };
+
 export const fetchFriends = async (req, res) => {
 	try {
-		const { userID } = req.params;
-		if (validator.isMongoId(userID) == false) {
-			return res.status(400).json({
-				success: false,
-				error: "invalid credentials",
-			});
-		}
+		const userID = req.user._id;
 
 		const user = await User.findById(userID)
-			.populate("friends", "_id fullname isOnline")
+			.populate("friends", "_id fullname avatar isOnline")
 			.lean();
 		if (!user) {
 			return res.status(404).json({
@@ -57,6 +52,7 @@ export const fetchFriends = async (req, res) => {
 		});
 	}
 };
+
 export const fetchFriend = async (req, res) => {
 	try {
 		const { userID, friendID } = req.params;

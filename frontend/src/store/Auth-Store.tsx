@@ -87,6 +87,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				accessToken,
 				isAuthenticated: true,
 			});
+			console.log(user)
 		} catch (error: unknown) {
 			console.error("login failed", error);
 			set({

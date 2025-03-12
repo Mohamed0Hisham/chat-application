@@ -80,7 +80,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 			if (!user) {
 				return;
 			}
-			const response = await api.get(`/users/${user._id}/friends`, {
+			const response = await api.get(`/friends/all`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 			const friends = response.data.data;

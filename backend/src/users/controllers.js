@@ -10,6 +10,7 @@ export const findUsers = async (req, res) => {
 	try {
 		const { email: rawEmail, fullname: rawFullName } = req.query;
 		const currentUserId = req.user._id;
+		console.log(req.user)
 
 		const email = rawEmail?.trim().toLowerCase();
 		const fullname = rawFullName?.trim().replace(/\s+/g, " ");
