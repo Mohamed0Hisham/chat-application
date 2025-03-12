@@ -11,13 +11,20 @@ type Request = {
 };
 
 const Requests: FC = () => {
-	const { fetchRequests, isLoading } = useFriendStore();
-	const [requests, setRequests] = useState<Request[] | null>([]);
-
+	const { fetchRequests, isLoading, acceptRequest, declineRequest } =
+		useFriendStore();
+	const [requests, setRequests] = useState<Request[]>([]);
+	const [error, setError] = useState<string | null>(null);
 	useEffect(() => {
 		(async () => {
-			const requests = await fetchRequests();
-			setRequests(requests);
+			try {
+				const requests = await fetchRequests();
+				setRequests(requests);
+			} catch (err) {
+				console.error("Failed to fetch requests:", err);
+				setError("Failed to load requests");
+				setRequests([]);
+			}
 		})();
 	}, [fetchRequests]);
 
@@ -28,9 +35,11 @@ const Requests: FC = () => {
 				<p>Manage incoming friend requests</p>
 			</header>
 			<ul className={styles.requestList}>
-				{isLoading ? (
+				{error ? (
+					<div className={styles.error}>{error}</div>
+				) : isLoading ? (
 					<li className={styles.loading}>Loading requests...</li>
-				) : Array.isArray(requests) ? (
+				) : requests.length > 0 ? (
 					requests.map((request) => (
 						<li key={request._id} className={styles.request}>
 							<div className={styles.requestContent}>
@@ -45,14 +54,22 @@ const Requests: FC = () => {
 										{request.fullname}
 									</p>
 									<p className={styles.timestamp}>
-										{request.createdAt.toTimeString()}
+									{new Date(request.createdAt).toLocaleString()}
 									</p>
 								</div>
 								<div className={styles.actions}>
-									<button className={styles.acceptButton}>
+									<button
+										className={styles.acceptButton}
+										onClick={() =>
+											acceptRequest(request._id)
+										}>
 										Accept
 									</button>
-									<button className={styles.declineButton}>
+									<button
+										className={styles.declineButton}
+										onClick={() =>
+											declineRequest(request._id)
+										}>
 										Decline
 									</button>
 								</div>
@@ -60,7 +77,7 @@ const Requests: FC = () => {
 						</li>
 					))
 				) : (
-					<li className={styles.noRequests}>No pending requests</li>
+					<div className={styles.noRequests}>No pending requests</div>
 				)}
 			</ul>
 		</div>
