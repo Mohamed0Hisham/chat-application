@@ -2,6 +2,7 @@ import { create } from "zustand";
 import api from "../services/api";
 import useAuthStore from "./Auth-Store";
 import { isError } from "../services/isError";
+import axios from "axios";
 
 type Friend = {
 	_id: string;
@@ -22,6 +23,7 @@ interface FriendState {
 	friends: Friend[];
 	isLoading: boolean;
 	error: string | null;
+	searchHistory: number[];
 	getFriend: (x: string) => Promise<void>;
 	setFriend: (x: Friend) => void;
 	getFriends: () => Promise<void>;
@@ -34,11 +36,12 @@ interface FriendState {
 	) => Promise<Friend[]>;
 }
 
-const useFriendStore = create<FriendState>((set) => ({
+const useFriendStore = create<FriendState>((set, get) => ({
 	friend: null,
 	friends: [],
 	isLoading: false,
 	error: null,
+	searchHistory: [],
 
 	getFriend: async (friendID: string) => {
 		set({ isLoading: true, error: null });
@@ -195,8 +198,23 @@ const useFriendStore = create<FriendState>((set) => ({
 			set({ isLoading: false });
 		}
 	},
-	
-	findUsers: async (query: SearchQuery) => {
+
+	findUsers: async (query: SearchQuery, signal?: AbortSignal) => {
+		const MAX_SEARCHES = 5;
+		const now = Date.now();
+
+		// Check rate limit
+		const recentSearches = get().searchHistory.filter(
+			(t) => now - t < 60000
+		);
+		if (recentSearches.length >= MAX_SEARCHES) {
+			set({ error: "Too many search attempts. Please wait 1 minute." });
+			return [];
+		}
+
+		set((state) => ({
+			searchHistory: [...state.searchHistory, now],
+		}));
 		set({ isLoading: true, error: null });
 		try {
 			// Ensure only valid params are added
@@ -204,11 +222,16 @@ const useFriendStore = create<FriendState>((set) => ({
 			if (query?.email) params.append("email", query.email);
 			if (query?.fullname) params.append("fullname", query.fullname);
 
-			const response = await api.get(`/users/all?${params.toString()}`);
+			const response = await api.get(`/users/all?${params.toString()}`, {
+				signal,
+			});
 
 			const searchResult: Friend[] = response.data.results;
 			return searchResult;
 		} catch (error) {
+			if (axios.isCancel(error)) {
+				return []; // Expected cancellation
+			}
 			if (isError(error)) {
 				set({ error: error.message });
 			} else {

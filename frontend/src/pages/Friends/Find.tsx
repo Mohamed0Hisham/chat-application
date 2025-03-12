@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { isError } from "../../services/isError";
 import useFriendStore from "../../store/friend";
 import styles from "./Find.module.css";
+import DOMPurify from "dompurify";
 
 type Friend = {
 	_id: string;
@@ -29,6 +29,7 @@ const Find = () => {
 	}, [query]);
 
 	useEffect(() => {
+		const controller = new AbortController();
 		if (!debouncedQuery) {
 			setResult([]); // Clear results when input is empty
 			return;
@@ -42,14 +43,17 @@ const Find = () => {
 					? { email: debouncedQuery }
 					: { fullname: debouncedQuery };
 
-				const result = await findUsers(params); // Pass the correct query param
+				const result = await findUsers(params, controller.signal); // Pass the correct query param
 				setResult(result);
 			} catch (error) {
-				console.error("Failed to fetch users:", error);
+				if (!controller.signal.aborted) {
+					console.error("Failed to fetch users:", error);
+				}
 			}
 		};
+		if (debouncedQuery) fetchUsers();
 
-		fetchUsers();
+		return () => controller.abort();
 	}, [debouncedQuery, findUsers]);
 
 	const handleAddFriend = async (id: string) => {
@@ -103,11 +107,14 @@ const Find = () => {
 									</div>
 									<div className={styles.description}>
 										<p className={styles.fullname}>
-											{user.fullname}
+											{DOMPurify.sanitize(user.fullname)}
 										</p>
 									</div>
 									<button
 										disabled={pendingRequests.has(user._id)}
+										onClick={() =>
+											handleAddFriend(user._id)
+										}
 										className={styles.actionButton}>
 										{pendingRequests.has(user._id)
 											? "Sending..."
