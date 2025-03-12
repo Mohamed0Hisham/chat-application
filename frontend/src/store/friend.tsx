@@ -32,7 +32,8 @@ interface FriendState {
 	acceptRequest: (id: string) => Promise<void>;
 	declineRequest: (id: string) => Promise<void>;
 	findUsers: (
-		q: { email?: string; fullname?: string } | null
+		q: { email?: string; fullname?: string } | null,
+		signal?: AbortSignal
 	) => Promise<Friend[]>;
 }
 
@@ -202,21 +203,20 @@ const useFriendStore = create<FriendState>((set, get) => ({
 	findUsers: async (query: SearchQuery, signal?: AbortSignal) => {
 		const MAX_SEARCHES = 5;
 		const now = Date.now();
+		const { searchHistory } = get();
 
-		// Check rate limit
-		const recentSearches = get().searchHistory.filter(
-			(t) => now - t < 60000
-		);
+		// Rate limiting check
+		const recentSearches = searchHistory.filter((t) => now - t < 60000);
 		if (recentSearches.length >= MAX_SEARCHES) {
 			set({ error: "Too many search attempts. Please wait 1 minute." });
 			return [];
 		}
 
-		set((state) => ({
-			searchHistory: [...state.searchHistory, now],
-		}));
 		set({ isLoading: true, error: null });
+
 		try {
+			// Update search history
+			set({ searchHistory: [...searchHistory, now] });
 			// Ensure only valid params are added
 			const params = new URLSearchParams();
 			if (query?.email) params.append("email", query.email);
@@ -242,6 +242,12 @@ const useFriendStore = create<FriendState>((set, get) => ({
 			return [];
 		} finally {
 			set({ isLoading: false });
+			// Cleanup old search history entries
+			set((state) => ({
+				searchHistory: state.searchHistory.filter(
+					(t) => now - t < 60000
+				),
+			}));
 		}
 	},
 }));
