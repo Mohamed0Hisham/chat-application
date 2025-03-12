@@ -135,7 +135,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
 
-			const requests = response.data;
+			const { requests } = response.data;
 			set({ requests });
 		} catch (error) {
 			console.error(error);

@@ -15,7 +15,7 @@ export const useAuth = () => {
 
 	useEffect(() => {
 		checkAuth();
-	}, []);
+	}, [checkAuth]);
 
 	return {
 		user,
