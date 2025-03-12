@@ -1,55 +1,100 @@
 import { AtSign, Lock, SquareUserRound } from "lucide-react";
-import "./index.css";
-import { Link } from "react-router-dom";
+import styles from "./Auth.module.css";
+import { Link, useNavigate } from "react-router-dom";
+import { FormEvent, useEffect, useState } from "react";
+import useAuthStore from "../../store/Auth-Store";
 
 const Register = () => {
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [fullname, setFullname] = useState("");
+	const [error, setError] = useState<string | null>(null);
+	const navigate = useNavigate();
+	const [isCompleted, setIsCompleted] = useState(false);
+	const { register, isLoading } = useAuthStore();
+
+	const handleSubmit = async (e: FormEvent) => {
+		e.preventDefault();
+		setError(null);
+
+		if (!email || !password || !fullname) {
+			setError("Please fill in all fields");
+			return;
+		}
+
+		try {
+			await register(fullname, email, password);
+			setIsCompleted(true);
+		} catch (err) {
+			setError(
+				err instanceof Error
+					? err.message
+					: "Sign up failed. Please try again."
+			);
+		}
+	};
+
+	useEffect(() => {
+		if (isCompleted) {
+			navigate("/login");
+		}
+	}, [isCompleted, navigate]);
+
 	return (
-		<section className="container">
-			<form className="form" action="">
-				<div className="form-field">
-					<label htmlFor="fullname">Fullname</label>
-					<div className="input-field">
+		<section className={styles.containerAuth}>
+			<form className={styles.form} onSubmit={handleSubmit}>
+				<div className={styles.formField}>
+					<label className={styles.label} htmlFor="fullname">Fullname</label>
+					<div className={styles.inputField}>
 						<SquareUserRound />
 						<input
 							type="text"
 							id="fullname"
 							placeholder="Your fullname"
+							onChange={(e) => setFullname(e.target.value)}
+							disabled={isLoading}
+							className={styles.input}
 						/>
 					</div>
 				</div>
-				<div className="form-field">
-					<label htmlFor="email">E-mail</label>
-					<div className="input-field">
+				<div className={styles.formField}>
+					<label className={styles.label} htmlFor="email">E-mail</label>
+					<div className={styles.inputField}>
 						<AtSign />
 						<input
 							type="email"
 							id="email"
 							placeholder="example@gmail.com"
+							onChange={(e) => setEmail(e.target.value)}
+							disabled={isLoading}
+							className={styles.input}
 						/>
 					</div>
 				</div>
-				<div className="form-field">
-					<label htmlFor="password">Password</label>
-					<div className="input-field">
+				<div className={styles.formField}>
+					<label className={styles.label} htmlFor="password">Password</label>
+					<div className={styles.inputField}>
 						<Lock />
-						<input type="password" id="password" />
+						<input
+							type="password"
+							id="password"
+							onChange={(e) => setPassword(e.target.value)}
+							disabled={isLoading}
+							className={styles.input}
+						/>
 					</div>
 				</div>
-				<div className="options">
-					<div>
-						<input type="checkbox" id="remember" />
-						<span>Remember me</span>
-					</div>
-					<button className="reset-password">Forgot Password?</button>
-				</div>
+				{error && <p className={styles.errorMessage}>{error}</p>}
 				<input
-					className="submit-button"
+					className={styles.submitButton}
 					type="submit"
 					value="Sign Up"
+					disabled={isLoading}
+					
 				/>
 				<p>
 					Already have an account?{" "}
-					<Link className="register" to="/login">
+					<Link className={styles.register} to="/login">
 						Sign In
 					</Link>
 				</p>

@@ -1,0 +1,149 @@
+/* Chat.module.css */
+.conv {
+	height: 100dvh;
+}
+.chatContainer {
+	position: relative;
+	overflow-y: auto;
+	height: 100%;
+	padding: 20px;
+	font-size: 1.15rem;
+}
+.chatContainer {
+	scrollbar-width: none; /* Firefox */
+	-ms-overflow-style: none; /* IE and Edge */
+}
+.chatContainer::-webkit-scrollbar {
+	display: none; /* Chrome, Safari */
+}
+.msgIn {
+	position: sticky;
+	bottom: 0;
+	width: 100%;
+	display: grid;
+	grid-template-columns: auto 1fr auto auto;
+	align-items: center;
+	padding-left: 2rem;
+	padding-right: 2rem;
+	gap: 2rem;
+	background: #fff;
+
+}
+.send {
+	color: white;
+	background: #007bff;
+	width: 4rem;
+	height: 3rem;
+	border-radius: 40px;
+	cursor: pointer;
+}
+.sendIcon {
+	width: 2rem;
+	height: 3rem;
+}
+.smile {
+	width: 2.5rem;
+	height: 3rem;
+	cursor: pointer;
+}
+.smileIcon {
+	width: 2.5rem;
+	height: 3rem;
+}
+.attach {
+	width: 2.5rem;
+	height: 3rem;
+	cursor: pointer;
+}
+.attachIcon {
+	width: 2.5rem;
+	height: 3rem;
+}
+@media (min-width: 2559px) {
+	.send {
+		width: 8rem;
+		height: 6rem;
+	}
+	.sendIcon {
+		width: 5rem;
+		height: 6rem;
+	}
+	.smile {
+		width: 4.5rem;
+		height: 5rem;
+	}
+	.smileIcon {
+		width: 4.5rem;
+		height: 5rem;
+	}
+	.attach {
+		width: 4.5rem;
+		height: 5rem;
+		cursor: pointer;
+	}
+	.attachIcon {
+		width: 4.5rem;
+		height: 5rem;
+	}
+}
+
+.friend{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
+	background: #ddd;
+	position: sticky;
+	top: 0;
+	width: 100%;
+	z-index: 2;
+}
+.avatar {
+	border-radius: 300px;
+	padding: 12px;
+	transform: scale(0.75);
+	
+}
+.description {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 18px;
+}
+.green,
+.red {
+	border-radius: 9999px;
+	width: 20px;
+	height: 20px;
+}
+.green {
+	background: #2aea2a;
+}
+.red {
+	background: #ff0000;
+}
+@media (max-width: 321px) {
+	.green,
+	.red {
+		border-radius: 40px;
+		padding: 4px;
+		width: 15px;
+		height: 15px;
+	}
+}
+@media (min-width: 2559px) {
+	.friend{
+		gap: 4rem;
+	}
+	.avatar {
+		border-radius: 300px;
+		padding: 24px;
+		transform: scale(1.25);
+		margin-right: 4em;
+		
+	}
+	.description {
+		gap: 30px;
+		transform: scale(2);
+	}
+}

@@ -1,11 +1,91 @@
 import validator from "validator";
 import User from "./models.js";
 import bcryptjs from "bcryptjs";
-import { startSession } from "mongoose";
 import { generateAccessToken, generateRefreshToken } from "../../utils/auth.js";
 
 const SALT = 12;
 const environment = process.env.ENVIRONMENT === "production";
+
+// const invalidateRefreshToken = async (userId) => {
+// 	try {
+// 		// Update user document to remove refresh token
+// 		await User.findByIdAndUpdate(userId, {
+// 			$unset: { refreshToken: 1 }, // Removes the refreshToken field
+// 		});
+// 	} catch (error) {
+// 		console.error("Error invalidating refresh token:", error);
+// 		throw new Error("Failed to invalidate session");
+// 	}
+// };
+
+export const findUsers = async (req, res) => {
+	try {
+		const { email: rawEmail, fullname: rawFullName } = req.query;
+		const currentUserId = req.user._id;
+		console.log(req.user);
+
+		const email = rawEmail?.trim().toLowerCase();
+		const fullname = rawFullName?.trim().replace(/\s+/g, " ");
+
+		if (email && fullname) {
+			return res.status(400).json({
+				success: false,
+				error: "Search by either email or fullname, not both.",
+			});
+		}
+
+		if (!email && !fullname) {
+			return res.status(400).json({
+				success: false,
+				error: "Please provide a valid email or fullname.",
+			});
+		}
+
+		let query = { _id: { $ne: currentUserId } }; // Exclude current user
+		const projection = { _id: 1, fullname: 1, avatar: 1 };
+
+		let sort = {};
+		if (email) {
+			if (!validator.isEmail(email)) {
+				return res.status(400).json({
+					success: false,
+					error: "Invalid email format.",
+				});
+			}
+			query.email = email;
+		} else {
+			if (validator.isEmpty(fullname)) {
+				return res.status(400).json({
+					success: false,
+					error: "Fullname cannot be empty.",
+				});
+			}
+			// query.$text = { $search: fullname };
+			query.$text = { $search: `"${fullname}"` };
+			projection.score = { $meta: "textScore" };
+			sort = { score: { $meta: "textScore" } };
+		}
+
+		const users = await User.find(query, projection)
+			.sort(sort)
+			.limit(20)
+			.lean();
+
+		// Add to successful search response
+		console.info(`User search: ${email || fullname} by ${currentUserId}`);
+		return res.status(200).json({
+			success: true,
+			results: users,
+		});
+	} catch (error) {
+		console.error("Search Error:", error.message);
+		return res.status(500).json({
+			success: false,
+			error: error.message || "Server error processing your request.",
+		});
+	}
+};
+
 export const registerUser = async (req, res) => {
 	try {
 		const { fullname, email, password } = req.body;
@@ -57,7 +137,9 @@ export const login = async (req, res) => {
 				error: "invalid credentials",
 			});
 		}
-		const user = await User.findOne({ email });
+		const user = await User.findOne({ email })
+			.select("_id fullname email")
+			.lean();
 		if (!user) {
 			return res.status(400).json({
 				success: false,
@@ -79,6 +161,7 @@ export const login = async (req, res) => {
 			success: true,
 			message: "Login in successfully",
 			accessToken,
+			user,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -87,9 +170,20 @@ export const login = async (req, res) => {
 		});
 	}
 };
-export const logout = (req, res) => {
-	res.clearCookie("refreshToken", { path: "/api/auth/refresh" });
-	res.json({ message: "Logged out" });
+export const logout = async (req, res) => {
+	// const userId = req.user._id; 
+
+	// await invalidateRefreshToken(userId);
+
+	res.clearCookie("refreshToken", {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "Strict",
+		path: "/api/auth/refresh",
+	});
+	return res
+		.status(200)
+		.json({ success: true, message: "Logged out successfully" });
 };
 
 export const fetchProfile = async (req, res) => {
@@ -175,145 +269,5 @@ export const updateProfile = async (req, res) => {
 			success: false,
 			error: error.message,
 		});
-	}
-};
-export const fetchFriends = async (req, res) => {
-	try {
-		const { userID } = req.params;
-		if (validator.isMongoId(userID) == false) {
-			return res.status(400).json({
-				success: false,
-				error: "invalid credentials",
-			});
-		}
-
-		const user = await User.findById(userID)
-			.populate("friends", "_id fullname email")
-			.lean();
-		if (!user) {
-			return res.status(400).json({
-				success: false,
-				error: "user not found",
-			});
-		}
-
-		return res.status(200).json({
-			success: true,
-			message: "friends list fetched",
-			data: user.friends,
-		});
-	} catch (error) {
-		return res.status(500).json({
-			success: false,
-			error: error.message,
-		});
-	}
-};
-
-export const addFriend = async (req, res) => {
-	const session = await startSession();
-
-	try {
-		session.startTransaction();
-
-		const { userID } = req.params;
-		const { friendID } = req.body;
-		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
-			return res.status(400).json({
-				success: false,
-				error: "Invalid operation",
-			});
-		}
-
-		const users = await User.find({ _id: { $in: [userID, friendID] } });
-		if (users.length !== 2) {
-			return res.status(400).json({
-				success: false,
-				error: "Invalid user or friend ID",
-			});
-		}
-		const user = users.find((u) => u._id.toString() === userID);
-		const friend = users.find((u) => u._id.toString() === friendID);
-
-		if (
-			user.friends.includes(friendID) ||
-			friend.friends.includes(userID)
-		) {
-			return res.status(400).json({
-				success: false,
-				error: "friend already added",
-			});
-		}
-
-		user.friends.push(friendID);
-		friend.friends.push(userID);
-		await User.bulkSave([user, friend], { session });
-
-		await session.commitTransaction();
-		return res.status(200).json({
-			success: true,
-			message: "friend added successfully",
-			data: user.friends,
-		});
-	} catch (error) {
-		await session.abortTransaction();
-		return res.status(500).json({
-			success: false,
-			error: error.message,
-		});
-	} finally {
-		await session.endSession();
-	}
-};
-export const deleteFriend = async (req, res) => {
-	const session = await startSession();
-	try {
-		session.startTransaction();
-
-		const { userID, friendID } = req.params;
-		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
-			return res.status(400).json({
-				success: false,
-				error: "Invalid operation",
-			});
-		}
-
-		const users = await User.find({ _id: { $in: [userID, friendID] } });
-		if (users.length !== 2) {
-			return res.status(400).json({
-				success: false,
-				error: "Invalid user or friend ID",
-			});
-		}
-		const user = users.find((u) => u._id.toString() === userID);
-		const friend = users.find((u) => u._id.toString() === friendID);
-
-		const friendIndex = user.friends.indexOf(friendID);
-		const userIndex = friend.friends.indexOf(userID);
-		if (friendIndex === -1 || userIndex === -1) {
-			return res.status(400).json({
-				success: false,
-				error: "friend not found",
-			});
-		}
-
-		user.friends.splice(friendIndex, 1);
-		friend.friends.splice(userIndex, 1);
-		await User.bulkSave([user, friend], { session });
-
-		await session.commitTransaction();
-		return res.status(200).json({
-			success: true,
-			message: "friend deleted successfully",
-			data: user.friends,
-		});
-	} catch (error) {
-		await session.abortTransaction();
-		return res.status(500).json({
-			success: false,
-			error: error.message,
-		});
-	} finally {
-		await session.endSession();
 	}
 };

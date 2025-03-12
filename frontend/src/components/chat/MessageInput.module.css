@@ -1,0 +1,44 @@
+/* MessageInput.module.css */
+.inputContainer {
+	width: 100%;
+	padding: 10px;
+}
+
+.textarea {
+	width: 100%;
+	min-height: 50px;
+	max-height: 200px; /* Maximum height before scrolling */
+	padding: 10px 15px;
+	border: 1px solid #ddd;
+	border-radius: 20px;
+	font-size: 1.4rem;
+	font-weight: 500;
+	resize: none; /* Prevents manual resizing */
+	overflow-y: auto; /* Adds scrollbar if needed */
+	background: #f1f1f1;
+	transition: height 0.2s ease; /* Smooth height transition */
+}
+
+.textarea:focus {
+	outline: none;
+	border-color: #007bff;
+	background: #fff;
+	color: black;
+}
+
+.textarea::placeholder {
+	color: #888;
+	font-weight: 600;
+}
+@media (min-width: 2559px) {
+	.textarea {
+		width: 100%;
+		border-radius: 20px;
+		font-size: 2.5rem;
+		font-weight: 600;
+		height: 1rem;
+		padding: 1.5rem;
+		min-height: 100px;
+		max-height: 400px;
+	}
+}

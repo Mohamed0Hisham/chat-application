@@ -79,31 +79,106 @@ export const createConversation = async (req, res) => {
 };
 export const fetchConversation = async (req, res) => {
 	try {
-		const { chatID } = req.params;
-		if (!validator.isMongoId(chatID)) {
+		const userID = req.user._id.toString();
+		const { friendID } = req.query;
+		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
 			return res.status(400).json({
 				success: false,
-				message: "invalid chat Id",
+				message: "invalid users Id",
 			});
 		}
 
-		const chat = await Chat.findById(chatID).lean();
-		if (!chat) {
+		const user = await User.findById(userID).lean();
+		const friend = await User.findById(friendID).lean();
+		if (!user || !friend) {
 			return res.status(404).json({
 				success: false,
-				message: "no such chat exist",
+				message: "invalid id passed",
 			});
 		}
+
+		const chatID = await Chat.findOne({
+			participants: { $all: [userID, friendID] },
+		})
+			.select("_id")
+			.lean();
 
 		return res.status(200).json({
 			success: true,
 			message: "chat fetched",
+			chat: chatID._id,
+		});
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message:
+				process.env.NODE_ENV === "production"
+					? "Server error"
+					: error.message,
+		});
+	}
+};
+export const fetchGroupConversation = async (req, res) => {
+	try {
+		// Extract userIDs from query parameters (e.g., "id1,id2,id3")
+		const { userIDs } = req.query;
+		if (!userIDs) {
+			return res.status(400).json({
+				success: false,
+				message: "userIDs query parameter is required",
+			});
+		}
+
+		// Split into an array and ensure at least two users
+		const ids = userIDs.split(",");
+		if (ids.length < 2) {
+			return res.status(400).json({
+				success: false,
+				message: "at least two user IDs are required for a group chat",
+			});
+		}
+
+		// Validate each ID as a MongoDB ObjectId
+		for (const id of ids) {
+			if (!validator.isMongoId(id)) {
+				return res.status(400).json({
+					success: false,
+					message: "invalid user ID",
+				});
+			}
+		}
+
+		// Check if all users exist in the database
+		const users = await User.find({ _id: { $in: ids } }).lean();
+		if (users.length !== ids.length) {
+			return res.status(404).json({
+				success: false,
+				message: "one or more users not found",
+			});
+		}
+
+		// Find a chat that includes all specified participants
+		const chat = await Chat.findOne({
+			participants: { $all: ids },
+		}).lean();
+
+		if (!chat) {
+			return res.status(404).json({
+				success: false,
+				message: "no chat found with the specified participants",
+			});
+		}
+
+		// Return the chat
+		return res.status(200).json({
+			success: true,
+			message: "chat fetched successfully",
 			data: chat,
 		});
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
-			message: error.message,
+			message: "an error occurred while fetching the chat",
 		});
 	}
 };

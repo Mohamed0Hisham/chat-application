@@ -1,9 +1,17 @@
 import { Outlet } from "react-router-dom";
+import useAuthStore from "./store/Auth-Store";
 const App = () => {
+	const { isLoggingOut } = useAuthStore();
+
 	return (
-		<main>
+		<>
 			<Outlet />
-		</main>
+			{isLoggingOut && (
+				<div className="logout-overlay">
+					<p>Logging out...</p>
+				</div>
+			)}
+		</>
 	);
 };
 
