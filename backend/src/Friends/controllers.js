@@ -10,7 +10,7 @@ export const fetchRequests = async (req, res) => {
 			requests: 1,
 			_id: 0,
 		})
-			.populate("requests", " -_id fullname email avatar createdAt")
+			.populate("requests", " _id fullname email avatar createdAt")
 			.lean();
 
 		return res.status(200).json({

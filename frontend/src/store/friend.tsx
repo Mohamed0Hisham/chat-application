@@ -10,6 +10,7 @@ type Friend = {
 	avatar: string;
 };
 type Request = {
+	_id: string;
 	fullname: string;
 	email: string;
 	avatar: string;

@@ -1,32 +1,27 @@
 import styles from "./Requests.module.css";
 import useFriendStore from "../../store/friend";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
-// Sample data for demonstration (replace with real data from your backend)
-const requests = [
-	{
-		_id: "1",
-		sender: {
-			fullname: "John Doe",
-			avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-		},
-		timestamp: "2 hours ago",
-	},
-	{
-		_id: "2",
-		sender: {
-			fullname: "Jane Smith",
-			avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-		},
-		timestamp: "1 day ago",
-	},
-];
-
-const isLoading = false; // Toggle to true to see the loading state
+type Request = {
+	_id: string;
+	fullname: string;
+	email: string;
+	avatar: string;
+	createdAt: Date;
+};
 
 const Requests: FC = () => {
-const {} = useFriendStore();
-    return (
+	const { fetchRequests, isLoading } = useFriendStore();
+	const [requests, setRequests] = useState<Request[] | null>([]);
+
+	useEffect(() => {
+		(async () => {
+			const requests = await fetchRequests();
+			setRequests(requests);
+		})();
+	}, [fetchRequests]);
+
+	return (
 		<div className={styles.container}>
 			<header className={styles.header}>
 				<h1>Friend Requests</h1>
@@ -35,22 +30,22 @@ const {} = useFriendStore();
 			<ul className={styles.requestList}>
 				{isLoading ? (
 					<li className={styles.loading}>Loading requests...</li>
-				) : requests.length > 0 ? (
+				) : Array.isArray(requests) ? (
 					requests.map((request) => (
 						<li key={request._id} className={styles.request}>
 							<div className={styles.requestContent}>
 								<div className={styles.avatar}>
 									<img
-										src={request.sender.avatar}
-										alt={`${request.sender.fullname}'s avatar`}
+										src={request.avatar}
+										alt={`${request.fullname}'s avatar`}
 									/>
 								</div>
 								<div className={styles.description}>
 									<p className={styles.fullname}>
-										{request.sender.fullname}
+										{request.fullname}
 									</p>
 									<p className={styles.timestamp}>
-										{request.timestamp}
+										{request.createdAt.toTimeString()}
 									</p>
 								</div>
 								<div className={styles.actions}>
