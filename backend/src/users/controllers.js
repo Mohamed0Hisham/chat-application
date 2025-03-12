@@ -6,6 +6,18 @@ import { generateAccessToken, generateRefreshToken } from "../../utils/auth.js";
 const SALT = 12;
 const environment = process.env.ENVIRONMENT === "production";
 
+// const invalidateRefreshToken = async (userId) => {
+// 	try {
+// 		// Update user document to remove refresh token
+// 		await User.findByIdAndUpdate(userId, {
+// 			$unset: { refreshToken: 1 }, // Removes the refreshToken field
+// 		});
+// 	} catch (error) {
+// 		console.error("Error invalidating refresh token:", error);
+// 		throw new Error("Failed to invalidate session");
+// 	}
+// };
+
 export const findUsers = async (req, res) => {
 	try {
 		const { email: rawEmail, fullname: rawFullName } = req.query;
@@ -158,7 +170,11 @@ export const login = async (req, res) => {
 		});
 	}
 };
-export const logout = (req, res) => {
+export const logout = async (req, res) => {
+	// const userId = req.user._id; 
+
+	// await invalidateRefreshToken(userId);
+
 	res.clearCookie("refreshToken", {
 		httpOnly: true,
 		secure: process.env.NODE_ENV === "production",

@@ -2,14 +2,14 @@ import styles from "./Auth.module.css";
 import { AtSign, Lock } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import useAuthStore from "../../store/Auth-Store";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 
-	const { login, isLoading, isAuthenticated } = useAuth();
+	const { isLoading, isAuthenticated, login } = useAuthStore();
 	const navigate = useNavigate();
 	const location = useLocation();
 

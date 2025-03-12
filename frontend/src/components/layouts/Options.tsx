@@ -1,8 +1,30 @@
 import { Link } from "react-router-dom";
 import styles from "./Options.module.css";
-import { MessageSquare, Users, Plus, User, LucideChevronLeftCircle } from "lucide-react";
+import {
+	MessageSquare,
+	Users,
+	Plus,
+	User,
+	LucideChevronLeftCircle,
+	LogOut,
+} from "lucide-react";
+import useAuthStore from "../../store/Auth-Store";
 
 const Options = () => {
+	const { logout } = useAuthStore();
+
+	const handleLogout = async () => {
+		try {
+			await logout();
+		} catch (error) {
+			console.error(
+				error instanceof Error
+					? error.message
+					: "Logout failed. Please try again."
+			);
+		}
+	};
+
 	return (
 		<ul className={styles.options}>
 			<li aria-label="Chat section">
@@ -28,6 +50,10 @@ const Options = () => {
 			<li aria-label="My profile">
 				<User className={styles.icon} />
 				me
+			</li>
+			<li aria-label="My profile" onClick={handleLogout}>
+				<LogOut className={styles.icon} />
+				Logout
 			</li>
 		</ul>
 	);

@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import api from "../services/api";
+import useFriendStore from "./friend";
 
 type User = { _id: string; fullname: string; email: string };
 
@@ -57,8 +58,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				);
 				set(clearAuthState());
 			}
-		} else {
-			set(clearAuthState());
 		}
 		set({
 			isLoading: false,
@@ -108,14 +107,30 @@ const useAuthStore = create<AuthState>((set, get) => ({
 	},
 	logout: async () => {
 		try {
-			await api.post("/users/logout");
+			await api.post("/users/logout", undefined, {
+				headers: { Authorization: get().accessToken },
+			});
+			console.error("done");
 		} catch (error) {
 			console.error(
 				"Logout failed:",
 				error instanceof Error ? error.message : ""
 			);
 		} finally {
+			// 👇 Cancel all ongoing friend requests
+			const friendStore = useFriendStore.getState();
+			friendStore.abortController?.abort(); // If you track controllers
+
+			// Clear state BEFORE redirect
 			set(clearAuthState());
+			useFriendStore.getState().friends = [];
+
+			// Force DOM-level reset
+			setTimeout(() => {
+				window.location.href = "/login";
+			}, 50); // Tiny delay ensures state clears before reload
+			// Force full reset
+			window.location.href = "/login";
 		}
 	},
 	refreshAccessToken: async () => {
@@ -123,7 +138,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			const response = await api.post("/auth/refresh");
 			const { accessToken } = response.data;
 			localStorage.setItem("accessToken", accessToken);
-			set({ accessToken});
+			set({ accessToken });
 		} catch (error) {
 			console.error(
 				"Token refresh failed:",

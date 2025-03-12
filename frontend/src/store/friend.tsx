@@ -25,8 +25,11 @@ interface FriendState {
 	error: string | null;
 	searchHistory: number[];
 	requests: Request[];
+	abortController?: AbortController;
+
 	getFriend: (x: string) => Promise<void>;
-	setFriend: (x: Friend) => void;
+	setFriend: (x: Friend | null) => void;
+
 	getFriends: () => Promise<void>;
 	sendFriendRequest: (s: string) => Promise<void>;
 	fetchRequests: () => Promise<void>;
@@ -77,6 +80,10 @@ const useFriendStore = create<FriendState>((set, get) => ({
 	setFriend: (friend) => set({ friend }),
 	getFriends: async () => {
 		set({ isLoading: true });
+		// Create new AbortController for this request
+		const controller = new AbortController();
+		set({ abortController: controller }); // 👈 Store it
+
 		try {
 			const { user, accessToken } = useAuthStore.getState();
 			if (!user) {
@@ -84,12 +91,18 @@ const useFriendStore = create<FriendState>((set, get) => ({
 			}
 			const response = await api.get(`/friends/all`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
+				signal: controller.signal,
 			});
 			const friends = response.data.data;
 			set({
 				friends,
 			});
 		} catch (error) {
+			if (axios.isCancel(error)) {
+				console.log("Request canceled");
+				return;
+			}
+
 			if (isError(error)) {
 				set({ error: error.message });
 			} else {
@@ -99,7 +112,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 				});
 			}
 		} finally {
-			set({ isLoading: false });
+			set({ isLoading: false, abortController: undefined });
 		}
 	},
 	sendFriendRequest: async (userID: string) => {

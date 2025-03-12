@@ -4,6 +4,7 @@ import s from "./sidebar.module.css";
 import useFriendStore from "../../store/friend";
 import { useEffect, useState } from "react";
 import useMsgStore from "../../store/chat";
+import axios from "axios";
 
 const Sidebar = () => {
 	const { getFriends, isLoading, setFriend, friends } = useFriendStore();
@@ -16,10 +17,24 @@ const Sidebar = () => {
 	);
 
 	useEffect(() => {
-		(async () => {
-			await getFriends();
-		})();
-	}, [getFriends]);
+		const controller = new AbortController();
+		const fetchData = async () => {
+			try {
+				await getFriends();
+			} catch (error) {
+				if (axios.isCancel(error)) {
+					console.log("Friends fetch canceled");
+				}
+			}
+		};
+
+		fetchData();
+
+		return () => {
+			// Cancel request if component unmounts
+			controller.abort();
+		};
+	}, []);
 	return (
 		<div className={s.sidebar}>
 			<div className={s.searchField}>

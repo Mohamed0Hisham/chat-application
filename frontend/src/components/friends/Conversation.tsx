@@ -8,13 +8,13 @@ import { MessageInput } from "../chat/MessageInput";
 import useFriendStore from "../../store/friend";
 import api from "../../services/api";
 import useMsgStore from "../../store/chat";
-import { useAuth } from "../../hooks/useAuth";
+import useAuthStore from "../../store/Auth-Store";
 
 const Conversation: FC = () => {
 	const [content, setContent] = useState("");
 	const { friend } = useFriendStore();
 	const { chat, isLoading, messages } = useMsgStore();
-	const { user, token } = useAuth();
+	const { user, accessToken } = useAuthStore();
 	return (
 		<div className={styles.conv}>
 			<div className={styles.friend}>
@@ -92,7 +92,7 @@ const Conversation: FC = () => {
 									},
 									{
 										headers: {
-											Authorization: `Bearer ${token}`,
+											Authorization: `Bearer ${accessToken}`,
 										},
 									}
 								);

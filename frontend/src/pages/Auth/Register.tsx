@@ -2,7 +2,7 @@ import { AtSign, Lock, SquareUserRound } from "lucide-react";
 import styles from "./Auth.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import useAuthStore from "../../store/Auth-Store";
 
 const Register = () => {
 	const [email, setEmail] = useState("");
@@ -11,7 +11,7 @@ const Register = () => {
 	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
 	const [isCompleted, setIsCompleted] = useState(false);
-	const { register, isLoading } = useAuth();
+	const { register, isLoading } = useAuthStore();
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
