@@ -1,29 +1,22 @@
 import styles from "./Requests.module.css";
 import useFriendStore from "../../store/friend";
-import { FC, useEffect, useState } from "react";
-
-type Request = {
-	_id: string;
-	fullname: string;
-	email: string;
-	avatar: string;
-	createdAt: Date;
-};
+import { FC, useEffect } from "react";
 
 const Requests: FC = () => {
-	const { fetchRequests, isLoading, acceptRequest, declineRequest } =
-		useFriendStore();
-	const [requests, setRequests] = useState<Request[]>([]);
-	const [error, setError] = useState<string | null>(null);
+	const {
+		fetchRequests,
+		isLoading,
+		acceptRequest,
+		declineRequest,
+		requests,
+		error
+	} = useFriendStore();
 	useEffect(() => {
 		(async () => {
 			try {
-				const requests = await fetchRequests();
-				setRequests(requests);
+				await fetchRequests();
 			} catch (err) {
 				console.error("Failed to fetch requests:", err);
-				setError("Failed to load requests");
-				setRequests([]);
 			}
 		})();
 	}, [fetchRequests]);
@@ -54,7 +47,9 @@ const Requests: FC = () => {
 										{request.fullname}
 									</p>
 									<p className={styles.timestamp}>
-									{new Date(request.createdAt).toLocaleString()}
+										{new Date(
+											request.createdAt
+										).toLocaleString()}
 									</p>
 								</div>
 								<div className={styles.actions}>

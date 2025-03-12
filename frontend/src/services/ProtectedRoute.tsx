@@ -1,6 +1,6 @@
 // src/components/ProtectedRoute.tsx
 import { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 interface ProtectedRouteProps {
@@ -8,10 +8,15 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-	const { isAuthenticated } = useAuth();
+	const { isAuthenticated, isLoading } = useAuth();
+	const location = useLocation();
 
+	if (isLoading) {
+		// Show a loading indicator while auth status is being determined
+		return <div>Loading...</div>;
+	}
 	if (!isAuthenticated) {
-		return <Navigate to="/login"  />;
+		return <Navigate to="/login" state={{ from: location }} replace/>;
 	}
 
 	return <>{children}</>;

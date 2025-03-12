@@ -24,11 +24,12 @@ interface FriendState {
 	isLoading: boolean;
 	error: string | null;
 	searchHistory: number[];
+	requests: Request[];
 	getFriend: (x: string) => Promise<void>;
 	setFriend: (x: Friend) => void;
 	getFriends: () => Promise<void>;
 	sendFriendRequest: (s: string) => Promise<void>;
-	fetchRequests: () => Promise<Request[]>;
+	fetchRequests: () => Promise<void>;
 	acceptRequest: (id: string) => Promise<void>;
 	declineRequest: (id: string) => Promise<void>;
 	findUsers: (
@@ -43,6 +44,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 	isLoading: false,
 	error: null,
 	searchHistory: [],
+	requests: [],
 
 	getFriend: async (friendID: string) => {
 		set({ isLoading: true, error: null });
@@ -134,8 +136,9 @@ const useFriendStore = create<FriendState>((set, get) => ({
 			});
 
 			const requests = response.data;
-			return requests;
+			set({ requests });
 		} catch (error) {
+			console.error(error);
 			if (isError(error)) {
 				set({ error: error.message });
 			} else {

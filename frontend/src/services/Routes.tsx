@@ -16,11 +16,19 @@ const routes = createBrowserRouter([
 		children: [
 			{
 				path: "/add",
-				element: <Find />,
+				element: (
+					<ProtectedRoute>
+						<Find />
+					</ProtectedRoute>
+				),
 			},
 			{
 				path: "/requests",
-				element: <Requests />,
+				element: (
+					<ProtectedRoute>
+						<Requests />
+					</ProtectedRoute>
+				),
 			},
 			{
 				path: "/register",

@@ -57,6 +57,8 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				);
 				set(clearAuthState());
 			}
+		} else {
+			set(clearAuthState());
 		}
 		set({
 			isLoading: false,
@@ -80,7 +82,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 	},
 	login: async (email, password) => {
 		try {
-			set({ isLoading: true, isAuthenticated: false });
+			set({ isLoading: true });
 			const response = await api.post("/users/login", {
 				email,
 				password,
@@ -94,48 +96,40 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				accessToken,
 				isAuthenticated: true,
 			});
-			console.log(user);
-		} catch (error: unknown) {
+		} catch (error) {
 			console.error(
 				"login failed",
 				error instanceof Error ? error.message : ""
 			);
-			set({
-				user: undefined,
-				accessToken: undefined,
-				isAuthenticated: false,
-			});
+			set(clearAuthState());
 		} finally {
 			set({ isLoading: false });
 		}
 	},
 	logout: async () => {
 		try {
-			await api.post("/api/users/logout");
+			await api.post("/users/logout");
 		} catch (error) {
 			console.error(
 				"Logout failed:",
 				error instanceof Error ? error.message : ""
 			);
+		} finally {
+			set(clearAuthState());
 		}
-		set(clearAuthState());
 	},
 	refreshAccessToken: async () => {
 		try {
-			set({ isLoading: true });
 			const response = await api.post("/auth/refresh");
 			const { accessToken } = response.data;
-
 			localStorage.setItem("accessToken", accessToken);
-			set({ accessToken, isLoading: false });
-			return accessToken;
+			set({ accessToken});
 		} catch (error) {
 			console.error(
 				"Token refresh failed:",
 				error instanceof Error ? error.message : ""
 			);
 			get().logout();
-			throw error;
 		}
 	},
 }));

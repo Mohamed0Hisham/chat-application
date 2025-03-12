@@ -1,6 +1,6 @@
-import { AtSign, Lock } from "lucide-react";
 import styles from "./Auth.module.css";
-import { Link, useNavigate } from "react-router-dom";
+import { AtSign, Lock } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
@@ -8,8 +8,13 @@ const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
-	const { login, isLoading,isAuthenticated } = useAuth();
+
+	const { login, isLoading, isAuthenticated } = useAuth();
 	const navigate = useNavigate();
+	const location = useLocation();
+
+	// Determine the route the user originally wanted to visit
+	const from = location.state?.from?.pathname || "/dashboard";
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
@@ -22,6 +27,7 @@ const Login = () => {
 
 		try {
 			await login(email, password);
+			navigate(from, { replace: true });
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -33,15 +39,17 @@ const Login = () => {
 
 	useEffect(() => {
 		if (isAuthenticated) {
-			navigate("/dashboard");
+			navigate(from, { replace: true });
 		}
-	}, [isAuthenticated, navigate]);
+	}, [isAuthenticated, navigate, from]);
 
 	return (
 		<section className={styles.containerAuth}>
 			<form className={styles.form} onSubmit={handleSubmit}>
 				<div className={styles.formField}>
-					<label className={styles.label} htmlFor="email">E-mail</label>
+					<label className={styles.label} htmlFor="email">
+						E-mail
+					</label>
 					<div className={styles.inputField}>
 						<AtSign />
 						<input
@@ -55,7 +63,9 @@ const Login = () => {
 					</div>
 				</div>
 				<div className={styles.formField}>
-					<label className={styles.label} htmlFor="password">Password</label>
+					<label className={styles.label} htmlFor="password">
+						Password
+					</label>
 					<div className={styles.inputField}>
 						<Lock />
 						<input
