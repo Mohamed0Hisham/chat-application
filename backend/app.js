@@ -26,6 +26,6 @@ app.use("/api/users", userRoutes);
 app.use("/api/friends", friendRoutes);
 app.use("/api/conversations", isAuthenticated, conversationRoutes);
 app.use("/api/messages", isAuthenticated, messagesRoutes);
-app.post("/api/auth/refresh", isAuthenticated, refreshToken);
+app.post("/api/auth/refresh", refreshToken);
 
 export default app;

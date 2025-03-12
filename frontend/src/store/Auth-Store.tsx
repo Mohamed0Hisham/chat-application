@@ -15,6 +15,16 @@ interface AuthState {
 	refreshAccessToken: () => Promise<void>;
 }
 
+const clearAuthState = () => {
+	localStorage.removeItem("accessToken");
+	localStorage.removeItem("user");
+	return {
+		user: undefined,
+		accessToken: undefined,
+		isAuthenticated: false,
+	};
+};
+
 const useAuthStore = create<AuthState>((set, get) => ({
 	user: undefined,
 	accessToken: undefined,
@@ -41,14 +51,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
 					isAuthenticated: true,
 				});
 			} catch (error) {
-				console.error("check auth method failed", error);
-				set({
-					user: undefined,
-					accessToken: undefined,
-					isAuthenticated: false,
-				});
-				localStorage.removeItem("accessToken");
-				localStorage.removeItem("user");
+				console.error(
+					"check auth method failed",
+					error instanceof Error ? error.message : ""
+				);
+				set(clearAuthState());
 			}
 		}
 		set({
@@ -87,9 +94,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				accessToken,
 				isAuthenticated: true,
 			});
-			console.log(user)
+			console.log(user);
 		} catch (error: unknown) {
-			console.error("login failed", error);
+			console.error(
+				"login failed",
+				error instanceof Error ? error.message : ""
+			);
 			set({
 				user: undefined,
 				accessToken: undefined,
@@ -103,28 +113,27 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		try {
 			await api.post("/api/users/logout");
 		} catch (error) {
-			console.error("Logout failed:", error);
+			console.error(
+				"Logout failed:",
+				error instanceof Error ? error.message : ""
+			);
 		}
-		localStorage.removeItem("accessToken");
-		localStorage.removeItem("user");
-		set({
-			user: undefined,
-			accessToken: undefined,
-			isLoading: false,
-			isAuthenticated: false,
-		});
+		set(clearAuthState());
 	},
 	refreshAccessToken: async () => {
 		try {
 			set({ isLoading: true });
-			const response = await api.post("/api/auth/refresh");
+			const response = await api.post("/auth/refresh");
 			const { accessToken } = response.data;
 
 			localStorage.setItem("accessToken", accessToken);
 			set({ accessToken, isLoading: false });
 			return accessToken;
 		} catch (error) {
-			console.error("Token refresh failed:", error);
+			console.error(
+				"Token refresh failed:",
+				error instanceof Error ? error.message : ""
+			);
 			get().logout();
 			throw error;
 		}
