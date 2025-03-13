@@ -21,7 +21,7 @@ interface AuthState {
 	isInitialized: boolean;
 	checkAuth: () => Promise<void>;
 	register: (a: string, b: string, c: string) => Promise<void>;
-	login: (email: string, password: string) => Promise<void>;
+	login: (email: string, password: string) => Promise<boolean>;
 	logout: () => Promise<void>;
 	refreshAccessToken: () => Promise<void>;
 	getProfile: () => Promise<void>;
@@ -53,6 +53,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				email,
 				password,
 			});
+
+			if (response.data.success === false) {
+				set(clearAuthState());
+				return false;
+			}
+			console.log(response.data.success);
 			const { accessToken } = response.data;
 			localStorage.setItem("accessToken", accessToken);
 
@@ -60,12 +66,14 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				accessToken,
 				isAuthenticated: true,
 			});
+			return true;
 		} catch (error) {
 			console.error(
 				"login failed",
 				error instanceof Error ? error.message : ""
 			);
 			set(clearAuthState());
+			return false;
 		} finally {
 			set({ isLoading: false });
 		}
@@ -130,7 +138,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		set({ isLoggingOut: true });
 		try {
 			await api.post("/users/logout", undefined, {
-				headers: { Authorization: get().accessToken },
+				headers: { Authorization: `Bearer ${get().accessToken}` },
 			});
 			console.error("done");
 		} catch (error) {
@@ -176,7 +184,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			});
 			const Profile: User = response.data.user;
 			localStorage.setItem("user", JSON.stringify(Profile));
-			console.log(Profile);
 			set({ user: Profile });
 		} catch (error) {
 			console.error(

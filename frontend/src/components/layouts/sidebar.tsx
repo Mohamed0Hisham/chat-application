@@ -7,7 +7,8 @@ import useMsgStore from "../../store/chat";
 import axios from "axios";
 
 const Sidebar = () => {
-	const { getFriends, isLoading, setFriend, friends } = useFriendStore();
+	const { isLoading, setFriend, friends } = useFriendStore();
+	const getFriends = useFriendStore((state) => state.getFriends);
 	const { setChat } = useMsgStore();
 	const [searchQuery, setSearchQuery] = useState("");
 
@@ -17,7 +18,6 @@ const Sidebar = () => {
 	);
 
 	useEffect(() => {
-		const controller = new AbortController();
 		const fetchData = async () => {
 			try {
 				await getFriends();
@@ -29,11 +29,6 @@ const Sidebar = () => {
 		};
 
 		fetchData();
-
-		return () => {
-			// Cancel request if component unmounts
-			controller.abort();
-		};
 	}, [getFriends]);
 	return (
 		<div className={s.sidebar}>

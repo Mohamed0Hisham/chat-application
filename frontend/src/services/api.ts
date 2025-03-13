@@ -6,10 +6,17 @@ const api = axios.create({
 	headers: { "Content-Type": "application/json" },
 	withCredentials: true,
 });
+
 api.interceptors.response.use(
 	(response) => response,
 	async (error) => {
-		if (error.response?.status === 401) {
+		// Check if the error is a 401 and specifically for invalid token
+		if (
+			error.response?.status === 401 &&
+			(error.response?.data?.message?.includes("missing token") ||
+				error.response?.data?.message?.includes("Token expired") ||
+				error.response?.data?.message?.includes("Invalid token"))
+		) {
 			const authStore = useAuthStore.getState();
 			try {
 				await authStore.refreshAccessToken();
@@ -25,4 +32,5 @@ api.interceptors.response.use(
 		return Promise.reject(error);
 	}
 );
+
 export default api;

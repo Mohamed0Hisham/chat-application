@@ -82,13 +82,20 @@ const useFriendStore = create<FriendState>((set, get) => ({
 		set({ isLoading: true });
 		// Create new AbortController for this request
 		const controller = new AbortController();
-		set({ abortController: controller }); // 👈 Store it
+		set({ abortController: controller });
 
 		try {
-			const { user, accessToken } = useAuthStore.getState();
-			if (!user) {
+			const { accessToken, isInitialized } = useAuthStore.getState();
+			if (!isInitialized) {
+				console.log("Auth not initialized yet, waiting...");
 				return;
 			}
+
+			if (!accessToken) {
+				console.log("No user or token available");
+				return;
+			}
+
 			const response = await api.get(`/friends/all`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
 				signal: controller.signal,
