@@ -73,7 +73,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		set({ isLoading: true });
 		try {
 			const response = await api.get(`/users/profile`, {
-				headers: { Authorization: get().accessToken },
+				headers: { Authorization: `Bearer ${get().accessToken}` },
 			});
 			const Profile: User = response.data.user;
 			localStorage.setItem("user", JSON.stringify(Profile));
@@ -91,7 +91,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		set({ isLoading: true });
 		try {
 			const response = await api.put(`/users/profile/update`, update, {
-				headers: { Authorization: get().accessToken },
+				headers: { Authorization: `Bearer ${get().accessToken}` },
 			});
 			const Profile: User = response.data.user;
 			localStorage.setItem("user", JSON.stringify(Profile));

@@ -10,7 +10,12 @@ const Dashboard = () => {
 
 	useEffect(() => {
 		(async () => {
-			await getProfile();
+			try {
+				await getProfile();
+				
+			} catch (error) {
+				console.error("failed at dashboard", error.message)
+			}
 		})();
 	}, [getProfile]);
 	
