@@ -2,6 +2,14 @@ import { Schema, model } from "mongoose";
 
 const ConversationSchema = new Schema(
 	{
+		name: {
+			type: String,
+			default: "",
+		},
+		avatar: {
+			type: String,
+			avatar: "",
+		},
 		participants: {
 			type: [Schema.Types.ObjectId],
 			ref: "User",
