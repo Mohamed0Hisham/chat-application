@@ -38,10 +38,10 @@ const EditableField: React.FC<EditableFieldProps> = ({
 						value={editedValue}
 						onChange={(e) => setEditedValue(e.target.value)}
 					/>
-					<button disabled={isSaving} onClick={handleSave}>
+					<button className={styles.button} disabled={isSaving} onClick={handleSave}>
 						Save
 					</button>
-					<button disabled={isSaving} onClick={handleCancel}>
+					<button className={styles.button} disabled={isSaving} onClick={handleCancel}>
 						Cancel
 					</button>
 				</div>

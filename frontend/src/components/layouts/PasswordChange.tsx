@@ -52,7 +52,7 @@ const PasswordChange: React.FC<PasswordChangeProps> = ({ onChange }) => {
 					onChange={(e) => setConfirmPassword(e.target.value)}
 				/>
 			</div>
-			<button type="submit">Change Password</button>
+			<button className={styles.button} type="submit">Change Password</button>
 		</form>
 	);
 };
