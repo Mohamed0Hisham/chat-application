@@ -38,6 +38,11 @@ const userSchema = new Schema(
 			ref: "User",
 			default: [],
 		},
+		groups: {
+			type: [Schema.Types.ObjectId],
+			ref: "conversation",
+			default: [],
+		},
 	},
 	{ timestamps: true }
 );
