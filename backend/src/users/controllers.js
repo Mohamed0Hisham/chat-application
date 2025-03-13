@@ -171,7 +171,7 @@ export const login = async (req, res) => {
 	}
 };
 export const logout = async (req, res) => {
-	// const userId = req.user._id; 
+	// const userId = req.user._id;
 
 	// await invalidateRefreshToken(userId);
 
@@ -188,19 +188,21 @@ export const logout = async (req, res) => {
 
 export const fetchProfile = async (req, res) => {
 	try {
-		const { userID } = req.params;
-		if (validator.isMongoId(userID) == false) {
-			return res.status(400).json({
-				success: false,
-				error: "invalid credentials",
-			});
-		}
+		const userID = req.user._id;
 		const user = await User.findById(userID, {
-			_id: 1,
-			fullname: 1,
-			email: 1,
-			friends: 1,
-		}).lean();
+			__v: 0,
+			updatedAt: 0,
+		})
+			.populate({
+				path: "friends",
+				select: "fullname email avatar isOnline",
+			})
+			.populate({
+				path: "groups",
+				select: "name avatar",
+			})
+			.lean();
+
 		if (!user) {
 			return res.status(400).json({
 				success: false,
@@ -211,7 +213,7 @@ export const fetchProfile = async (req, res) => {
 		return res.status(200).json({
 			success: true,
 			message: "user profile fetched",
-			data: user,
+			user,
 		});
 	} catch (error) {
 		return res.status(500).json({
@@ -220,20 +222,13 @@ export const fetchProfile = async (req, res) => {
 		});
 	}
 };
+
 export const updateProfile = async (req, res) => {
 	try {
 		if (!req.body) {
 			return res.status(400).json({
 				success: false,
 				error: "invalid operation",
-			});
-		}
-
-		const { userID } = req.params;
-		if (validator.isMongoId(userID) == false) {
-			return res.status(400).json({
-				success: false,
-				error: "invalid credentials",
 			});
 		}
 
@@ -248,6 +243,7 @@ export const updateProfile = async (req, res) => {
 			req.body.password = hashedPassword;
 		}
 
+		const userID = req.user._id;
 		const result = await User.findByIdAndUpdate(userID, req.body, {
 			new: true,
 		});
