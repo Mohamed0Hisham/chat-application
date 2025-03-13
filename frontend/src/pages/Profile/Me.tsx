@@ -18,7 +18,7 @@ import useAuthStore from "../../store/Auth-Store";
 // };
 
 const Me: React.FC = () => {
-	const { user } = useAuthStore();
+	const { user, updateProfile } = useAuthStore();
 	const [fullName, setFullName] = useState(user?.fullname);
 	const [email, setEmail] = useState("");
 

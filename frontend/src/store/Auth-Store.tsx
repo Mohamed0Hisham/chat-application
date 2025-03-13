@@ -24,6 +24,7 @@ interface AuthState {
 	logout: () => Promise<void>;
 	refreshAccessToken: () => Promise<void>;
 	getProfile: () => Promise<void>;
+	updateProfile: (update: object) => Promise<void>;
 }
 
 const clearAuthState = () => {
@@ -52,7 +53,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			});
 			const { accessToken } = response.data;
 			localStorage.setItem("accessToken", accessToken);
-			
+
 			set({
 				accessToken,
 				isAuthenticated: true,
@@ -72,6 +73,24 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		set({ isLoading: true });
 		try {
 			const response = await api.get(`/users/profile`, {
+				headers: { Authorization: get().accessToken },
+			});
+			const Profile: User = response.data.user;
+			localStorage.setItem("user", JSON.stringify(Profile));
+			set({ user: Profile });
+		} catch (error) {
+			console.error(
+				"failed to fetch user profile",
+				error instanceof Error ? error.message : ""
+			);
+		} finally {
+			set({ isLoading: false });
+		}
+	},
+	updateProfile: async (update: object) => {
+		set({ isLoading: true });
+		try {
+			const response = await api.put(`/users/profile/update`, update, {
 				headers: { Authorization: get().accessToken },
 			});
 			const Profile: User = response.data.user;
