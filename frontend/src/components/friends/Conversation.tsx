@@ -19,6 +19,7 @@ const Conversation: FC = () => {
 		if (!content.trim() || !user || isSending) return;
 		setIsSending(true);
 		const tempId = Date.now().toString();
+		
 		useMsgStore.setState((state) => ({
 			messages: [
 				...state.messages,
@@ -43,7 +44,7 @@ const Conversation: FC = () => {
 		}
 	};
 
-	const handleEmojiClick = (emoji) => {
+	const handleEmojiClick = (emoji: { emoji: string }) => {
 		setContent((prev) => prev + emoji.emoji);
 	};
 

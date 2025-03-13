@@ -173,7 +173,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				"Token refresh failed:",
 				error instanceof Error ? error.message : ""
 			);
-			get().logout();
+			// get().logout();
 		}
 	},
 	getProfile: async () => {
