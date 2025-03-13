@@ -2,7 +2,15 @@ import { create } from "zustand";
 import api from "../services/api";
 import useFriendStore from "./friend";
 
-type User = { _id: string; fullname: string; email: string };
+type User = {
+	_id: string;
+	fullname: string;
+	email: string;
+	avatar: string | null;
+	joinDate: Date | null;
+	friendsCount: number | null;
+	groupsCount: number | null;
+};
 
 interface AuthState {
 	user?: User;
@@ -15,6 +23,7 @@ interface AuthState {
 	login: (email: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;
 	refreshAccessToken: () => Promise<void>;
+	getProfile: () => Promise<void>;
 }
 
 const clearAuthState = () => {
@@ -34,6 +43,49 @@ const useAuthStore = create<AuthState>((set, get) => ({
 	isAuthenticated: false,
 	isLoggingOut: false,
 
+	login: async (email, password) => {
+		try {
+			set({ isLoading: true });
+			const response = await api.post("/users/login", {
+				email,
+				password,
+			});
+			const { accessToken } = response.data;
+			localStorage.setItem("accessToken", accessToken);
+			
+			set({
+				accessToken,
+				isAuthenticated: true,
+			});
+		} catch (error) {
+			console.error(
+				"login failed",
+				error instanceof Error ? error.message : ""
+			);
+			set(clearAuthState());
+		} finally {
+			set({ isLoading: false });
+		}
+	},
+
+	getProfile: async () => {
+		set({ isLoading: true });
+		try {
+			const response = await api.get(`/users/profile`, {
+				headers: { Authorization: get().accessToken },
+			});
+			const Profile: User = response.data.user;
+			localStorage.setItem("user", JSON.stringify(Profile));
+			set({ user: Profile });
+		} catch (error) {
+			console.error(
+				"failed to fetch user profile",
+				error instanceof Error ? error.message : ""
+			);
+		} finally {
+			set({ isLoading: false });
+		}
+	},
 	checkAuth: async () => {
 		set({
 			isLoading: true,
@@ -81,32 +133,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			});
 		}
 	},
-	login: async (email, password) => {
-		try {
-			set({ isLoading: true });
-			const response = await api.post("/users/login", {
-				email,
-				password,
-			});
-			const { accessToken, user } = response.data;
 
-			localStorage.setItem("accessToken", accessToken);
-			localStorage.setItem("user", JSON.stringify(user));
-			set({
-				user: user,
-				accessToken,
-				isAuthenticated: true,
-			});
-		} catch (error) {
-			console.error(
-				"login failed",
-				error instanceof Error ? error.message : ""
-			);
-			set(clearAuthState());
-		} finally {
-			set({ isLoading: false });
-		}
-	},
 	logout: async () => {
 		set({ isLoggingOut: true });
 		try {

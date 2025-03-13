@@ -189,31 +189,34 @@ export const logout = async (req, res) => {
 export const fetchProfile = async (req, res) => {
 	try {
 		const userID = req.user._id;
+
+		// Fetch the user document
 		const user = await User.findById(userID, {
 			__v: 0,
 			updatedAt: 0,
-		})
-			.populate({
-				path: "friends",
-				select: "fullname email avatar isOnline",
-			})
-			.populate({
-				path: "groups",
-				select: "name avatar",
-			})
-			.lean();
+			password: 0, // Exclude the password field
+		}).lean();
 
 		if (!user) {
 			return res.status(400).json({
 				success: false,
-				error: "user not found",
+				error: "User not found",
 			});
 		}
 
+		const formattedUser = {
+			avatar: user.avatar,
+			fullName: user.fullname,
+			email: user.email,
+			joinDate: user.createdAt,
+			friendsCount: user.friends ? user.friends.length : 0,
+			groupsCount: user.groups ? user.groups.length : 0,
+		};
+
 		return res.status(200).json({
 			success: true,
-			message: "user profile fetched",
-			user,
+			message: "User profile fetched",
+			user: formattedUser,
 		});
 	} catch (error) {
 		return res.status(500).json({
