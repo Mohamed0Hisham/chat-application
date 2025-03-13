@@ -12,12 +12,12 @@ import {
 
 const router = express.Router();
 
-router.get("/all", isAuthenticated, fetchFriends);
-router.get("/requests", isAuthenticated, fetchRequests);
-router.post("/accept", isAuthenticated, acceptFriend);
-router.post("/decline", isAuthenticated, declineFriend);
-router.post("/request/:friendID", isAuthenticated, sendFriendRequest);
-router.get("/:userID/friends/:friendID", isAuthenticated, fetchFriend);
-router.delete("/:userID/friends/:friendID", isAuthenticated, deleteFriend);
+router.get("/all", fetchFriends);
+router.get("/requests", fetchRequests);
+router.post("/accept", acceptFriend);
+router.post("/decline", declineFriend);
+router.post("/request/:friendID", sendFriendRequest);
+router.get("/:userID/friends/:friendID", fetchFriend);
+router.delete("/:userID/friends/:friendID", deleteFriend);
 
 export default router;
