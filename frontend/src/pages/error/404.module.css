@@ -1,0 +1,18 @@
+.containerE {
+	width: 80dvw;
+	height: 80dvh;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: center;
+	text-align: center;
+}
+.h1 {
+	font-size: 68px;
+}
+.h2 {
+	font-size: 48px;
+}
+.p {
+	font-size: 24px;
+	font-style: italic;
+}

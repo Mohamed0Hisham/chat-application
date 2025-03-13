@@ -1,0 +1,39 @@
+.inputContainer {
+	flex: 1;
+	padding: 0.5rem;
+}
+
+.textarea {
+	width: 100%;
+	min-height: 40px;
+	max-height: 150px;
+	padding: 0.75rem 1rem;
+	border: 1px solid #ddd;
+	border-radius: 20px;
+	font-size: 1rem;
+	font-weight: 500;
+	resize: none;
+	overflow-y: auto;
+	background: #f9f9f9;
+	transition: all 0.2s ease;
+	font-family: "Inter", sans-serif;
+}
+
+.textarea:focus {
+	outline: none;
+	border-color: #007bff;
+	background: #fff;
+}
+
+.textarea::placeholder {
+	color: #888;
+	font-weight: 500;
+}
+
+@media (min-width: 2559px) {
+	.textarea {
+		font-size: 1.2rem;
+		min-height: 60px;
+		padding: 1rem 1.5rem;
+	}
+}

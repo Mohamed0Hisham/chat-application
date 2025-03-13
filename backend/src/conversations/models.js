@@ -2,6 +2,14 @@ import { Schema, model } from "mongoose";
 
 const ConversationSchema = new Schema(
 	{
+		name: {
+			type: String,
+			default: "",
+		},
+		avatar: {
+			type: String,
+			avatar: "",
+		},
 		participants: {
 			type: [Schema.Types.ObjectId],
 			ref: "User",
@@ -15,6 +23,6 @@ const ConversationSchema = new Schema(
 	},
 	{ timestamps: true }
 );
-
+ConversationSchema.index({ participants: 1 }, { unique: true });
 const Conversation = model("conversation", ConversationSchema);
 export default Conversation;

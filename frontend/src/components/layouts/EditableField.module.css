@@ -1,0 +1,66 @@
+.field {
+	margin-bottom: 1.5rem;
+}
+
+.field label {
+	font-weight: 600;
+	color: #334155;
+}
+
+.viewMode,
+.editMode {
+	display: flex;
+	align-items: center;
+	margin-top: 0.5rem;
+}
+
+.viewMode span {
+	flex: 1;
+	font-size: 1.1rem;
+	color: #1e293b;
+}
+
+.editMode input {
+	flex: 1;
+	padding: 8px;
+	border: 1px solid #e2e8f0;
+	border-radius: 5px;
+	margin-right: 1rem;
+}
+
+.button {
+	padding: 6px 12px;
+	font-size: 0.9rem;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.viewMode button {
+	background: #6366f1;
+	color: white;
+}
+
+.viewMode button:hover {
+	background: #4f46e5;
+}
+
+.editMode button:first-of-type {
+	background: #10b981;
+	color: white;
+	margin-right: 0.5rem;
+}
+
+.editMode button:first-of-type:hover {
+	background: #059669;
+}
+
+.editMode button:last-of-type {
+	background: #ef4444;
+	color: white;
+}
+
+.editMode button:last-of-type:hover {
+	background: #dc2626;
+}

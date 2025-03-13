@@ -95,7 +95,7 @@ export const fetchMsgs = async (req, res) => {
 		}
 
 		const messages = await Msg.find({ chatID })
-			.select("content createdAt senderID")
+			.select("content createdAt senderID receiverID")
 			.sort({ createdAt: -1 })
 			.skip(skip)
 			.limit(limit)
@@ -105,7 +105,7 @@ export const fetchMsgs = async (req, res) => {
 		return res.status(200).json({
 			success: true,
 			message: "Messages fetched",
-			data: messages,
+			messages,
 			pagination: {
 				currentPage: page,
 				totalPages: Math.ceil(totalMessages / limit),
