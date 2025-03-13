@@ -77,7 +77,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			});
 			const Profile: User = response.data.user;
 			localStorage.setItem("user", JSON.stringify(Profile));
-			console.log(Profile)
+			console.log(Profile);
 			set({ user: Profile });
 		} catch (error) {
 			console.error(
@@ -110,18 +110,20 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		set({
 			isLoading: true,
 		});
-
 		const token = localStorage.getItem("accessToken");
 		const userString = localStorage.getItem("user");
 
-		if (token && userString) {
+		if (!token || !userString) {
+			set(clearAuthState());
+			return;
+		}
+
 			try {
-				const storedUser = JSON.parse(userString);
-				const response = await api.get(`/users/${storedUser._id}`, {
+				const response = await api.get(`/users/profile`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
 				set({
-					user: response.data.data,
+					user: response.data.user,
 					accessToken: token,
 					isAuthenticated: true,
 				});
@@ -132,7 +134,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				);
 				set(clearAuthState());
 			}
-		}
 		set({
 			isLoading: false,
 		});
