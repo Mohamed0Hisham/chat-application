@@ -7,7 +7,7 @@ type User = {
 	fullname: string;
 	email: string;
 	avatar: string | null;
-	joinDate: Date | null;
+	joinDate: Date;
 	friendsCount: number | null;
 	groupsCount: number | null;
 };

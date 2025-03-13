@@ -7,36 +7,53 @@ import StatsDisplay from "../../components/layouts/StatsDisplay";
 import MembershipDisplay from "../../components/layouts/Membership";
 import useAuthStore from "../../store/Auth-Store";
 
-// Sample user data (replace with real data from your backend or context)
-// const user = {
-// 	avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-// 	fullName: "John Doe",
-// 	email: "john@example.com",
-// 	joinDate: new Date("2020-01-01"),
-// 	friendsCount: 150,
-// 	groupsCount: 5,
-// };
 
 const Me: React.FC = () => {
 	const { user, updateProfile } = useAuthStore();
-	const [fullName, setFullName] = useState(user?.fullname);
-	const [email, setEmail] = useState("");
 
-	const handleSaveFullName = (newValue: string) => {
-		setFullName(newValue);
-		// Here, you would typically update the backend
-		console.log("Updated full name:", newValue);
+	const [fullName, setFullName] = useState(user?.fullname || "");
+	const [email, setEmail] = useState(user?.email || "");
+	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState<string | null>(null);
+
+	const handleSaveFullName = async (newValue: string) => {
+		try {
+			setError(null);
+			setSuccess(null);
+			await updateProfile({ fullname: newValue });
+			setFullName(newValue); // Sync local state with update
+			setSuccess("Full name updated successfully!");
+		} catch (err) {
+			setError("Failed to update full name. Please try again.");
+			console.error("Full name update error:", err);
+		}
 	};
 
-	const handleSaveEmail = (newValue: string) => {
-		setEmail(newValue);
-		// Here, you would typically update the backend
-		console.log("Updated email:", newValue);
+	// Handle email update
+	const handleSaveEmail = async (newValue: string) => {
+		try {
+			setError(null);
+			setSuccess(null);
+			await updateProfile({ email: newValue });
+			setEmail(newValue); // Sync local state with update
+			setSuccess("Email updated successfully!");
+		} catch (err) {
+			setError("Failed to update email. Please try again.");
+			console.error("Email update error:", err);
+		}
 	};
 
-	const handlePasswordChange = (newPassword: string) => {
-		// Here, you would typically send the new password to the backend
-		console.log("Password changed to:", newPassword);
+	// Handle password update
+	const handlePasswordChange = async (newPassword: string) => {
+		try {
+			setError(null);
+			setSuccess(null);
+			await updateProfile({ password: newPassword });
+			setSuccess("Password changed successfully!");
+		} catch (err) {
+			setError("Failed to change password. Please try again.");
+			console.error("Password update error:", err);
+		}
 	};
 
 	return (
@@ -48,11 +65,15 @@ const Me: React.FC = () => {
 						<h1>{user.fullname}</h1>
 					</header>
 					<div className={styles.content}>
+						{/* Display feedback messages */}
+						{error && <p className={styles.error}>{error}</p>}
+						{success && <p className={styles.success}>{success}</p>}
+
 						<section className={styles.personalInfo}>
 							<h2>Personal Information</h2>
 							<EditableField
 								label="Full Name"
-								value={fullName ? fullName : user.fullname}
+								value={fullName}
 								onSave={handleSaveFullName}
 							/>
 							<EditableField
@@ -66,11 +87,13 @@ const Me: React.FC = () => {
 							<h2>Social Stats</h2>
 							<StatsDisplay
 								label="Friends"
-								count={user.friendsCount}
+								count={
+									user.friendsCount ? user.friendsCount : 0
+								}
 							/>
 							<StatsDisplay
 								label="Groups"
-								count={user.groupsCount}
+								count={user.groupsCount ? user.groupsCount : 0}
 							/>
 						</section>
 						<section className={styles.membership}>
@@ -79,7 +102,7 @@ const Me: React.FC = () => {
 					</div>
 				</>
 			) : (
-				<div>Loading..</div>
+				<div>Loading...</div>
 			)}
 		</section>
 	);
