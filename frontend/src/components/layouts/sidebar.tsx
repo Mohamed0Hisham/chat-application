@@ -56,7 +56,6 @@ const Sidebar = () => {
 								className={s.user}
 								onClick={() => {
 									(async () => {
-										console.log(user);
 										await setChat(user._id);
 										setFriend(user);
 									})();

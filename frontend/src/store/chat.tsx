@@ -12,7 +12,7 @@ interface ChatState {
 	messages: Msg[];
 	isLoading: boolean;
 	chat: string;
-	getMsgsOfChat: (x: string) => Promise<Msg[] | undefined>;
+	getMsgsOfChat: (id: string) => Promise<void>;
 	setChat: (id: string) => Promise<void>;
 }
 
@@ -25,14 +25,20 @@ const useMsgStore = create<ChatState>((set) => ({
 		const { accessToken } = useAuthStore.getState();
 		try {
 			set({ isLoading: true });
-			const msgs: Msg[] = await api.get(`/messages/${chatID}`, {
+			const response = await api.get(`/messages/chat/${chatID}`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
 			});
+
+			if (response.data.success === false)
+				throw new Error(response.data.message);
+
+			const msgs: Msg[] = response.data.messages;
 			set({ messages: msgs, isLoading: false });
-			return msgs;
 		} catch (error) {
-			console.log(error);
-			set({ isLoading: false });
+			console.log(
+				error instanceof Error ? error.message : "unknown error"
+			);
+			set({ isLoading: false, messages: [] });
 		}
 	},
 	setChat: async (id) => {
@@ -45,11 +51,16 @@ const useMsgStore = create<ChatState>((set) => ({
 					headers: { Authorization: `Bearer ${accessToken}` },
 				}
 			);
-			console.log(response.data);
+
+			if (response.data.success === false)
+				throw new Error(response.data.message);
+
 			const { chat } = response.data;
 			set({ chat, isLoading: false });
 		} catch (error) {
-			console.log(error);
+			console.log(
+				error instanceof Error ? error.message : "unknown error"
+			);
 			set({ isLoading: false });
 		}
 	},

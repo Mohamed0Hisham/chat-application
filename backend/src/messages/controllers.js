@@ -105,7 +105,7 @@ export const fetchMsgs = async (req, res) => {
 		return res.status(200).json({
 			success: true,
 			message: "Messages fetched",
-			data: messages,
+			messages,
 			pagination: {
 				currentPage: page,
 				totalPages: Math.ceil(totalMessages / limit),
