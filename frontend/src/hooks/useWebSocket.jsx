@@ -12,9 +12,15 @@ function useWebSocket(url, options = {}) {
 	const [isConnected, setIsConnected] = useState(false);
 	const [lastMessage, setLastMessage] = useState(null);
 	const websocketRef = useRef(null);
+	const isManualClose = useRef(false);
 	const reconnectTimeout = useRef(null);
 
 	const connect = useCallback(() => {
+		isManualClose.current = false;
+		if (websocketRef.current) {
+			websocketRef.current.close();
+		}
+
 		websocketRef.current = new WebSocket(url);
 
 		websocketRef.current.onopen = (event) => {
@@ -22,11 +28,14 @@ function useWebSocket(url, options = {}) {
 			onOpen && onOpen(event);
 		};
 
-		websocketRef.current.onmessage = (event) => {
-			setLastMessage(event.data);
-			onMessage && onMessage(event);
+		websocketRef.current.onmessage = async (event) => {
+			const message =
+				event.data instanceof Blob
+					? await event.data.arrayBuffer()
+					: event.data;
+			setLastMessage(message);
+			onMessage && onMessage(message);
 		};
-
 		websocketRef.current.onerror = (event) => {
 			onError && onError(event);
 		};
@@ -34,7 +43,7 @@ function useWebSocket(url, options = {}) {
 		websocketRef.current.onclose = (event) => {
 			setIsConnected(false);
 			onClose && onClose(event);
-			if (reconnect) {
+			if (reconnect && !isManualClose.current) {
 				reconnectTimeout.current = setTimeout(
 					connect,
 					reconnectInterval
@@ -53,7 +62,11 @@ function useWebSocket(url, options = {}) {
 
 	const sendMessage = useCallback(
 		(message) => {
-			if (isConnected && websocketRef.current) {
+			if (
+				isConnected &&
+				websocketRef.current &&
+				websocketRef.current?.readyState === WebSocket.OPEN
+			) {
 				websocketRef.current.send(message);
 			}
 		},
@@ -64,10 +77,13 @@ function useWebSocket(url, options = {}) {
 		connect();
 
 		return () => {
+			isManualClose.current = true;
 			if (websocketRef.current) {
 				websocketRef.current.close();
 			}
-			clearTimeout(reconnectTimeout.current);
+			if (reconnectTimeout.current) {
+				clearTimeout(reconnectTimeout.current);
+			}
 		};
 	}, [connect]);
 

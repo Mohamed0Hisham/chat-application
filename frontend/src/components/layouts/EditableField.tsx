@@ -48,7 +48,7 @@ const EditableField: React.FC<EditableFieldProps> = ({
 			) : (
 				<div className={styles.viewMode}>
 					<span>{value}</span>
-					<button onClick={handleEdit}>Edit</button>
+					<button className={styles.button} onClick={handleEdit}>Edit</button>
 				</div>
 			)}
 		</div>
