@@ -47,10 +47,12 @@ const Options = () => {
 					add
 				</li>
 			</Link>
-			<li aria-label="My profile">
-				<User className={styles.icon} />
-				me
-			</li>
+			<Link to={"/profile"} className={styles.link}>
+				<li aria-label="My profile">
+					<User className={styles.icon} />
+					me
+				</li>
+			</Link>
 			<li aria-label="My profile" onClick={handleLogout}>
 				<LogOut className={styles.icon} />
 				Logout

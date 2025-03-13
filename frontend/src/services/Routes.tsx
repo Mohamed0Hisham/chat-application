@@ -7,6 +7,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../pages/Chat/Dashboard";
 import Find from "../pages/Friends/Find";
 import Requests from "../pages/Friends/Requests";
+import Me from "../pages/Profile/Me";
 
 const routes = createBrowserRouter([
 	{
@@ -14,6 +15,14 @@ const routes = createBrowserRouter([
 		element: <App />,
 		errorElement: <NotFound />,
 		children: [
+			{
+				path: "/profile",
+				element: (
+					<ProtectedRoute>
+						<Me />
+					</ProtectedRoute>
+				),
+			},
 			{
 				path: "/add",
 				element: (

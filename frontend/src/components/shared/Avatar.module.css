@@ -1,0 +1,30 @@
+.avatarContainer {
+	position: relative;
+	display: inline-block;
+}
+
+.avatar {
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	object-fit: cover;
+	border: 3px solid #e0e7ff;
+	transition: transform 0.3s ease;
+}
+
+.avatar:hover {
+	transform: scale(1.05);
+}
+
+.uploadButton {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 5px 10px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 0.9rem;
+	color: #6366f1;
+}
