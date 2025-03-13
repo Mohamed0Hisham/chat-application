@@ -5,12 +5,14 @@ interface EditableFieldProps {
 	label: string;
 	value: string;
 	onSave: (newValue: string) => void;
+	isSaving: boolean;
 }
 
 const EditableField: React.FC<EditableFieldProps> = ({
 	label,
 	value,
 	onSave,
+	isSaving = false,
 }) => {
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedValue, setEditedValue] = useState(value);
@@ -31,12 +33,17 @@ const EditableField: React.FC<EditableFieldProps> = ({
 			{isEditing ? (
 				<div className={styles.editMode}>
 					<input
+						disabled={isSaving}
 						type="text"
 						value={editedValue}
 						onChange={(e) => setEditedValue(e.target.value)}
 					/>
-					<button onClick={handleSave}>Save</button>
-					<button onClick={handleCancel}>Cancel</button>
+					<button disabled={isSaving} onClick={handleSave}>
+						Save
+					</button>
+					<button disabled={isSaving} onClick={handleCancel}>
+						Cancel
+					</button>
 				</div>
 			) : (
 				<div className={styles.viewMode}>

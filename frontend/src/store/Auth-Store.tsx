@@ -198,10 +198,9 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			localStorage.setItem("user", JSON.stringify(Profile));
 			set({ user: Profile });
 		} catch (error) {
-			console.error(
-				"failed to fetch user profile",
-				error instanceof Error ? error.message : ""
-			);
+			const message =
+				error instanceof Error ? error.message : "Update failed";
+			throw new Error(message);
 		} finally {
 			set({ isLoading: false });
 		}

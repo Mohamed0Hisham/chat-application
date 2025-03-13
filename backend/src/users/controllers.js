@@ -228,6 +228,8 @@ export const fetchProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
 	try {
+		const { password, ...rest } = req.body;
+
 		if (!req.body) {
 			return res.status(400).json({
 				success: false,
@@ -235,38 +237,48 @@ export const updateProfile = async (req, res) => {
 			});
 		}
 
-		if (req.body.password) {
-			if (validator.isLength(password, { min: 6 }) == false) {
+		if (password && password.length > 0) {
+			if (validator.isLength(password, { min: 6 }) === false) {
 				return res.status(400).json({
 					success: false,
-					error: "invalid operation",
+					error: "Password must be at least 6 characters long",
 				});
 			}
-			const hashedPassword = bcryptjs.hash(password, SALT);
+			const hashedPassword = await bcryptjs.hash(password, SALT);
 			req.body.password = hashedPassword;
 		}
 
 		const userID = req.user._id;
 		const result = await User.findByIdAndUpdate(userID, req.body, {
 			new: true,
-		});
+		}).lean();
+
 		if (!result) {
 			return res.status(400).json({
 				success: false,
-				error: "invalid operation",
+				error: "User not found",
 			});
 		}
 
-		const { password, ...rest } = result._doc;
+		const formattedUser = {
+			avatar: result.avatar,
+			fullname: result.fullname,
+			email: result.email,
+			joinDate: result.createdAt,
+			friendsCount: result.friends ? result.friends.length : 0,
+			groupsCount: result.groups ? result.groups.length : 0,
+		};
+
 		return res.status(200).json({
 			success: true,
-			message: "user profile updated",
-			data: rest,
+			message: "User profile updated",
+			user: formattedUser,
 		});
 	} catch (error) {
+		console.error("Update Profile Error:", error);
 		return res.status(500).json({
 			success: false,
-			error: error.message,
+			error: error.message || "Internal server error",
 		});
 	}
 };

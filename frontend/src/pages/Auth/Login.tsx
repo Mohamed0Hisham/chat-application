@@ -14,7 +14,6 @@ const Login = () => {
 		isAuthenticated,
 		login,
 		getProfile,
-		checkAuth,
 		isInitialized,
 	} = useAuthStore();
 	const navigate = useNavigate();
@@ -49,7 +48,7 @@ const Login = () => {
 		if (isAuthenticated) {
 			navigate(from, { replace: true });
 		}
-	}, [isAuthenticated, navigate, from, checkAuth]);
+	}, [isAuthenticated, navigate, from]);
 	
 	// Show loading until auth state is determined
 	if (!isInitialized) return <div>Loading...</div>;

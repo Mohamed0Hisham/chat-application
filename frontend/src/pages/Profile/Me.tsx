@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./me.module.css";
 import Avatar from "../../components/shared/Avatar";
 import EditableField from "../../components/layouts/EditableField";
@@ -7,9 +7,8 @@ import StatsDisplay from "../../components/layouts/StatsDisplay";
 import MembershipDisplay from "../../components/layouts/Membership";
 import useAuthStore from "../../store/Auth-Store";
 
-
 const Me: React.FC = () => {
-	const { user, updateProfile } = useAuthStore();
+	const { user, updateProfile, isLoading } = useAuthStore();
 
 	const [fullName, setFullName] = useState(user?.fullname || "");
 	const [email, setEmail] = useState(user?.email || "");
@@ -45,6 +44,10 @@ const Me: React.FC = () => {
 
 	// Handle password update
 	const handlePasswordChange = async (newPassword: string) => {
+		if (newPassword.length < 6) {
+			setError("Password must be at least 6 characters");
+			return;
+		}
 		try {
 			setError(null);
 			setSuccess(null);
@@ -55,7 +58,18 @@ const Me: React.FC = () => {
 			console.error("Password update error:", err);
 		}
 	};
+	// Todo Later
+	// const handleAvatarUpdate = async (file: File) => {
+	// 	const formData = new FormData();
+	// 	formData.append("avatar", file);
+	// 	await updateProfile(formData);
+	// };
 
+	useEffect(() => {
+		setFullName(user?.fullname || "");
+		setEmail(user?.email || "");
+		console.log(user);
+	}, [user]);
 	return (
 		<section className={styles.container}>
 			{user ? (
@@ -72,11 +86,13 @@ const Me: React.FC = () => {
 						<section className={styles.personalInfo}>
 							<h2>Personal Information</h2>
 							<EditableField
+								isSaving={isLoading}
 								label="Full Name"
 								value={fullName}
 								onSave={handleSaveFullName}
 							/>
 							<EditableField
+								isSaving={isLoading}
 								label="Email"
 								value={email}
 								onSave={handleSaveEmail}
