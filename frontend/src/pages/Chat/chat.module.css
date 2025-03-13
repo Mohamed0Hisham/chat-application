@@ -1,10 +1,22 @@
-@media (max-width: 801px) {
-	.chat {
-		display: none;
-	}
+.chat {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	background: #f6f8fc;
+	font-family: "Inter", sans-serif; /* Modern sans-serif font */
 }
 
-.chat {
+.noFriendSelected {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	height: 100%;
-	overflow-y: auto;
+	font-size: 1.2rem;
+	color: #666;
+}
+
+@media (max-width: 801px) {
+	.chat {
+		display: none; /* Hide on small screens as per original */
+	}
 }

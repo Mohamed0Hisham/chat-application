@@ -52,7 +52,7 @@
 	.searchField {
 		height: 3rem;
 	}
-	
+
 	.searchIn {
 		padding-left: 20px;
 		font-size: 1rem;
@@ -150,6 +150,8 @@
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	cursor: pointer;
+	text-decoration: none;
+	color: #1e293b;
 }
 
 .user:hover {
@@ -180,11 +182,11 @@
 	height: 16px;
 	border-radius: 50%;
 }
-.green{
+.green {
 	background: #39ff14;
 }
-.red{
-background: #ff0800;
+.red {
+	background: #ff0800;
 }
 @media (max-width: 501px) {
 	.user {
@@ -197,7 +199,7 @@ background: #ff0800;
 	.avatar {
 		width: 3rem;
 		height: 3rem;
-		margin: 0 0.5rem 0 0.25rem ;
+		margin: 0 0.5rem 0 0.25rem;
 	}
 }
 /* Responsive adjustments */
@@ -214,7 +216,6 @@ background: #ff0800;
 }
 
 @media (min-width: 2000px) {
-
 	.user {
 		padding: 2rem;
 		margin-bottom: 1.5rem;

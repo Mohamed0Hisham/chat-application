@@ -5,6 +5,7 @@ import useFriendStore from "../../store/friend";
 import { useEffect, useState } from "react";
 import useMsgStore from "../../store/chat";
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
 	const { isLoading, setFriend, friends } = useFriendStore();
@@ -49,7 +50,8 @@ const Sidebar = () => {
 				{!isLoading &&
 					filteredFriends.map((user) => {
 						return (
-							<li
+							<Link
+								to={"/chat"}
 								key={user._id}
 								className={s.user}
 								onClick={() => {
@@ -76,7 +78,7 @@ const Sidebar = () => {
 										<div className={s.red}></div>
 									)}
 								</div>
-							</li>
+							</Link>
 						);
 					})}
 			</ul>

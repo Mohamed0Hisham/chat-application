@@ -9,7 +9,9 @@ const Chat = () => {
 			{friend ? (
 				<Conversation />
 			) : (
-				<p>select a friend to start conversation</p>
+				<div className={styles.noFriendSelected}>
+					<p>Select a friend to start a conversation</p>
+				</div>
 			)}
 		</main>
 	);

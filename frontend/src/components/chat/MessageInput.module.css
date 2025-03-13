@@ -1,44 +1,39 @@
-/* MessageInput.module.css */
 .inputContainer {
-	width: 100%;
-	padding: 10px;
+	flex: 1;
+	padding: 0.5rem;
 }
 
 .textarea {
 	width: 100%;
-	min-height: 50px;
-	max-height: 200px; /* Maximum height before scrolling */
-	padding: 10px 15px;
+	min-height: 40px;
+	max-height: 150px;
+	padding: 0.75rem 1rem;
 	border: 1px solid #ddd;
 	border-radius: 20px;
-	font-size: 1.4rem;
+	font-size: 1rem;
 	font-weight: 500;
-	resize: none; /* Prevents manual resizing */
-	overflow-y: auto; /* Adds scrollbar if needed */
-	background: #f1f1f1;
-	transition: height 0.2s ease; /* Smooth height transition */
+	resize: none;
+	overflow-y: auto;
+	background: #f9f9f9;
+	transition: all 0.2s ease;
+	font-family: "Inter", sans-serif;
 }
 
 .textarea:focus {
 	outline: none;
 	border-color: #007bff;
 	background: #fff;
-	color: black;
 }
 
 .textarea::placeholder {
 	color: #888;
-	font-weight: 600;
+	font-weight: 500;
 }
+
 @media (min-width: 2559px) {
 	.textarea {
-		width: 100%;
-		border-radius: 20px;
-		font-size: 2.5rem;
-		font-weight: 600;
-		height: 1rem;
-		padding: 1.5rem;
-		min-height: 100px;
-		max-height: 400px;
+		font-size: 1.2rem;
+		min-height: 60px;
+		padding: 1rem 1.5rem;
 	}
 }
