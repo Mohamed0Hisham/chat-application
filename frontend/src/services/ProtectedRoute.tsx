@@ -8,16 +8,15 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-	const { isAuthenticated, isLoading } = useAuthStore();
+	const { isAuthenticated, isInitialized } = useAuthStore();
 	const location = useLocation();
 
-	if (isLoading) {
-		// Show a loading indicator while auth status is being determined
-		return <div>Loading...</div>;
-	}
-	if (!isAuthenticated) {
-		return <Navigate to="/login" state={{ from: location }} replace/>;
-	}
+	// Don't render anything until auth check completes
+	if (!isInitialized) return null;
 
-	return <>{children}</>;
+	return isAuthenticated ? (
+		children
+	) : (
+		<Navigate to="/login" state={{ from: location }} replace />
+	);
 }

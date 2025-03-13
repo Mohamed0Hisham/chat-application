@@ -9,7 +9,14 @@ const Login = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 
-	const { isLoading, isAuthenticated, login, getProfile } = useAuthStore();
+	const {
+		isLoading,
+		isAuthenticated,
+		login,
+		getProfile,
+		checkAuth,
+		isInitialized,
+	} = useAuthStore();
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -42,7 +49,20 @@ const Login = () => {
 		if (isAuthenticated) {
 			navigate(from, { replace: true });
 		}
-	}, [isAuthenticated, navigate, from]);
+	}, [isAuthenticated, navigate, from, checkAuth]);
+	
+	// Show loading until auth state is determined
+	if (!isInitialized) return <div>Loading...</div>;
+
+	// If already authenticated, redirect immediately
+	if (isAuthenticated) {
+		navigate(from, { replace: true });
+		return null;
+	}
+
+	if (isLoading) {
+		return <div className="logout-overlay">Loading...</div>; // Add a proper loading indicator
+	}
 
 	return (
 		<section className={styles.containerAuth}>

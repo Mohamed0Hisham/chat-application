@@ -18,6 +18,7 @@ interface AuthState {
 	isLoading: boolean;
 	isAuthenticated: boolean;
 	isLoggingOut: boolean;
+	isInitialized: boolean;
 	checkAuth: () => Promise<void>;
 	register: (a: string, b: string, c: string) => Promise<void>;
 	login: (email: string, password: string) => Promise<void>;
@@ -43,6 +44,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 	isLoading: false,
 	isAuthenticated: false,
 	isLoggingOut: false,
+	isInitialized: false,
 
 	login: async (email, password) => {
 		try {
@@ -69,43 +71,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 		}
 	},
 
-	getProfile: async () => {
-		set({ isLoading: true });
-		try {
-			const response = await api.get(`/users/profile`, {
-				headers: { Authorization: `Bearer ${get().accessToken}` },
-			});
-			const Profile: User = response.data.user;
-			localStorage.setItem("user", JSON.stringify(Profile));
-			console.log(Profile);
-			set({ user: Profile });
-		} catch (error) {
-			console.error(
-				"failed to fetch user profile",
-				error instanceof Error ? error.message : ""
-			);
-		} finally {
-			set({ isLoading: false });
-		}
-	},
-	updateProfile: async (update: object) => {
-		set({ isLoading: true });
-		try {
-			const response = await api.put(`/users/profile/update`, update, {
-				headers: { Authorization: `Bearer ${get().accessToken}` },
-			});
-			const Profile: User = response.data.user;
-			localStorage.setItem("user", JSON.stringify(Profile));
-			set({ user: Profile });
-		} catch (error) {
-			console.error(
-				"failed to fetch user profile",
-				error instanceof Error ? error.message : ""
-			);
-		} finally {
-			set({ isLoading: false });
-		}
-	},
 	checkAuth: async () => {
 		set({
 			isLoading: true,
@@ -115,28 +80,34 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
 		if (!token || !userString) {
 			set(clearAuthState());
+			set({
+				isLoading: false,
+				isInitialized: true,
+			});
 			return;
 		}
 
-			try {
-				const response = await api.get(`/users/profile`, {
-					headers: { Authorization: `Bearer ${token}` },
-				});
-				set({
-					user: response.data.user,
-					accessToken: token,
-					isAuthenticated: true,
-				});
-			} catch (error) {
-				console.error(
-					"check auth method failed",
-					error instanceof Error ? error.message : ""
-				);
-				set(clearAuthState());
-			}
-		set({
-			isLoading: false,
-		});
+		try {
+			const response = await api.get(`/users/profile`, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
+			set({
+				user: response.data.user,
+				accessToken: token,
+				isAuthenticated: true,
+			});
+		} catch (error) {
+			console.error(
+				"check auth method failed",
+				error instanceof Error ? error.message : ""
+			);
+			set(clearAuthState());
+		} finally {
+			set({
+				isLoading: false,
+				isInitialized: true,
+			});
+		}
 	},
 	register: async (fullname, email, password) => {
 		set({ isLoading: true });
@@ -195,6 +166,44 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				error instanceof Error ? error.message : ""
 			);
 			get().logout();
+		}
+	},
+	getProfile: async () => {
+		set({ isLoading: true });
+		try {
+			const response = await api.get(`/users/profile`, {
+				headers: { Authorization: `Bearer ${get().accessToken}` },
+			});
+			const Profile: User = response.data.user;
+			localStorage.setItem("user", JSON.stringify(Profile));
+			console.log(Profile);
+			set({ user: Profile });
+		} catch (error) {
+			console.error(
+				"failed to fetch user profile",
+				error instanceof Error ? error.message : ""
+			);
+		} finally {
+			set({ isLoading: false });
+		}
+	},
+
+	updateProfile: async (update: object) => {
+		set({ isLoading: true });
+		try {
+			const response = await api.put(`/users/profile/update`, update, {
+				headers: { Authorization: `Bearer ${get().accessToken}` },
+			});
+			const Profile: User = response.data.user;
+			localStorage.setItem("user", JSON.stringify(Profile));
+			set({ user: Profile });
+		} catch (error) {
+			console.error(
+				"failed to fetch user profile",
+				error instanceof Error ? error.message : ""
+			);
+		} finally {
+			set({ isLoading: false });
 		}
 	},
 }));
