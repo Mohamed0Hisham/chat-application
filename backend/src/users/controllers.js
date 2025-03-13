@@ -206,7 +206,7 @@ export const fetchProfile = async (req, res) => {
 
 		const formattedUser = {
 			avatar: user.avatar,
-			fullName: user.fullname,
+			fullname: user.fullname,
 			email: user.email,
 			joinDate: user.createdAt,
 			friendsCount: user.friends ? user.friends.length : 0,

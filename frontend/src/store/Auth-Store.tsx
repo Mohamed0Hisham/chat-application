@@ -77,6 +77,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			});
 			const Profile: User = response.data.user;
 			localStorage.setItem("user", JSON.stringify(Profile));
+			console.log(Profile)
 			set({ user: Profile });
 		} catch (error) {
 			console.error(
