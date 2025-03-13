@@ -53,7 +53,7 @@ const Options = () => {
 					me
 				</li>
 			</Link>
-			<li aria-label="My profile" >
+			<li aria-label="My profile" onClick={handleLogout}>
 				<LogOut className={styles.icon} />
 				Logout
 			</li>

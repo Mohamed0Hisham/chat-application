@@ -34,7 +34,7 @@ const Sidebar = () => {
 			// Cancel request if component unmounts
 			controller.abort();
 		};
-	}, []);
+	}, [getFriends]);
 	return (
 		<div className={s.sidebar}>
 			<div className={s.searchField}>

@@ -9,7 +9,7 @@ const Login = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 
-	const { isLoading, isAuthenticated, login } = useAuthStore();
+	const { isLoading, isAuthenticated, login, getProfile } = useAuthStore();
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -27,6 +27,7 @@ const Login = () => {
 
 		try {
 			await login(email, password);
+			await getProfile();
 			navigate(from, { replace: true });
 		} catch (err) {
 			setError(
