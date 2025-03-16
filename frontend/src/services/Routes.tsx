@@ -1,17 +1,30 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, FC } from "react";
 
 import App from "../App";
 import Loader from "../components/shared/Loader";
-const Register = lazy(() => import("../pages/Auth/Register"));
-const NotFound = lazy(() => import("../pages/error/404"));
-const Login = lazy(() => import("../pages/Auth/Login"));
 const ProtectedRoute = lazy(() => import("./ProtectedRoute"));
-const Dashboard = lazy(() => import("../pages/Chat/Dashboard"));
-const Find = lazy(() => import("../pages/Friends/Find"));
-const Requests = lazy(() => import("../pages/Friends/Requests"));
-const Chat = lazy(() => import("../pages/Chat/chat"));
-const Me = lazy(() => import("../pages/Profile/Me"));
+
+const Register = lazy(
+	(): Promise<{ default: FC }> => import("../pages/Auth/Register")
+);
+const NotFound = lazy(
+	(): Promise<{ default: FC }> => import("../pages/error/404")
+);
+const Login = lazy(
+	(): Promise<{ default: FC }> => import("../pages/Auth/Login")
+);
+const Dashboard = lazy(
+	(): Promise<{ default: FC }> => import("../pages/Chat/Dashboard")
+);
+const Find = lazy(
+	(): Promise<{ default: FC }> => import("../pages/Friends/Find")
+);
+const Requests = lazy(
+	(): Promise<{ default: FC }> => import("../pages/Friends/Requests")
+);
+const Chat = lazy((): Promise<{ default: FC }> => import("../pages/Chat/chat"));
+const Me = lazy((): Promise<{ default: FC }> => import("../pages/Profile/Me"));
 
 const routes = createBrowserRouter([
 	{
@@ -24,51 +37,69 @@ const routes = createBrowserRouter([
 		errorElement: <NotFound />,
 		children: [
 			{
+				path: "/register",
+				element: (
+					<Suspense fallback={<Loader />}>
+						<Register />
+					</Suspense>
+				),
+			},
+			{
+				path: "/login",
+				element: (
+					<Suspense fallback={<Loader />}>
+						<Login />
+					</Suspense>
+				),
+			},
+			{
 				path: "/chat",
 				element: (
-					<ProtectedRoute>
-						<Chat />
-					</ProtectedRoute>
+					<Suspense fallback={<Loader />}>
+						<ProtectedRoute>
+							<Chat />
+						</ProtectedRoute>
+					</Suspense>
 				),
 			},
 			{
 				path: "/profile",
 				element: (
-					<ProtectedRoute>
-						<Me />
-					</ProtectedRoute>
+					<Suspense fallback={<Loader />}>
+						<ProtectedRoute>
+							<Me />
+						</ProtectedRoute>
+					</Suspense>
 				),
 			},
 			{
 				path: "/add",
 				element: (
-					<ProtectedRoute>
-						<Find />
-					</ProtectedRoute>
+					<Suspense fallback={<Loader />}>
+						<ProtectedRoute>
+							<Find />
+						</ProtectedRoute>
+					</Suspense>
 				),
 			},
 			{
 				path: "/requests",
 				element: (
-					<ProtectedRoute>
-						<Requests />
-					</ProtectedRoute>
+					<Suspense fallback={<Loader />}>
+						<ProtectedRoute>
+							<Requests />
+						</ProtectedRoute>
+					</Suspense>
 				),
-			},
-			{
-				path: "/register",
-				element: <Register />,
-			},
-			{
-				path: "/login",
-				element: <Login />,
 			},
 			{
 				path: "/dashboard",
 				element: (
-					<ProtectedRoute>
-						<Dashboard />
-					</ProtectedRoute>
+					<Suspense fallback={<Loader />}>
+						<ProtectedRoute>
+							<Dashboard />
+						</ProtectedRoute>
+					</Suspense>
 				),
 			},
 			{
