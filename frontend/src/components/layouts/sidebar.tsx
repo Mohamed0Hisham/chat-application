@@ -63,7 +63,7 @@ const Sidebar = () => {
 								<div>
 									<img
 										className={s.avatar}
-										src={user.avatar}
+										src={user.avatar? user.avatar:""}
 										alt="avatar"
 									/>
 								</div>
