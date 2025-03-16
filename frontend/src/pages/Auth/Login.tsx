@@ -3,6 +3,7 @@ import { AtSign, Lock } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
 import useAuthStore from "../../store/Auth-Store";
+import Loader from "../../components/shared/Loader";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
@@ -47,7 +48,11 @@ const Login = () => {
 	}, [isAuthenticated, navigate, from]);
 
 	if (isLoading || !isInitialized) {
-		return <div className="logout-overlay">Loading...</div>;
+		return (
+			<div className="overlay">
+				<Loader />
+			</div>
+		);
 	}
 
 	return (

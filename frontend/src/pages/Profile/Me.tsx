@@ -68,7 +68,6 @@ const Me: React.FC = () => {
 	useEffect(() => {
 		setFullName(user?.fullname || "");
 		setEmail(user?.email || "");
-		console.log(user);
 	}, [user]);
 	return (
 		<section className={styles.container}>

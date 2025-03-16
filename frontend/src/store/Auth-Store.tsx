@@ -58,7 +58,6 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				set(clearAuthState());
 				return false;
 			}
-			console.log(response.data.success);
 			const { accessToken } = response.data;
 			localStorage.setItem("accessToken", accessToken);
 

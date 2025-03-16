@@ -27,9 +27,7 @@ const Me = lazy((): Promise<{ default: FC }> => import("../pages/Profile/Me"));
 const routes = createBrowserRouter([
 	{
 		path: "/",
-		element: (
-				<App />
-		),
+		element: <App />,
 		errorElement: <NotFound />,
 		children: [
 			{
@@ -41,6 +39,7 @@ const routes = createBrowserRouter([
 				),
 			},
 			{
+				index: true,
 				path: "/login",
 				element: (
 					<Suspense fallback={<Loader />}>
