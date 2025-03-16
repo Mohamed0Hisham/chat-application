@@ -107,15 +107,10 @@ export const registerUser = async (req, res) => {
 			password: hashedPassword,
 		};
 
-		const result = await User.create(user);
+		await User.create(user);
 		return res.status(201).json({
 			success: true,
 			message: "user created",
-			data: {
-				userID: result._id,
-				fullname: result.fullname,
-				email: result.email,
-			},
 		});
 	} catch (error) {
 		return res.status(500).json({

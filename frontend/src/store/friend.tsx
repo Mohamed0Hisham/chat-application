@@ -25,7 +25,6 @@ interface FriendState {
 	error: string | null;
 	searchHistory: number[];
 	requests: Request[];
-	abortController?: AbortController;
 
 	getFriend: (x: string) => Promise<void>;
 	setFriend: (x: Friend | null) => void;
@@ -80,9 +79,6 @@ const useFriendStore = create<FriendState>((set, get) => ({
 	setFriend: (friend) => set({ friend }),
 	getFriends: async () => {
 		set({ isLoading: true });
-		// Create new AbortController for this request
-		const controller = new AbortController();
-		set({ abortController: controller });
 
 		try {
 			const { accessToken, isInitialized } = useAuthStore.getState();
@@ -98,7 +94,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 
 			const response = await api.get(`/friends/all`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
-				signal: controller.signal,
+				
 			});
 			const friends = response.data.data;
 			set({
@@ -119,7 +115,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 				});
 			}
 		} finally {
-			set({ isLoading: false, abortController: undefined });
+			set({ isLoading: false });
 		}
 	},
 	sendFriendRequest: async (userID: string) => {
