@@ -26,27 +26,26 @@ const Me = lazy((): Promise<{ default: FC }> => import("../pages/Profile/Me"));
 
 const routes = createBrowserRouter([
 	{
+		index: true,
+		element: (
+			<Suspense fallback={<Loader />}>
+				<Login />
+			</Suspense>
+		),
+	},
+	{
+		path: "/register",
+		element: (
+			<Suspense fallback={<Loader />}>
+				<Register />
+			</Suspense>
+		),
+	},
+	{
 		path: "/",
 		element: <App />,
 		errorElement: <NotFound />,
 		children: [
-			{
-				path: "/register",
-				element: (
-					<Suspense fallback={<Loader />}>
-						<Register />
-					</Suspense>
-				),
-			},
-			{
-				index: true,
-				path: "/login",
-				element: (
-					<Suspense fallback={<Loader />}>
-						<Login />
-					</Suspense>
-				),
-			},
 			{
 				path: "/chat",
 				element: (

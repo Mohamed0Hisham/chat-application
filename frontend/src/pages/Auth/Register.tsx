@@ -36,7 +36,7 @@ const Register = () => {
 
 	useEffect(() => {
 		if (isCompleted) {
-			navigate("/login");
+			navigate("/");
 		}
 	}, [isCompleted, navigate]);
 
@@ -94,7 +94,7 @@ const Register = () => {
 				/>
 				<p>
 					Already have an account?{" "}
-					<Link className={styles.register} to="/login">
+					<Link className={styles.register} to="/">
 						Sign In
 					</Link>
 				</p>
