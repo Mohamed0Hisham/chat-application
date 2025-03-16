@@ -10,7 +10,6 @@ import { FriendState } from "../types/States";
 
 type SearchQuery = Partial<Pick<Friend, "email" | "fullname">> | null;
 
-
 const useFriendStore = create<FriendState>((set, get) => ({
 	friend: null,
 	friends: [],
