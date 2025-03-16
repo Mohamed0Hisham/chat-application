@@ -1,7 +1,6 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist } from "zustand/middleware"; // Import persist middleware
 import api from "../services/api";
-import { indexedDBStorage, createJSONStorage } from "../services/IDB";
 import type { AuthState } from "../types/States";
 
 const useAuthStore = create<AuthState>()(
@@ -23,9 +22,7 @@ const useAuthStore = create<AuthState>()(
 						fullname,
 					});
 					const { success, message } = response.data;
-					if (!success) {
-						throw new Error(message);
-					}
+					if (!success) throw new Error(message);
 					set({ isLoading: false });
 				} catch (error) {
 					console.error("failed to register the user:", error);
@@ -40,12 +37,20 @@ const useAuthStore = create<AuthState>()(
 						email,
 						password,
 					});
+
 					const { success, message, accessToken } = response.data;
-					if (!success) {
-						throw new Error(message);
-					}
+					if (!success) throw new Error(message);
+
+					// Fetch user profile after login
+					const profileResponse = await api.get("/users/profile", {
+						headers: { Authorization: `Bearer ${accessToken}` },
+					});
+					const { user } = profileResponse.data;
+
+					// Update state
 					set({
 						accessToken,
+						user,
 						isAuthenticated: true,
 					});
 				} catch (error) {
@@ -54,8 +59,8 @@ const useAuthStore = create<AuthState>()(
 						error instanceof Error ? error.message : ""
 					);
 					set({
-						user: undefined,
 						accessToken: undefined,
+						user: undefined,
 						isAuthenticated: false,
 					});
 				} finally {
@@ -66,44 +71,36 @@ const useAuthStore = create<AuthState>()(
 			checkAuth: async () => {
 				set({ isLoading: true });
 				const { accessToken } = get();
+
 				if (!accessToken) {
 					set({
-						user: undefined,
-						accessToken: undefined,
 						isAuthenticated: false,
-						isLoading: false,
 						isInitialized: true,
+						isLoading: false,
 					});
 					return;
 				}
 
 				try {
-					const response = await api.get(`/users/profile`, {
+					const response = await api.get("/users/profile", {
 						headers: { Authorization: `Bearer ${accessToken}` },
 					});
 					const { success, message, user } = response.data;
-					if (!success) {
-						throw new Error(message);
-					}
-					set({
-						user,
-						isAuthenticated: true,
-					});
+					if (!success) throw new Error(message);
+
+					set({ user, isAuthenticated: true });
 				} catch (error) {
 					console.error(
-						"check auth failed",
+						"check auth method failed",
 						error instanceof Error ? error.message : ""
 					);
 					set({
-						user: undefined,
 						accessToken: undefined,
+						user: undefined,
 						isAuthenticated: false,
 					});
 				} finally {
-					set({
-						isLoading: false,
-						isInitialized: true,
-					});
+					set({ isInitialized: true, isLoading: false });
 				}
 			},
 
@@ -120,9 +117,7 @@ const useAuthStore = create<AuthState>()(
 						}
 					);
 					const { success, message } = response.data;
-					if (!success) {
-						throw new Error(message);
-					}
+					if (!success) throw new Error(message);
 				} catch (error) {
 					console.error(
 						"Logout failed:",
@@ -130,8 +125,8 @@ const useAuthStore = create<AuthState>()(
 					);
 				} finally {
 					set({
-						user: undefined,
 						accessToken: undefined,
+						user: undefined,
 						isAuthenticated: false,
 						isLoggingOut: false,
 					});
@@ -156,15 +151,13 @@ const useAuthStore = create<AuthState>()(
 			getProfile: async () => {
 				set({ isLoading: true });
 				try {
-					const response = await api.get(`/users/profile`, {
+					const response = await api.get("/users/profile", {
 						headers: {
 							Authorization: `Bearer ${get().accessToken}`,
 						},
 					});
 					const { success, message, user } = response.data;
-					if (!success) {
-						throw new Error(message);
-					}
+					if (!success) throw new Error(message);
 					set({ user });
 				} catch (error) {
 					console.error(
@@ -180,7 +173,7 @@ const useAuthStore = create<AuthState>()(
 				set({ isLoading: true });
 				try {
 					const response = await api.put(
-						`/users/profile/update`,
+						"/users/profile/update",
 						update,
 						{
 							headers: {
@@ -189,29 +182,27 @@ const useAuthStore = create<AuthState>()(
 						}
 					);
 					const { success, message, user } = response.data;
-					if (!success) {
-						throw new Error(message);
-					}
+					if (!success) throw new Error(message);
 					set({ user });
 				} catch (error) {
-					const message =
-						error instanceof Error
-							? error.message
-							: "Update failed";
-					throw new Error(message);
+					console.error(
+						"update failed",
+						error instanceof Error ? error.message : ""
+					);
 				} finally {
 					set({ isLoading: false });
 				}
 			},
 		}),
 		{
-			name: "auth-storage", // Key for the storage
-			storage: createJSONStorage(() => indexedDBStorage), // Wrap IndexedDB storage
-			partialize: (state) => ({
-				user: state.user,
-				accessToken: state.accessToken,
-				isAuthenticated: state.isAuthenticated,
-			}),
+			name: "auth-storage", // Unique name for the storage key
+			storage: {
+				getItem: (name) =>
+					JSON.parse(sessionStorage.getItem(name) || "null"),
+				setItem: (name, value) =>
+					sessionStorage.setItem(name, JSON.stringify(value)),
+				removeItem: (name) => sessionStorage.removeItem(name),
+			},
 		}
 	)
 );
