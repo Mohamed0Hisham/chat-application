@@ -5,13 +5,9 @@ import App from "../App";
 import Loader from "../components/shared/Loader";
 import ProtectedRoute from "./ProtectedRoute";
 import NotFound from "../pages/error/404";
+import Login from "../pages/Auth/Login";
+import Register from "../pages/Auth/Register";
 
-const Register = lazy(
-	(): Promise<{ default: FC }> => import("../pages/Auth/Register")
-);
-const Login = lazy(
-	(): Promise<{ default: FC }> => import("../pages/Auth/Login")
-);
 const Dashboard = lazy(
 	(): Promise<{ default: FC }> => import("../pages/Chat/Dashboard")
 );
