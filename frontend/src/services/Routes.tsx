@@ -1,19 +1,26 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Register from "../pages/Auth/Register";
+import { lazy, Suspense } from "react";
+
 import App from "../App";
-import NotFound from "../pages/error/404";
-import Login from "../pages/Auth/Login";
-import ProtectedRoute from "./ProtectedRoute";
-import Dashboard from "../pages/Chat/Dashboard";
-import Find from "../pages/Friends/Find";
-import Requests from "../pages/Friends/Requests";
-import Me from "../pages/Profile/Me";
-import Chat from "../pages/Chat/chat";
+import Loader from "../components/shared/Loader";
+const Register = lazy(() => import("../pages/Auth/Register"));
+const NotFound = lazy(() => import("../pages/error/404"));
+const Login = lazy(() => import("../pages/Auth/Login"));
+const ProtectedRoute = lazy(() => import("./ProtectedRoute"));
+const Dashboard = lazy(() => import("../pages/Chat/Dashboard"));
+const Find = lazy(() => import("../pages/Friends/Find"));
+const Requests = lazy(() => import("../pages/Friends/Requests"));
+const Chat = lazy(() => import("../pages/Chat/chat"));
+const Me = lazy(() => import("../pages/Profile/Me"));
 
 const routes = createBrowserRouter([
 	{
 		path: "/",
-		element: <App />,
+		element: (
+			<Suspense fallback={<Loader />}>
+				<App />
+			</Suspense>
+		),
 		errorElement: <NotFound />,
 		children: [
 			{
