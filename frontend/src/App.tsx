@@ -8,8 +8,8 @@ const App = () => {
 	return (
 		<>
 			<AppLoader>
-				<Outlet />
-				{isLoggingOut && <Loader />}
+					<Outlet />
+				{isLoggingOut && <div className="overlay"><Loader /></div> }
 			</AppLoader>
 		</>
 	);

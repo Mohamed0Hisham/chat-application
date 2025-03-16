@@ -4,12 +4,10 @@ import { lazy, Suspense, FC } from "react";
 import App from "../App";
 import Loader from "../components/shared/Loader";
 import ProtectedRoute from "./ProtectedRoute";
+import NotFound from "../pages/error/404";
 
 const Register = lazy(
 	(): Promise<{ default: FC }> => import("../pages/Auth/Register")
-);
-const NotFound = lazy(
-	(): Promise<{ default: FC }> => import("../pages/error/404")
 );
 const Login = lazy(
 	(): Promise<{ default: FC }> => import("../pages/Auth/Login")
@@ -30,9 +28,7 @@ const routes = createBrowserRouter([
 	{
 		path: "/",
 		element: (
-			<Suspense fallback={<Loader />}>
 				<App />
-			</Suspense>
 		),
 		errorElement: <NotFound />,
 		children: [
