@@ -1,20 +1,7 @@
 import { create } from "zustand";
 import api from "../services/api";
 import useAuthStore from "./Auth-Store";
-
-type Msg = {
-	_id?: string;
-	content: string;
-	createdAt: Date;
-	senderID: string;
-};
-interface ChatState {
-	messages: Msg[];
-	isLoading: boolean;
-	chat: string;
-	getMsgsOfChat: (id: string) => Promise<void>;
-	setChat: (id: string) => Promise<void>;
-}
+import type { ChatState } from "../types/States";
 
 const useMsgStore = create<ChatState>((set) => ({
 	messages: [],
@@ -32,7 +19,7 @@ const useMsgStore = create<ChatState>((set) => ({
 			if (response.data.success === false)
 				throw new Error(response.data.message);
 
-			const msgs: Msg[] = response.data.messages;
+			const msgs = response.data.messages;
 			set({ messages: msgs, isLoading: false });
 		} catch (error) {
 			console.log(

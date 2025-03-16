@@ -1,31 +1,7 @@
 import { create } from "zustand";
 import api from "../services/api";
+import type { AuthState } from "../types/States";
 
-type User = {
-	_id: string;
-	fullname: string;
-	email: string;
-	avatar: string | null;
-	joinDate: Date;
-	friendsCount: number | null;
-	groupsCount: number | null;
-};
-
-interface AuthState {
-	user?: User;
-	accessToken?: string;
-	isLoading: boolean;
-	isAuthenticated: boolean;
-	isLoggingOut: boolean;
-	isInitialized: boolean;
-	checkAuth: () => Promise<void>;
-	register: (a: string, b: string, c: string) => Promise<void>;
-	login: (email: string, password: string) => Promise<boolean>;
-	logout: () => Promise<void>;
-	refreshAccessToken: () => Promise<void>;
-	getProfile: () => Promise<void>;
-	updateProfile: (update: object) => Promise<void>;
-}
 
 const clearAuthState = () => {
 	localStorage.removeItem("accessToken");
@@ -86,14 +62,12 @@ const useAuthStore = create<AuthState>((set, get) => ({
 				accessToken,
 				isAuthenticated: true,
 			});
-			return true;
 		} catch (error) {
 			console.error(
 				"login failed",
 				error instanceof Error ? error.message : ""
 			);
 			set(clearAuthState());
-			return false;
 		} finally {
 			set({ isLoading: false });
 		}
@@ -168,6 +142,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			window.location.href = "/login";
 		}
 	},
+
 	refreshAccessToken: async () => {
 		try {
 			const response = await api.post("/auth/refresh");
@@ -182,6 +157,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 			get().logout();
 		}
 	},
+
 	getProfile: async () => {
 		set({ isLoading: true });
 		try {

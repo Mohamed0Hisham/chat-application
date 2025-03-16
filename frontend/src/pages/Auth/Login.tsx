@@ -28,10 +28,8 @@ const Login = () => {
 		}
 
 		try {
-			const success = await login(email, password);
-			if (success) {
-				await getProfile();
-			} else throw new Error();
+			await login(email, password);
+			await getProfile();
 		} catch (err) {
 			setError(
 				err instanceof Error

@@ -1,44 +1,15 @@
 import { create } from "zustand";
+import axios from "axios";
+
 import api from "../services/api";
 import useAuthStore from "./Auth-Store";
 import { isError } from "../services/isError";
-import axios from "axios";
 
-type Friend = {
-	_id: string;
-	fullname: string;
-	isOnline?: boolean;
-	avatar: string;
-};
-type Request = {
-	_id: string;
-	fullname: string;
-	email: string;
-	avatar: string;
-	createdAt: Date;
-};
-type SearchQuery = { email?: string; fullname?: string } | null;
-interface FriendState {
-	friend: Friend | null;
-	friends: Friend[];
-	isLoading: boolean;
-	error: string | null;
-	searchHistory: number[];
-	requests: Request[];
+import type { Person as Friend } from "../types/User";
+import { FriendState } from "../types/States";
 
-	getFriend: (x: string) => Promise<void>;
-	setFriend: (x: Friend | null) => void;
+type SearchQuery = Partial<Pick<Friend, "email" | "fullname">> | null;
 
-	getFriends: () => Promise<void>;
-	sendFriendRequest: (s: string) => Promise<void>;
-	fetchRequests: () => Promise<void>;
-	acceptRequest: (id: string) => Promise<void>;
-	declineRequest: (id: string) => Promise<void>;
-	findUsers: (
-		q: { email?: string; fullname?: string } | null,
-		signal?: AbortSignal
-	) => Promise<Friend[]>;
-}
 
 const useFriendStore = create<FriendState>((set, get) => ({
 	friend: null,
@@ -94,7 +65,6 @@ const useFriendStore = create<FriendState>((set, get) => ({
 
 			const response = await api.get(`/friends/all`, {
 				headers: { Authorization: `Bearer ${accessToken}` },
-				
 			});
 			const friends = response.data.data;
 			set({
