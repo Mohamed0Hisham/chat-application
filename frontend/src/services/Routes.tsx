@@ -3,7 +3,7 @@ import { lazy, Suspense, FC } from "react";
 
 import App from "../App";
 import Loader from "../components/shared/Loader";
-const ProtectedRoute = lazy(() => import("./ProtectedRoute"));
+import ProtectedRoute from "./ProtectedRoute";
 
 const Register = lazy(
 	(): Promise<{ default: FC }> => import("../pages/Auth/Register")
@@ -55,51 +55,51 @@ const routes = createBrowserRouter([
 			{
 				path: "/chat",
 				element: (
-					<Suspense fallback={<Loader />}>
-						<ProtectedRoute>
+					<ProtectedRoute>
+						<Suspense fallback={<Loader />}>
 							<Chat />
-						</ProtectedRoute>
-					</Suspense>
+						</Suspense>
+					</ProtectedRoute>
 				),
 			},
 			{
 				path: "/profile",
 				element: (
-					<Suspense fallback={<Loader />}>
-						<ProtectedRoute>
+					<ProtectedRoute>
+						<Suspense fallback={<Loader />}>
 							<Me />
-						</ProtectedRoute>
-					</Suspense>
+						</Suspense>
+					</ProtectedRoute>
 				),
 			},
 			{
 				path: "/add",
 				element: (
-					<Suspense fallback={<Loader />}>
-						<ProtectedRoute>
+					<ProtectedRoute>
+						<Suspense fallback={<Loader />}>
 							<Find />
-						</ProtectedRoute>
-					</Suspense>
+						</Suspense>
+					</ProtectedRoute>
 				),
 			},
 			{
 				path: "/requests",
 				element: (
-					<Suspense fallback={<Loader />}>
-						<ProtectedRoute>
+					<ProtectedRoute>
+						<Suspense fallback={<Loader />}>
 							<Requests />
-						</ProtectedRoute>
-					</Suspense>
+						</Suspense>
+					</ProtectedRoute>
 				),
 			},
 			{
 				path: "/dashboard",
 				element: (
-					<Suspense fallback={<Loader />}>
-						<ProtectedRoute>
+					<ProtectedRoute>
+						<Suspense fallback={<Loader />}>
 							<Dashboard />
-						</ProtectedRoute>
-					</Suspense>
+						</Suspense>
+					</ProtectedRoute>
 				),
 			},
 			{
