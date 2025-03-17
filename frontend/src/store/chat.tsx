@@ -29,6 +29,7 @@ const useMsgStore = create<ChatState>((set) => ({
 		}
 	},
 	setChat: async (id) => {
+		// Optionally fetch messages here or rely on Chat component
 		const { accessToken } = useAuthStore.getState();
 		try {
 			set({ isLoading: true });
@@ -50,6 +51,21 @@ const useMsgStore = create<ChatState>((set) => ({
 			);
 			set({ isLoading: false });
 		}
+	},
+	addMessage: (message) => {
+		set((state) => {
+			// Only add if the message belongs to the current chat
+			if (message.chatID === state.chat) {
+				// Check for duplicates by _id
+				const exists = state.messages.some(
+					(m) => m._id === message._id
+				);
+				if (!exists) {
+					return { messages: [...state.messages, message] };
+				}
+			}
+			return state; // No change if message is a duplicate or for another chat
+		});
 	},
 }));
 

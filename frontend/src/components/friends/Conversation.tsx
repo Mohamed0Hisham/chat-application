@@ -6,8 +6,13 @@ import useFriendStore from "../../store/friend";
 import useMsgStore from "../../store/chat";
 import useAuthStore from "../../store/Auth-Store";
 import EmojiPicker from "emoji-picker-react";
+import { Socket } from "socket.io-client";
+import { Msg } from "../../types/States";
 
-const Conversation: FC = () => {
+interface ConversationProps {
+	socket: Socket | null;
+}
+const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const [content, setContent] = useState("");
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const [isSending, setIsSending] = useState(false);
@@ -16,26 +21,54 @@ const Conversation: FC = () => {
 	const { user } = useAuthStore();
 
 	const handleSend = async () => {
-		if (!content.trim() || !user || isSending) return;
+		if (!content.trim() || !user || isSending || !socket) return;
 		setIsSending(true);
 		const tempId = Date.now().toString();
-		
+
+		const tempMessage = {
+			_id: tempId,
+			content,
+			senderID: user._id,
+			createdAt: new Date(),
+			chatID: useMsgStore.getState().chat,
+		};
+
+		// Add temporary message to store for immediate feedback
 		useMsgStore.setState((state) => ({
-			messages: [
-				...state.messages,
-				{
-					_id: tempId,
-					content,
-					senderID: user._id,
-					createdAt: new Date(),
-				},
-			],
+			messages: [...state.messages, tempMessage],
 		}));
+
 		try {
-			//Todo
-			setContent("");
+			socket.emit(
+				"sendMessage",
+				{
+					chatID: useMsgStore.getState().chat,
+					senderID: user._id,
+					content,
+				},
+				(response: {
+					success: boolean;
+					data?: Msg;
+					error?: string;
+				}) => {
+					if (response.success && response.data) {
+						// Replace temporary message with the actual message from server
+						useMsgStore.setState((state) => ({
+							messages: state.messages.map((msg) =>
+								msg._id === tempId ? response.data! : msg
+							),
+						}));
+					} else {
+						throw new Error(
+							response.error || "Failed to send message"
+						);
+					}
+				}
+			);
+			setContent(""); // Clear input on successful send
 		} catch (error) {
-			console.log("Failed to send message", error);
+			console.error("Failed to send message:", error);
+			// Remove temporary message on error
 			useMsgStore.setState((state) => ({
 				messages: state.messages.filter((msg) => msg._id !== tempId),
 			}));

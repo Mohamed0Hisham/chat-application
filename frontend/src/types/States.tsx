@@ -9,10 +9,11 @@ export type Request = {
 	createdAt: Date;
 };
 export type Msg = {
-	_id?: string;
+	_id: string;
 	content: string;
 	createdAt: Date;
 	senderID: string;
+	chatID: string;
 };
 export interface ChatState {
 	messages: Msg[];
@@ -20,6 +21,7 @@ export interface ChatState {
 	chat: string;
 	getMsgsOfChat: (id: string) => Promise<void>;
 	setChat: (id: string) => Promise<void>;
+	addMessage: (message: Msg) => void;
 }
 
 export interface AuthState {

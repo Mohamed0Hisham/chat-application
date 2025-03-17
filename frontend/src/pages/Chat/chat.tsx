@@ -1,51 +1,68 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import Conversation from "../../components/friends/Conversation";
-import useFriendStore from "../../store/friend";
 import styles from "./chat.module.css";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 import useAuthStore from "../../store/Auth-Store";
+import useMsgStore from "../../store/chat";
+
 
 const Chat = () => {
-	const { friend } = useFriendStore();
-	const { accessToken } = useAuthStore();
+	const { accessToken, user } = useAuthStore();
+	const { chat } = useMsgStore();
+	const socketRef = useRef<Socket | null>(null);
 
+	// Socket initialization
 	useEffect(() => {
-		const socket = io("http://localhost:7536", {
+		socketRef.current = io("http://localhost:7536", {
 			auth: {
 				token: accessToken,
 			},
 		});
 
-		socket.on("connect", () => {
+		socketRef.current.on("connect", () => {
 			console.log("Connected to server");
 		});
 
-		socket.on("receiveMessage", (message) => {
+		socketRef.current.on("receiveMessage", (message) => {
 			console.log("Received message:", message);
+			useMsgStore.getState().addMessage(message);
 		});
 
-		socket.on("disconnect", () => {
+		socketRef.current.on("disconnect", () => {
 			console.log("Disconnected from server");
 		});
 
-		socket.on("connect_error", (error) => {
+		socketRef.current.on("connect_error", (error) => {
 			console.error("Connection error:", error);
 		});
 
 		return () => {
-			socket.disconnect();
+			socketRef?.current?.disconnect();
 		};
 	}, [accessToken]);
 
+	useEffect(() => {
+		if (chat && user && socketRef.current) {
+			socketRef.current.emit(
+				"joinConversation",
+				{ chatID: chat, userID: user._id },
+				(response: { success?: boolean; error?: string }) => {
+					if (response && response.success) {
+						console.log("Joined conversation successfully");
+					} else {
+						console.error(
+							"Failed to join conversation:",
+							response?.error
+						);
+					}
+				}
+			);
+		}
+	}, [chat, user]);
+
 	return (
 		<main className={styles.chat}>
-			{friend ? (
-				<Conversation />
-			) : (
-				<div className={styles.noFriendSelected}>
-					<p>Select a friend to start a conversation</p>
-				</div>
-			)}
+			<Conversation socket={socketRef.current} />
 		</main>
 	);
 };
