@@ -1,24 +1,40 @@
+import { saveMessage } from "../messages/messageService.js";
+import Msg from "../messages/models.js";
 import { validateData, checkConversationMembership } from "./middlewares.js";
 
 export const joinConversation = [
 	validateData(["chatID", "userID"]),
-	(socket, data, next) => {
+	async (socket, data, acknowledge) => {
 		socket.join(data.chatID);
 		socket.to(data.chatID).emit("userJoined", data.userID);
-		next();
+
+		// Fetch unread messages 
+		const unreadMessages = await Msg.find({
+			chatID,
+			receiverID: userID,
+		}).lean();
+
+		unreadMessages.forEach((msg) => {
+			socket.emit("receiveMessage", msg);
+		});
+
+		acknowledge?.({ success: true });
 	},
 ];
 
 export const sendMessage = [
 	validateData(["chatID", "senderID", "content"]),
 	checkConversationMembership,
-	async (socket, data, next) => {
+
+	async (socket, data, acknowledge) => {
+		const { chatID, senderID, content } = data;
 		try {
-			// await saveMessageToDB(data);
-			socket.server.to(data.chatID).emit("receiveMessage", data);
-			next();
+			const msg = await saveMessage(chatID, senderID, content);
+
+			socket.server.to(chatID).emit("receiveMessage", msg);
+			acknowledge?.({ success: true });
 		} catch (err) {
-			next(new Error("Failed to send message"));
+			acknowledge?.({ error: err.message });
 		}
 	},
 ];
