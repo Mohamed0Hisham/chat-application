@@ -88,41 +88,6 @@ const useAuthStore = create<AuthState>()(
 				}
 			},
 
-			checkAuth: async () => {
-				set({ isLoading: true });
-				const { accessToken } = get();
-
-				if (!accessToken) {
-					set({
-						isAuthenticated: false,
-						isLoading: false,
-					});
-					return;
-				}
-
-				try {
-					const response = await api.get("/users/profile", {
-						headers: { Authorization: `Bearer ${accessToken}` },
-					});
-					const { success, message, user } = response.data;
-					if (!success) throw new Error(message);
-
-					set({ user, isAuthenticated: true });
-				} catch (error) {
-					console.error(
-						"check auth method failed",
-						error instanceof Error ? error.message : ""
-					);
-					set({
-						accessToken: undefined,
-						user: undefined,
-						isAuthenticated: false,
-					});
-				} finally {
-					set({ isLoading: false });
-				}
-			},
-
 			refreshAccessToken: async () => {
 				try {
 					const response = await api.post("/auth/refresh");

@@ -3,7 +3,7 @@ export interface Person {
 	fullname: string;
 	email: string;
 	isOnline: boolean;
-	avatar: string | null;
+	avatar?: string ;
 }
 
 export interface User extends Person {

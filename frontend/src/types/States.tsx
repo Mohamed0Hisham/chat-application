@@ -29,7 +29,6 @@ export interface AuthState {
 	isAuthenticated: boolean;
 	isLoggingOut: boolean;
 	error: string | null;
-	checkAuth: () => Promise<void>;
 	register: (a: string, b: string, c: string) => Promise<void>;
 	login: (email: string, password: string) => Promise<void>;
 	logout: () => Promise<void>;

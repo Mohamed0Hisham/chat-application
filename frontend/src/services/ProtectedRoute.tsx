@@ -11,7 +11,6 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 	const { isAuthenticated } = useAuthStore();
 	const location = useLocation();
 
-
 	return isAuthenticated ? (
 		children
 	) : (

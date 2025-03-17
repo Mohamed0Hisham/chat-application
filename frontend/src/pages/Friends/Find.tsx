@@ -2,17 +2,11 @@ import { useEffect, useState } from "react";
 import useFriendStore from "../../store/friend";
 import styles from "./Find.module.css";
 import DOMPurify from "dompurify";
-
-type Friend = {
-	_id: string;
-	fullname: string;
-	isOnline?: boolean;
-	avatar: string;
-};
+import type { Person } from "../../types/User";
 
 const Find = () => {
 	const { sendFriendRequest, isLoading, findUsers } = useFriendStore();
-	const [result, setResult] = useState<Friend[]>([]);
+	const [result, setResult] = useState<Person[]>([]);
 	const [query, setQuery] = useState<string>("");
 	const [debouncedQuery, setDebouncedQuery] = useState<string>("");
 	const [pendingRequests, setPendingRequests] = useState<Set<string>>(
