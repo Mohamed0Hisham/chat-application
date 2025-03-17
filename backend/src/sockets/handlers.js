@@ -26,6 +26,7 @@ export const joinConversation = async (socket, data, acknowledge) => {
 
 export const sendMessage = async (socket, data, acknowledge) => {
 	const { chatID, senderID, content } = data;
+	console.log(data)
 
 	// Basic validation
 	if (!chatID || !senderID || !content) {

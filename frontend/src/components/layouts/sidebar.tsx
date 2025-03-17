@@ -5,18 +5,25 @@ import useFriendStore from "../../store/friend";
 import { useEffect, useState } from "react";
 import useMsgStore from "../../store/chat";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
-	const { isLoading, setFriend, friends } = useFriendStore();
+	const { isLoading, friends } = useFriendStore();
 	const getFriends = useFriendStore((state) => state.getFriends);
 	const { setChat } = useMsgStore();
 	const [searchQuery, setSearchQuery] = useState("");
+	const [set, setSet] = useState(false);
+	const navigate = useNavigate();
 
 	// Filter friends based on search
 	const filteredFriends = friends.filter((friend) =>
 		friend.fullname.toLowerCase().includes(searchQuery.toLowerCase())
 	);
+
+	const handleClick = async (id: string) => {
+		await setChat(id);
+		setSet(true);
+	};
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -31,6 +38,9 @@ const Sidebar = () => {
 
 		fetchData();
 	}, [getFriends]);
+	useEffect(() => {
+		if (set) navigate("/chat");
+	});
 	return (
 		<div className={s.sidebar}>
 			<div className={s.searchField}>
@@ -50,20 +60,14 @@ const Sidebar = () => {
 				{!isLoading &&
 					filteredFriends.map((user) => {
 						return (
-							<Link
-								to={"/chat"}
+							<li
 								key={user._id}
 								className={s.user}
-								onClick={() => {
-									(async () => {
-										await setChat(user._id);
-										setFriend(user);
-									})();
-								}}>
+								onClick={() => handleClick(user._id)}>
 								<div>
 									<img
 										className={s.avatar}
-										src={user.avatar? user.avatar:""}
+										src={user.avatar ? user.avatar : ""}
 										alt="avatar"
 									/>
 								</div>
@@ -77,7 +81,7 @@ const Sidebar = () => {
 										<div className={s.red}></div>
 									)}
 								</div>
-							</Link>
+							</li>
 						);
 					})}
 			</ul>

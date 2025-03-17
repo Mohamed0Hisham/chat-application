@@ -46,7 +46,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 			set({ isLoading: false });
 		}
 	},
-	setFriend: (friend) => set({ friend }),
+	// setFriend: (friend) => set({ friend }),
 	getFriends: async () => {
 		set({ isLoading: true });
 

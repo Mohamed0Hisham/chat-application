@@ -111,7 +111,7 @@ const Find = () => {
 										}
 										className={styles.actionButton}>
 										{pendingRequests.has(user._id)
-											? "Sending..."
+											? "Sent"
 											: "Add Friend"}
 									</button>
 								</div>

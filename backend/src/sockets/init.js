@@ -20,7 +20,7 @@ export function initializeSocket(httpServer) {
 	io.use(authenticate);
 
 	io.on("connection", (socket) => {
-		console.log(`User ${socket.userID} connected`);
+		console.log(`User ${socket.id} connected`);
 
 		socket.on("joinConversation", (data, acknowledge) =>
 			joinConversation(socket, data, acknowledge)

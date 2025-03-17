@@ -95,6 +95,13 @@ export const fetchConversation = async (req, res) => {
 			});
 		}
 
+		const friend = await User.findById(friendID, {
+			fullname: 1,
+			email: 1,
+			isOnline: 1,
+			avatar: 1,
+		}).lean();
+
 		// Consistent participant handling
 		const sortedIDs = sortParticipantIDs([userID, friendID]);
 
@@ -108,6 +115,7 @@ export const fetchConversation = async (req, res) => {
 				success: true,
 				message: "Chat fetched",
 				chatID: existingChat._id,
+				friend
 			});
 		}
 
@@ -125,6 +133,7 @@ export const fetchConversation = async (req, res) => {
 				success: true,
 				message: "Chat fetched",
 				chatID: existingInTransaction._id,
+				friend
 			});
 		}
 
@@ -147,6 +156,7 @@ export const fetchConversation = async (req, res) => {
 			success: true,
 			message: "Chat created and fetched",
 			chatID: newChat[0]._id,
+			friend
 		});
 	} catch (error) {
 		if (transactionStarted) {

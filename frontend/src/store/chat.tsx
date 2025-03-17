@@ -7,6 +7,7 @@ const useMsgStore = create<ChatState>((set) => ({
 	messages: [],
 	isLoading: false,
 	chat: "",
+	friend: null,
 
 	getMsgsOfChat: async (chatID) => {
 		const { accessToken } = useAuthStore.getState();
@@ -43,8 +44,8 @@ const useMsgStore = create<ChatState>((set) => ({
 			if (response.data.success === false)
 				throw new Error(response.data.message);
 
-			const { chat } = response.data;
-			set({ chat, isLoading: false });
+			const { chatID, friend } = response.data;
+			set({ chat: chatID, isLoading: false, friend });
 		} catch (error) {
 			console.log(
 				error instanceof Error ? error.message : "unknown error"

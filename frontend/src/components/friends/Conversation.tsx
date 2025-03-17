@@ -2,7 +2,6 @@ import { useState, FC } from "react";
 import styles from "./conversation.module.css";
 import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../chat/MessageInput";
-import useFriendStore from "../../store/friend";
 import useMsgStore from "../../store/chat";
 import useAuthStore from "../../store/Auth-Store";
 import EmojiPicker from "emoji-picker-react";
@@ -16,10 +15,9 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const [content, setContent] = useState("");
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const [isSending, setIsSending] = useState(false);
-	const { friend } = useFriendStore();
 	const { isLoading, messages } = useMsgStore();
 	const { user } = useAuthStore();
-
+	const friend = useMsgStore.getState().friend;
 	const handleSend = async () => {
 		if (!content.trim() || !user || isSending || !socket) return;
 		setIsSending(true);
@@ -30,7 +28,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 			chatID: useMsgStore.getState().chat,
 			senderID: user._id,
 			content,
-			createdAt: new Date(), 
+			createdAt: new Date(),
 		};
 
 		// Add temporary message for immediate feedback
@@ -39,6 +37,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}));
 
 		try {
+			console.log(useMsgStore.getState().chat);
 			socket.emit(
 				"sendMessage",
 				{

@@ -19,6 +19,8 @@ export interface ChatState {
 	messages: Msg[];
 	isLoading: boolean;
 	chat: string;
+	friend: Friend | null;
+	
 	getMsgsOfChat: (id: string) => Promise<void>;
 	setChat: (id: string) => Promise<void>;
 	addMessage: (message: Msg) => void;
@@ -48,7 +50,7 @@ export interface FriendState {
 	requests: Request[];
 
 	getFriend: (x: string) => Promise<void>;
-	setFriend: (x: Friend | null) => void;
+	// setFriend: (x: Friend | null) => void;
 
 	getFriends: () => Promise<void>;
 	sendFriendRequest: (s: string) => Promise<void>;
