@@ -2,57 +2,78 @@ import { saveMessage } from "../messages/messageService.js";
 import Msg from "../messages/models.js";
 import { validateData, checkConversationMembership } from "./middlewares.js";
 
-export const joinConversation = [
-	validateData(["chatID", "userID"]),
-	async (socket, data, acknowledge) => {
-		socket.join(data.chatID);
-		socket.to(data.chatID).emit("userJoined", data.userID);
+export const joinConversation = async (socket, data, acknowledge) => {
+	const { chatID, userID } = data;
 
-		// Fetch unread messages 
-		const unreadMessages = await Msg.find({
-			chatID,
-			receiverID: userID,
-		}).lean();
+	if (!chatID || !userID) {
+		return acknowledge?.({ error: "Missing chatID or userID" });
+	}
 
-		unreadMessages.forEach((msg) => {
-			socket.emit("receiveMessage", msg);
-		});
+	socket.join(chatID);
+	socket.to(chatID).emit("userJoined", userID);
 
+	// Fetch all/unread messages
+	const unreadMessages = await Msg.find({
+		chatID,
+		receiverID: userID,
+	}).lean();
+
+	unreadMessages.forEach((msg) => {
+		socket.emit("receiveMessage", msg);
+	});
+
+	acknowledge?.({ success: true });
+};
+
+export const sendMessage = async (socket, data, acknowledge) => {
+	const { chatID, senderID, content } = data;
+
+	// Basic validation
+	if (!chatID || !senderID || !content) {
+		return acknowledge?.({ error: "Missing required fields" });
+	}
+
+	// Ensure the user is in the chat room
+	if (!socket.rooms.has(chatID)) {
+		return acknowledge?.({ error: "Not in conversation" });
+	}
+
+	try {
+		const msg = await saveMessage(chatID, senderID, content);
+		// Emit the message to all clients in the room
+		socket.server.to(chatID).emit("receiveMessage", msg);
 		acknowledge?.({ success: true });
-	},
-];
+	} catch (err) {
+		acknowledge?.({ error: err.message });
+	}
+};
 
-export const sendMessage = [
-	validateData(["chatID", "senderID", "content"]),
-	checkConversationMembership,
+export const typing = async (socket, data, acknowledge) => {
+	const { chatID, userID } = data;
 
-	async (socket, data, acknowledge) => {
-		const { chatID, senderID, content } = data;
-		try {
-			const msg = await saveMessage(chatID, senderID, content);
+	// Validation
+	if (!chatID || !userID) {
+		return acknowledge?.({ error: "Missing required fields" });
+	}
 
-			socket.server.to(chatID).emit("receiveMessage", msg);
-			acknowledge?.({ success: true });
-		} catch (err) {
-			acknowledge?.({ error: err.message });
-		}
-	},
-];
+	// Membership check
+	if (!socket.rooms.has(chatID)) {
+		return acknowledge?.({ error: "Not in conversation" });
+	}
 
-export const typing = [
-	validateData(["chatID", "userID"]),
-	checkConversationMembership,
-	(socket, data, next) => {
-		socket.broadcast.to(data.chatID).emit("typing", data);
-		next();
-	},
-];
+	socket.broadcast.to(chatID).emit("typing", data);
+	acknowledge?.({ success: true });
+};
 
-export const leaveConversation = [
-	validateData(["chatID", "userID"]),
-	(socket, data, next) => {
-		socket.leave(data.chatID);
-		socket.to(data.chatID).emit("userLeft", data.userID);
-		next();
-	},
-];
+export const leaveConversation = async (socket, data, acknowledge) => {
+	const { chatID, userID } = data;
+
+	// Validation
+	if (!chatID || !userID) {
+		return acknowledge?.({ error: "Missing required fields" });
+	}
+
+	socket.leave(chatID);
+	socket.to(chatID).emit("userLeft", userID);
+	acknowledge?.({ success: true });
+};
