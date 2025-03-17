@@ -25,15 +25,15 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		setIsSending(true);
 		const tempId = Date.now().toString();
 
-		const tempMessage = {
+		const tempMessage: Msg = {
 			_id: tempId,
-			content,
-			senderID: user._id,
-			createdAt: new Date(),
 			chatID: useMsgStore.getState().chat,
+			senderID: user._id,
+			content,
+			createdAt: new Date(), 
 		};
 
-		// Add temporary message to store for immediate feedback
+		// Add temporary message for immediate feedback
 		useMsgStore.setState((state) => ({
 			messages: [...state.messages, tempMessage],
 		}));
@@ -52,7 +52,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 					error?: string;
 				}) => {
 					if (response.success && response.data) {
-						// Replace temporary message with the actual message from server
+						// Replace temporary message with server-confirmed message
 						useMsgStore.setState((state) => ({
 							messages: state.messages.map((msg) =>
 								msg._id === tempId ? response.data! : msg
@@ -65,10 +65,10 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 					}
 				}
 			);
-			setContent(""); // Clear input on successful send
+			setContent("");
 		} catch (error) {
 			console.error("Failed to send message:", error);
-			// Remove temporary message on error
+			// Remove temporary message if sending fails
 			useMsgStore.setState((state) => ({
 				messages: state.messages.filter((msg) => msg._id !== tempId),
 			}));
