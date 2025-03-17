@@ -7,7 +7,6 @@ import {
 	fetchUserConversations,
 	updateConversationSetting,
 } from "./controllers.js";
-import { isAuthenticated } from "../../utils/auth.js";
 
 const router = express.Router();
 

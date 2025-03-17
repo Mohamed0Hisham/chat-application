@@ -5,7 +5,7 @@ export const authenticate = (socket, next) => {
 	if (!token) return next(new Error("Authentication required"));
 
 	try {
-		const decoded = jwt.verify(token, process.env.JWT_SOCKET_SECRET);
+		const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
 		socket.userID = decoded.userID;
 		next();
 	} catch (error) {
