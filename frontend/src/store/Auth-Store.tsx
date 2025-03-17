@@ -188,6 +188,7 @@ const useAuthStore = create<AuthState>()(
 			partialize: (state) => ({
 				isAuthenticated: state.isAuthenticated,
 				user: state.user,
+				accessToken: state.accessToken,
 			}),
 			storage: {
 				getItem: (name) =>
