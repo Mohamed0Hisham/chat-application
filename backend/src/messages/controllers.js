@@ -2,14 +2,13 @@ import Chat from "../conversations/models.js";
 import Msg from "./models.js";
 import validator from "validator";
 import { startSession } from "mongoose";
+import { saveMessage } from "./messageService.js";
 
 export const sendMsg = async (req, res) => {
-	const session = await startSession();
 	try {
-		session.startTransaction();
-
 		const { chatID } = req.params;
 		const { senderID, content } = req.body;
+
 		if (!validator.isMongoId(chatID) || !validator.isMongoId(senderID)) {
 			return res.status(400).json({
 				success: false,
@@ -24,49 +23,18 @@ export const sendMsg = async (req, res) => {
 			});
 		}
 
-		const chat = await Chat.findById(chatID).session(session);
-		if (!chat) {
-			return res.status(404).json({
-				success: false,
-				message: "no such chat exist",
-			});
-		}
+		const msg = await saveMessage(chatID, senderID, content);
 
-		const isParticipant = chat.participants.some((userID) =>
-			userID.equals(senderID)
-		);
-		if (!isParticipant) {
-			return res.status(403).json({
-				success: false,
-				message: "unauthorized operation",
-			});
-		}
-
-		const msg = new Msg({
-			chatID,
-			senderID,
-			receiverID: chat.participants.filter((id) => !id.equals(senderID)),
-			content,
-		});
-		await msg.save({ session });
-
-		chat.messages.push(msg._id);
-		await chat.save({ session });
-
-		await session.commitTransaction();
 		return res.status(201).json({
 			success: true,
 			message: "message sent",
 			data: msg,
 		});
 	} catch (error) {
-		await session.abortTransaction();
 		return res.status(500).json({
 			success: false,
 			message: error.message,
 		});
-	} finally {
-		await session.endSession();
 	}
 };
 export const fetchMsgs = async (req, res) => {
