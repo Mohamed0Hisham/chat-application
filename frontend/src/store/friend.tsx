@@ -51,12 +51,7 @@ const useFriendStore = create<FriendState>((set, get) => ({
 		set({ isLoading: true });
 
 		try {
-			const { accessToken, isInitialized } = useAuthStore.getState();
-			if (!isInitialized) {
-				console.log("Auth not initialized yet, waiting...");
-				return;
-			}
-
+			const { accessToken, } = useAuthStore.getState();
 			if (!accessToken) {
 				console.log("No user or token available");
 				return;

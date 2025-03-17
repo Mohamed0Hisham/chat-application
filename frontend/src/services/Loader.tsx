@@ -9,9 +9,9 @@ const AppLoader = ({ children }: { children: React.ReactNode }) => {
 		checkAuth();
 	}, [checkAuth]);
 
-	// if (!isAuthenticated) {
-	// 	return <Loader />;
-	// }
+	if (!isAuthenticated) {
+		return <Loader />;
+	}
 
 	return <>{children}</>;
 };

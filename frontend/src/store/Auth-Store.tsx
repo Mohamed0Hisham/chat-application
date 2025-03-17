@@ -59,6 +59,34 @@ const useAuthStore = create<AuthState>()(
 					set({ isLoading: false });
 				}
 			},
+			logout: async () => {
+				set({ isLoggingOut: true });
+				try {
+					const response = await api.post(
+						"/users/logout",
+						undefined,
+						{
+							headers: {
+								Authorization: `Bearer ${get().accessToken}`,
+							},
+						}
+					);
+					const { success, message } = response.data;
+					if (!success) throw new Error(message);
+				} catch (error) {
+					console.error(
+						"Logout failed:",
+						error instanceof Error ? error.message : ""
+					);
+				} finally {
+					set({
+						accessToken: undefined,
+						user: undefined,
+						isAuthenticated: false,
+						isLoggingOut: false,
+					});
+				}
+			},
 
 			checkAuth: async () => {
 				set({ isLoading: true });
@@ -92,36 +120,6 @@ const useAuthStore = create<AuthState>()(
 					});
 				} finally {
 					set({ isLoading: false });
-				}
-			},
-
-			logout: async () => {
-				set({ isLoggingOut: true });
-				try {
-					const response = await api.post(
-						"/users/logout",
-						undefined,
-						{
-							headers: {
-								Authorization: `Bearer ${get().accessToken}`,
-							},
-						}
-					);
-					const { success, message } = response.data;
-					if (!success) throw new Error(message);
-				} catch (error) {
-					console.error(
-						"Logout failed:",
-						error instanceof Error ? error.message : ""
-					);
-				} finally {
-					set({
-						accessToken: undefined,
-						user: undefined,
-						isAuthenticated: false,
-						isLoggingOut: false,
-					});
-					window.location.href = "/login";
 				}
 			},
 
