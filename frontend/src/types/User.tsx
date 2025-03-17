@@ -7,7 +7,7 @@ export interface Person {
 }
 
 export interface User extends Person {
-	joinDate: Date;
+	createdAt: Date;
 	friendsCount: number | null;
 	groupsCount: number | null;
 }

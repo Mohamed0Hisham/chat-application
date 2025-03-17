@@ -112,7 +112,13 @@ const Me: React.FC = () => {
 							/>
 						</section>
 						<section className={styles.membership}>
-							<MembershipDisplay joinDate={user.joinDate} />
+							<MembershipDisplay
+								joinDate={
+									user.createdAt
+										? user.createdAt
+										: new Date("2001-01-01")
+								}
+							/>
 						</section>
 					</div>
 				</>
