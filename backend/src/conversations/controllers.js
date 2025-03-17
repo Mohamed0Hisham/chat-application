@@ -77,50 +77,95 @@ export const createConversation = async (req, res) => {
 		await session.endSession();
 	}
 };
+
+const sortParticipantIDs = (ids) => [...ids].sort((a, b) => a.localeCompare(b));
+
 export const fetchConversation = async (req, res) => {
+	const session = await startSession();
+	let transactionStarted = false;
+
 	try {
 		const userID = req.user._id.toString();
 		const { friendID } = req.query;
 
-		console.log(userID, friendID);
 		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
 			return res.status(400).json({
 				success: false,
-				message: "invalid users Id",
+				message: "Invalid user IDs",
 			});
 		}
 
-		const user = await User.findById(userID).lean();
-		const friend = await User.findById(friendID).lean();
-		if (!user || !friend) {
-			return res.status(404).json({
-				success: false,
-				message: "invalid id passed",
+		// Consistent participant handling
+		const sortedIDs = sortParticipantIDs([userID, friendID]);
+
+		// Existing chat check
+		const existingChat = await Chat.findOne({
+			participants: { $all: sortedIDs, $size: 2 },
+		});
+
+		if (existingChat) {
+			return res.status(200).json({
+				success: true,
+				message: "Chat fetched",
+				chatID: existingChat._id,
 			});
 		}
 
-		const chatID = await Chat.findOne({
-			participants: { $all: [userID, friendID] },
-		})
-			.select("_id")
-			.lean();
+		session.startTransaction();
+		transactionStarted = true;
 
-			console.log(chatID, typeof(chatID))
+		// Re-check within transaction
+		const existingInTransaction = await Chat.findOne({
+			participants: { $all: sortedIDs, $size: 2 },
+		}).session(session);
+
+		if (existingInTransaction) {
+			await session.commitTransaction();
+			return res.status(200).json({
+				success: true,
+				message: "Chat fetched",
+				chatID: existingInTransaction._id,
+			});
+		}
+
+		// ELSE => Chat creation
+		const newChat = await Chat.create([{ participants: sortedIDs }], {
+			session,
+		});
+
+		// User updates
+		const updateOps = sortedIDs.map((id) => ({
+			updateOne: {
+				filter: { _id: id },
+				update: { $push: { conversation: newChat[0]._id } },
+			},
+		}));
+		await User.bulkWrite(updateOps, { session });
+
+		await session.commitTransaction();
 		return res.status(200).json({
 			success: true,
-			message: "chat fetched",
-			chat: chatID._id,
+			message: "Chat created and fetched",
+			chatID: newChat[0]._id,
 		});
 	} catch (error) {
+		if (transactionStarted) {
+			await session.abortTransaction();
+		}
 		return res.status(500).json({
 			success: false,
 			message:
 				process.env.NODE_ENV === "production"
-					? "Server error"
+					? "Chat operation failed"
 					: error.message,
 		});
+	} finally {
+		if (session) {
+			await session.endSession();
+		}
 	}
 };
+
 export const fetchGroupConversation = async (req, res) => {
 	try {
 		// Extract userIDs from query parameters (e.g., "id1,id2,id3")
