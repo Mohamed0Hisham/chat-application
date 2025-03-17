@@ -1,6 +1,5 @@
 import { saveMessage } from "../messages/messageService.js";
 import Msg from "../messages/models.js";
-import { validateData, checkConversationMembership } from "./middlewares.js";
 
 export const joinConversation = async (socket, data, acknowledge) => {
 	const { chatID, userID } = data;

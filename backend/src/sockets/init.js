@@ -27,14 +27,14 @@ export function initializeSocket(httpServer) {
 		socket.on("leaveConversation", (data, acknowledge) =>
 			leaveConversation(socket, data, acknowledge)
 		);
-	});
-	socket.on("disconnect", () => {
-		for (const room of socket.rooms) {
-			if (room !== socket.id) {
-				// Exclude the socket's own room
-				socket.to(room).emit("userLeft", socket.userID);
+		socket.on("disconnect", () => {
+			for (const room of socket.rooms) {
+				if (room !== socket.id) {
+					// Exclude the socket's own room
+					socket.to(room).emit("userLeft", socket.userID);
+				}
 			}
-		}
+		});
 	});
 
 	return io;
