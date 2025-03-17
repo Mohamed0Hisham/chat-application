@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware"; // Import persist middleware
+import { persist } from "zustand/middleware";
 import api from "../services/api";
 import type { AuthState } from "../types/States";
 
@@ -187,6 +187,10 @@ const useAuthStore = create<AuthState>()(
 		}),
 		{
 			name: "auth-storage",
+			partialize: (state) => ({
+				isAuthenticated: state.isAuthenticated,
+				user: state.user,
+			}),
 			storage: {
 				getItem: (name) =>
 					JSON.parse(sessionStorage.getItem(name) || "null"),
