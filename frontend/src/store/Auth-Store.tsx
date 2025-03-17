@@ -11,7 +11,7 @@ const useAuthStore = create<AuthState>()(
 			isLoading: false,
 			isAuthenticated: false,
 			isLoggingOut: false,
-			isInitialized: false,
+			error: null,
 
 			register: async (fullname, email, password) => {
 				set({ isLoading: true });
@@ -32,36 +32,28 @@ const useAuthStore = create<AuthState>()(
 
 			login: async (email, password) => {
 				try {
-					set({ isLoading: true });
+					set({ isLoading: true, error: null });
 					const response = await api.post("/users/login", {
 						email,
 						password,
 					});
 
-					const { success, message, accessToken } = response.data;
+					const { success, message, accessToken, user } =
+						response.data;
 					if (!success) throw new Error(message);
 
-					// Fetch user profile after login
-					const profileResponse = await api.get("/users/profile", {
-						headers: { Authorization: `Bearer ${accessToken}` },
-					});
-					const { user } = profileResponse.data;
-
-					// Update state
 					set({
 						accessToken,
 						user,
 						isAuthenticated: true,
 					});
 				} catch (error) {
-					console.error(
-						"login failed",
-						error instanceof Error ? error.message : ""
-					);
+					console.error("login failed");
 					set({
 						accessToken: undefined,
 						user: undefined,
 						isAuthenticated: false,
+						error: error instanceof Error ? error.message : "",
 					});
 				} finally {
 					set({ isLoading: false });
@@ -75,7 +67,6 @@ const useAuthStore = create<AuthState>()(
 				if (!accessToken) {
 					set({
 						isAuthenticated: false,
-						isInitialized: true,
 						isLoading: false,
 					});
 					return;
@@ -100,7 +91,7 @@ const useAuthStore = create<AuthState>()(
 						isAuthenticated: false,
 					});
 				} finally {
-					set({ isInitialized: true, isLoading: false });
+					set({ isLoading: false });
 				}
 			},
 
@@ -195,7 +186,7 @@ const useAuthStore = create<AuthState>()(
 			},
 		}),
 		{
-			name: "auth-storage", // Unique name for the storage key
+			name: "auth-storage",
 			storage: {
 				getItem: (name) =>
 					JSON.parse(sessionStorage.getItem(name) || "null"),

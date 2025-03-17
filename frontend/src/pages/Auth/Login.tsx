@@ -10,8 +10,9 @@ const Login = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 
-	const { isLoading, isAuthenticated, login, getProfile, isInitialized } =
+	const { isLoading, isAuthenticated, login } =
 		useAuthStore();
+		
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -29,7 +30,7 @@ const Login = () => {
 
 		try {
 			await login(email, password);
-			await getProfile();
+			// await getProfile();
 		} catch (err) {
 			setError(
 				err instanceof Error
@@ -45,7 +46,7 @@ const Login = () => {
 		}
 	}, [isAuthenticated, navigate, from]);
 
-	if (isLoading || !isInitialized) {
+	if (isLoading) {
 		return (
 			<div className="overlay">
 				<Loader />

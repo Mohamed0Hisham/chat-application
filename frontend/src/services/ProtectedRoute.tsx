@@ -8,11 +8,9 @@ interface ProtectedRouteProps {
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-	const { isAuthenticated, isInitialized } = useAuthStore();
+	const { isAuthenticated } = useAuthStore();
 	const location = useLocation();
 
-	// Don't render anything until auth check completes
-	if (!isInitialized) return null;
 
 	return isAuthenticated ? (
 		children

@@ -133,7 +133,7 @@ export const login = async (req, res) => {
 			});
 		}
 		const user = await User.findOne({ email })
-			.select("_id fullname email")
+			.select("-__V -password")
 			.lean();
 		if (!user) {
 			return res.status(400).json({

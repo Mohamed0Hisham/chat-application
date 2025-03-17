@@ -22,28 +22,20 @@ const Me = lazy((): Promise<{ default: FC }> => import("../pages/Profile/Me"));
 
 const routes = createBrowserRouter([
 	{
-		index: true,
-		element: (
-			<Suspense fallback={<Loader />}>
-				<Login />
-			</Suspense>
-		),
-	},
-	{
-		path: "/register",
-		element: (
-			<Suspense fallback={<Loader />}>
-				<Register />
-			</Suspense>
-		),
-	},
-	{
 		path: "/",
 		element: <App />,
 		errorElement: <NotFound />,
 		children: [
 			{
-				path: "/chat",
+				index: true,
+				element: <Login />,
+			},
+			{
+				path: "register",
+				element: <Register />,
+			},
+			{
+				path: "chat",
 				element: (
 					<ProtectedRoute>
 						<Suspense fallback={<Loader />}>
@@ -53,7 +45,7 @@ const routes = createBrowserRouter([
 				),
 			},
 			{
-				path: "/profile",
+				path: "profile",
 				element: (
 					<ProtectedRoute>
 						<Suspense fallback={<Loader />}>
@@ -63,7 +55,7 @@ const routes = createBrowserRouter([
 				),
 			},
 			{
-				path: "/add",
+				path: "add",
 				element: (
 					<ProtectedRoute>
 						<Suspense fallback={<Loader />}>
@@ -73,7 +65,7 @@ const routes = createBrowserRouter([
 				),
 			},
 			{
-				path: "/requests",
+				path: "requests",
 				element: (
 					<ProtectedRoute>
 						<Suspense fallback={<Loader />}>
@@ -83,7 +75,7 @@ const routes = createBrowserRouter([
 				),
 			},
 			{
-				path: "/dashboard",
+				path: "dashboard",
 				element: (
 					<ProtectedRoute>
 						<Suspense fallback={<Loader />}>
