@@ -81,6 +81,8 @@ export const fetchConversation = async (req, res) => {
 	try {
 		const userID = req.user._id.toString();
 		const { friendID } = req.query;
+
+		console.log(userID, friendID);
 		if (!validator.isMongoId(userID) || !validator.isMongoId(friendID)) {
 			return res.status(400).json({
 				success: false,
@@ -103,6 +105,7 @@ export const fetchConversation = async (req, res) => {
 			.select("_id")
 			.lean();
 
+			console.log(chatID, typeof(chatID))
 		return res.status(200).json({
 			success: true,
 			message: "chat fetched",

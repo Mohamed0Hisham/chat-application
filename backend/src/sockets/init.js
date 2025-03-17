@@ -8,7 +8,14 @@ import {
 } from "./handlers.js";
 
 export function initializeSocket(httpServer) {
-	const io = new Server(httpServer);
+	const io = new Server(httpServer, {
+		cors: {
+			origin: "http://localhost:5173",
+			credentials: true,
+			methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+			allowedHeaders: ["Content-Type", "Authorization"],
+		},
+	});
 
 	io.use(authenticate);
 
