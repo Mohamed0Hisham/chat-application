@@ -8,9 +8,9 @@ import Loader from "../../components/shared/Loader";
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [error, setError] = useState<string | null>(null);
 
-	const { isLoading, isAuthenticated, login } = useAuthStore();
+	const { isLoading, isAuthenticated, login, error, setError } =
+		useAuthStore();
 
 	const navigate = useNavigate();
 	const location = useLocation();
