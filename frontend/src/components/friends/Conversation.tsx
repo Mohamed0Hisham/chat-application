@@ -18,14 +18,24 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const { isLoading, messages } = useMsgStore();
 	const { user } = useAuthStore();
 	const friend = useMsgStore.getState().friend;
+	const chat = useMsgStore.getState().chat;
 	const handleSend = async () => {
-		if (!content.trim() || !user || isSending || !socket) return;
+		
+		if (!content.trim() || !user || isSending || !socket) {
+			console.log("Blocked by:", {
+				contentEmpty: !content.trim(),
+				userMissing: !user,
+				isSending,
+				socketMissing: !socket,
+			});
+			return;
+		}
 		setIsSending(true);
 		const tempId = Date.now().toString();
 
 		const tempMessage: Msg = {
 			_id: tempId,
-			chatID: useMsgStore.getState().chat,
+			chatID: chat,
 			senderID: user._id,
 			content,
 			createdAt: new Date(),
@@ -37,11 +47,10 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}));
 
 		try {
-			console.log(useMsgStore.getState().chat);
 			socket.emit(
 				"sendMessage",
 				{
-					chatID: useMsgStore.getState().chat,
+					chatID: chat,
 					senderID: user._id,
 					content,
 				},
@@ -67,7 +76,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 			setContent("");
 		} catch (error) {
 			console.error("Failed to send message:", error);
-			// Remove temporary message if sending fails
 			useMsgStore.setState((state) => ({
 				messages: state.messages.filter((msg) => msg._id !== tempId),
 			}));

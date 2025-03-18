@@ -5,7 +5,6 @@ import { io, Socket } from "socket.io-client";
 import useAuthStore from "../../store/Auth-Store";
 import useMsgStore from "../../store/chat";
 
-
 const Chat = () => {
 	const { accessToken, user } = useAuthStore();
 	const { chat } = useMsgStore();
@@ -62,7 +61,9 @@ const Chat = () => {
 
 	return (
 		<main className={styles.chat}>
-			<Conversation socket={socketRef.current} />
+			{socketRef && (
+				<Conversation socket={socketRef.current} />
+			)}
 		</main>
 	);
 };
