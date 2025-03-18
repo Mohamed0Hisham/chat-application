@@ -29,7 +29,6 @@ const Login = () => {
 
 		try {
 			await login(email, password);
-			// await getProfile();
 		} catch (err) {
 			setError(
 				err instanceof Error

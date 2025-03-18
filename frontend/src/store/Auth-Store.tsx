@@ -11,7 +11,6 @@ const useAuthStore = create<AuthState>()(
 			isLoading: false,
 			isAuthenticated: false,
 			isLoggingOut: false,
-			error: null,
 
 			register: async (fullname, email, password) => {
 				set({ isLoading: true });
@@ -32,7 +31,7 @@ const useAuthStore = create<AuthState>()(
 
 			login: async (email, password) => {
 				try {
-					set({ isLoading: true, error: null });
+					set({ isLoading: true });
 					const response = await api.post("/users/login", {
 						email,
 						password,
@@ -48,13 +47,13 @@ const useAuthStore = create<AuthState>()(
 						isAuthenticated: true,
 					});
 				} catch (error) {
-					console.error("login failed");
 					set({
 						accessToken: undefined,
 						user: undefined,
 						isAuthenticated: false,
-						error: error instanceof Error ? error.message : "",
 					});
+					console.log(error)
+					throw error;
 				} finally {
 					set({ isLoading: false });
 				}

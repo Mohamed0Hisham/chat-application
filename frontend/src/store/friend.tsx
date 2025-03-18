@@ -65,7 +65,6 @@ const useFriendStore = create<FriendState>()(
 						{},
 						{
 							headers: { Authorization: `Bearer ${accessToken}` },
-							validateStatus: () => true,
 						}
 					);
 					const { success, message } = response.data;

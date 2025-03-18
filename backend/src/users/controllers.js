@@ -30,14 +30,14 @@ export const findUsers = async (req, res) => {
 		if (email && fullname) {
 			return res.status(400).json({
 				success: false,
-				error: "Search by either email or fullname, not both.",
+				message: "Search by either email or fullname, not both.",
 			});
 		}
 
 		if (!email && !fullname) {
 			return res.status(400).json({
 				success: false,
-				error: "Please provide a valid email or fullname.",
+				message: "Please provide a valid email or fullname.",
 			});
 		}
 
@@ -49,7 +49,7 @@ export const findUsers = async (req, res) => {
 			if (!validator.isEmail(email)) {
 				return res.status(400).json({
 					success: false,
-					error: "Invalid email format.",
+					message: "Invalid email format.",
 				});
 			}
 			query.email = email;
@@ -57,7 +57,7 @@ export const findUsers = async (req, res) => {
 			if (validator.isEmpty(fullname)) {
 				return res.status(400).json({
 					success: false,
-					error: "Fullname cannot be empty.",
+					message: "Fullname cannot be empty.",
 				});
 			}
 			// query.$text = { $search: fullname };
@@ -81,7 +81,7 @@ export const findUsers = async (req, res) => {
 		console.error("Search Error:", error.message);
 		return res.status(500).json({
 			success: false,
-			error: error.message || "Server error processing your request.",
+			message: error.message || "Server error processing your request.",
 		});
 	}
 };
@@ -96,7 +96,7 @@ export const registerUser = async (req, res) => {
 		) {
 			return res.status(400).json({
 				success: false,
-				error: "invalid credentials",
+				message: "invalid credentials",
 			});
 		}
 
@@ -115,7 +115,7 @@ export const registerUser = async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
-			error: error.message,
+			message: error.message,
 		});
 	}
 };
@@ -129,7 +129,7 @@ export const login = async (req, res) => {
 		) {
 			return res.status(400).json({
 				success: false,
-				error: "invalid credentials",
+				message: "invalid credentials",
 			});
 		}
 		const user = await User.findOne({ email })
@@ -138,7 +138,7 @@ export const login = async (req, res) => {
 		if (!user) {
 			return res.status(400).json({
 				success: false,
-				error: "make sure your credentials are correct",
+				message: "make sure your credentials are correct",
 			});
 		}
 
@@ -171,7 +171,7 @@ export const login = async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
-			error: error.message,
+			message: error.message,
 		});
 	}
 };
@@ -205,7 +205,7 @@ export const fetchProfile = async (req, res) => {
 		if (!user) {
 			return res.status(400).json({
 				success: false,
-				error: "User not found",
+				message: "User not found",
 			});
 		}
 
@@ -226,7 +226,7 @@ export const fetchProfile = async (req, res) => {
 	} catch (error) {
 		return res.status(500).json({
 			success: false,
-			error: error.message,
+			message: error.message,
 		});
 	}
 };
@@ -238,7 +238,7 @@ export const updateProfile = async (req, res) => {
 		if (!req.body) {
 			return res.status(400).json({
 				success: false,
-				error: "invalid operation",
+				message: "invalid operation",
 			});
 		}
 
@@ -246,7 +246,7 @@ export const updateProfile = async (req, res) => {
 			if (validator.isLength(password, { min: 6 }) === false) {
 				return res.status(400).json({
 					success: false,
-					error: "Password must be at least 6 characters long",
+					message: "Password must be at least 6 characters long",
 				});
 			}
 			const hashedPassword = await bcryptjs.hash(password, SALT);
@@ -261,7 +261,7 @@ export const updateProfile = async (req, res) => {
 		if (!result) {
 			return res.status(400).json({
 				success: false,
-				error: "User not found",
+				message: "User not found",
 			});
 		}
 
@@ -283,7 +283,7 @@ export const updateProfile = async (req, res) => {
 		console.error("Update Profile Error:", error);
 		return res.status(500).json({
 			success: false,
-			error: error.message || "Internal server error",
+			message: error.message || "Internal server error",
 		});
 	}
 };
