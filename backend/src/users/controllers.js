@@ -145,6 +145,15 @@ export const login = async (req, res) => {
 		const accessToken = await generateAccessToken(user);
 		const refreshToken = await generateRefreshToken(user);
 
+		const formattedUser = {
+			avatar: user.avatar,
+			fullname: user.fullname,
+			email: user.email,
+			createdAt: user.createdAt,
+			friendsCount: user.friends ? user.friends.length : 0,
+			groupsCount: user.groups ? user.groups.length : 0,
+		};
+
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
 			secure: environment,
@@ -156,7 +165,7 @@ export const login = async (req, res) => {
 			success: true,
 			message: "Login in successfully",
 			accessToken,
-			user,
+			user: formattedUser,
 		});
 	} catch (error) {
 		return res.status(500).json({

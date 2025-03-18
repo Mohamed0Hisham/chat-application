@@ -6,6 +6,7 @@ import PasswordChange from "../../components/layouts/PasswordChange";
 import StatsDisplay from "../../components/layouts/StatsDisplay";
 import MembershipDisplay from "../../components/layouts/Membership";
 import useAuthStore from "../../store/Auth-Store";
+import Loader from "../../components/shared/Loader";
 
 const Me: React.FC = () => {
 	const { user, updateProfile, isLoading } = useAuthStore();
@@ -74,11 +75,13 @@ const Me: React.FC = () => {
 			{user ? (
 				<>
 					<header className={styles.header}>
-						<Avatar src={user.avatar} alt={user.fullname} />
+						<Avatar
+							src={user.avatar ? user.avatar : ""}
+							alt={user.fullname}
+						/>
 						<h1>{user.fullname}</h1>
 					</header>
 					<div className={styles.content}>
-						{/* Display feedback messages */}
 						{error && <p className={styles.error}>{error}</p>}
 						{success && <p className={styles.success}>{success}</p>}
 
@@ -123,7 +126,9 @@ const Me: React.FC = () => {
 					</div>
 				</>
 			) : (
-				<div>Loading...</div>
+				<div className="overlay">
+					<Loader />
+				</div>
 			)}
 		</section>
 	);
