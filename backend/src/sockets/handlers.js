@@ -26,7 +26,7 @@ export const joinConversation = async (socket, data, acknowledge) => {
 
 export const sendMessage = async (socket, data, acknowledge) => {
 	const { chatID, senderID, content } = data;
-	console.log(data)
+	console.log(data);
 
 	// Basic validation
 	if (!chatID || !senderID || !content) {
@@ -40,9 +40,8 @@ export const sendMessage = async (socket, data, acknowledge) => {
 
 	try {
 		const msg = await saveMessage(chatID, senderID, content);
-		// Emit the message to all clients in the room
-		socket.server.to(chatID).emit("receiveMessage", msg);
-		acknowledge?.({ success: true });
+		socket.to(chatID).emit("receiveMessage", msg);
+		acknowledge?.({ success: true, data: msg, error: null });
 	} catch (err) {
 		acknowledge?.({ error: err.message });
 	}

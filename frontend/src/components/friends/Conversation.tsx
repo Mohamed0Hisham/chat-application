@@ -19,17 +19,9 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const { user } = useAuthStore();
 	const friend = useMsgStore.getState().friend;
 	const chat = useMsgStore.getState().chat;
+
 	const handleSend = async () => {
-		
-		if (!content.trim() || !user || isSending || !socket) {
-			console.log("Blocked by:", {
-				contentEmpty: !content.trim(),
-				userMissing: !user,
-				isSending,
-				socketMissing: !socket,
-			});
-			return;
-		}
+		if (!content.trim() || !user || isSending || !socket) return;
 		setIsSending(true);
 		const tempId = Date.now().toString();
 
@@ -41,41 +33,50 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 			createdAt: new Date(),
 		};
 
-		// Add temporary message for immediate feedback
 		useMsgStore.setState((state) => ({
 			messages: [...state.messages, tempMessage],
 		}));
 
 		try {
-			socket.emit(
-				"sendMessage",
-				{
-					chatID: chat,
-					senderID: user._id,
-					content,
-				},
-				(response: {
-					success: boolean;
-					data?: Msg;
-					error?: string;
-				}) => {
-					if (response.success && response.data) {
-						// Replace temporary message with server-confirmed message
-						useMsgStore.setState((state) => ({
-							messages: state.messages.map((msg) =>
-								msg._id === tempId ? response.data! : msg
-							),
-						}));
-					} else {
-						throw new Error(
-							response.error || "Failed to send message"
-						);
+			// Wrap socket.emit in a Promise
+			await new Promise((resolve, reject) => {
+				socket.emit(
+					"sendMessage",
+					{
+						chatID: chat,
+						senderID: user._id,
+						content,
+					},
+					(response: {
+						success: boolean;
+						data?: Msg;
+						error?: string;
+					}) => {
+						console.log(response);
+						if (response.success && response.data) {
+							useMsgStore.setState((state) => ({
+								messages: state.messages.map((msg) =>
+									msg._id === tempId ? response.data! : msg
+								),
+							}));
+							resolve(true);
+						} else {
+							reject(
+								new Error(
+									response.error || "Failed to send message"
+								)
+							);
+						}
 					}
-				}
-			);
+				);
+			});
+
 			setContent("");
 		} catch (error) {
-			console.error("Failed to send message:", error);
+			console.error(
+				"Failed to send message:",
+				error instanceof Error ? error.message : error
+			);
 			useMsgStore.setState((state) => ({
 				messages: state.messages.filter((msg) => msg._id !== tempId),
 			}));
@@ -90,7 +91,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 
 	return (
 		<div className={styles.conv}>
-			{/* Friend Header */}
 			<div className={styles.friendHeader}>
 				<div className={styles.avatarContainer}>
 					<img
@@ -113,7 +113,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 				</div>
 			</div>
 
-			{/* Chat Container */}
 			<div className={styles.chatContainer}>
 				{isLoading ? (
 					<p>Loading messages...</p>

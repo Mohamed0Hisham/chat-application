@@ -64,6 +64,7 @@ const useMsgStore = create<ChatState>()(
 						const exists = state.messages.some(
 							(m) => m._id === message._id
 						);
+						console.log(exists);
 						if (!exists) {
 							return { messages: [...state.messages, message] };
 						}
@@ -76,7 +77,7 @@ const useMsgStore = create<ChatState>()(
 			name: "msg-storage",
 			partialize: (state) => ({
 				chat: state.chat,
-				friend: state.friend
+				friend: state.friend,
 			}),
 			storage: {
 				getItem: (name) =>
