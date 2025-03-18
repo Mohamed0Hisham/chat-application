@@ -1,6 +1,6 @@
 import styles from "./Requests.module.css";
 import useFriendStore from "../../store/friend";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 
 const Requests: FC = () => {
 	const {
@@ -9,17 +9,39 @@ const Requests: FC = () => {
 		acceptRequest,
 		declineRequest,
 		requests,
-		error
+		error,
 	} = useFriendStore();
+	const [processingId, setProcessingId] = useState<string | null>(null);
+
 	useEffect(() => {
-		(async () => {
-			try {
-				await fetchRequests();
-			} catch (err) {
-				console.error("Failed to fetch requests:", err);
-			}
-		})();
+		fetchRequests();
 	}, [fetchRequests]);
+
+	const handleAccept = async (id: string) => {
+		setProcessingId(id);
+		try {
+			await acceptRequest(id);
+			// Optimistically remove from UI
+			useFriendStore.setState((state) => ({
+				requests: state.requests.filter((req) => req._id !== id),
+			}));
+		} finally {
+			setProcessingId(null);
+		}
+	};
+
+	const handleDecline = async (id: string) => {
+		setProcessingId(id);
+		try {
+			await declineRequest(id);
+			// Optimistically remove from UI
+			useFriendStore.setState((state) => ({
+				requests: state.requests.filter((req) => req._id !== id),
+			}));
+		} finally {
+			setProcessingId(null);
+		}
+	};
 
 	return (
 		<div className={styles.container}>
@@ -55,17 +77,23 @@ const Requests: FC = () => {
 								<div className={styles.actions}>
 									<button
 										className={styles.acceptButton}
+										disabled={processingId === request._id}
 										onClick={() =>
-											acceptRequest(request._id)
+											handleAccept(request._id)
 										}>
-										Accept
+										{processingId === request._id
+											? "Accepting..."
+											: "Accept"}
 									</button>
 									<button
 										className={styles.declineButton}
+										disabled={processingId === request._id}
 										onClick={() =>
-											declineRequest(request._id)
+											handleDecline(request._id)
 										}>
-										Decline
+										{processingId === request._id
+											? "Declining..."
+											: "Decline"}
 									</button>
 								</div>
 							</div>

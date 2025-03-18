@@ -111,24 +111,28 @@ const useFriendStore = create<FriendState>()(
 				set({ isLoading: true, error: null });
 				try {
 					const { accessToken } = useAuthStore.getState();
-
 					await api.post(
 						`/friends/accept`,
-						{
-							friendID: id,
-						},
+						{ friendID: id },
 						{
 							headers: { Authorization: `Bearer ${accessToken}` },
 						}
 					);
+					// Remove the request from state immediately
+					set((state) => ({
+						requests: state.requests.filter(
+							(req) => req._id !== id
+						),
+					}));
 				} catch (error) {
+					// Handle error and revert UI if needed
 					if (isError(error)) {
 						set({ error: error.message });
 					} else {
-						set({
-							error: "An unknown error occurred",
-						});
+						set({ error: "An unknown error occurred" });
 					}
+					// Re-fetch to sync with server
+					get().fetchRequests();
 				} finally {
 					set({ isLoading: false });
 				}
