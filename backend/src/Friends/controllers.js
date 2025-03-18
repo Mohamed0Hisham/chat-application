@@ -128,7 +128,7 @@ export const sendFriendRequest = async (req, res) => {
 		) {
 			return res.status(400).json({
 				success: false,
-				error: "friend already added",
+				message: "friend already added",
 			});
 		}
 

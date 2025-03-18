@@ -65,14 +65,13 @@ const useFriendStore = create<FriendState>()(
 						{},
 						{
 							headers: { Authorization: `Bearer ${accessToken}` },
+							validateStatus: () => true,
 						}
 					);
-					console.log(response)
 					const { success, message } = response.data;
 
 					if (!success) throw new Error(message);
 				} catch (error) {
-					console.log(error)
 					if (isError(error)) {
 						set({ error: error.message });
 					} else {
