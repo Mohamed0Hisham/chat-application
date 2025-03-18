@@ -78,6 +78,7 @@ const useMsgStore = create<ChatState>()(
 			partialize: (state) => ({
 				chat: state.chat,
 				friend: state.friend,
+				messages: state.messages,
 			}),
 			storage: {
 				getItem: (name) =>
