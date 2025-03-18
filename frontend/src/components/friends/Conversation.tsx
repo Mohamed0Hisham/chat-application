@@ -104,14 +104,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}
 	};
 
-	// Scroll handler to show/hide "Load More" button
-	const handleScroll = () => {
-		if (chatContainerRef.current) {
-			const { scrollTop } = chatContainerRef.current;
-			setShowLoadMore(scrollTop === 0 && page > 0 && !isLoading);
-		}
-	};
-
 	// Initial fetch and scroll to bottom
 	useEffect(() => {
 		(async () => {
@@ -137,6 +129,12 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 
 	// Attach scroll listener
 	useEffect(() => {
+		const handleScroll = () => {
+			if (chatContainerRef.current) {
+				const { scrollTop } = chatContainerRef.current;
+				setShowLoadMore(scrollTop === 0 && page > 0 && !isLoading);
+			}
+		};
 		const container = chatContainerRef.current;
 		if (container) {
 			container.addEventListener("scroll", handleScroll);
