@@ -12,7 +12,7 @@ const useMsgStore = create<ChatState>()(
 			isLoading: false,
 			chat: "",
 			friend: null,
-			page: 0,
+			page: 1,
 
 			getMsgsOfChat: async () => {
 				const { accessToken } = useAuthStore.getState();
@@ -30,16 +30,14 @@ const useMsgStore = create<ChatState>()(
 					if (response.data.success === false)
 						throw new Error(response.data.message);
 
-					const newMsgs = response.data.messages.reverse();
-					const currentPage = response.data.currentPage;
-
+					const newMsgs = response.data.messages.reverse(); // To ascending
 					set((state) => ({
 						messages:
-							currentPage === 1
+							state.page === 1
 								? newMsgs
 								: [...newMsgs, ...state.messages],
 						isLoading: false,
-						page: currentPage,
+						page: response.data.pagination.currentPage,
 					}));
 				} catch (error) {
 					console.log(
@@ -91,7 +89,7 @@ const useMsgStore = create<ChatState>()(
 			loadMoreMessages: async () => {
 				const next = get().page + 1;
 				set({ page: next });
-				// await get().getMsgsOfChat();
+				await get().getMsgsOfChat();
 			},
 		}),
 		{

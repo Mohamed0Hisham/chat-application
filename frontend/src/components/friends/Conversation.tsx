@@ -1,4 +1,4 @@
-import { useState, FC, useEffect } from "react";
+import { useState, FC, useEffect, useRef } from "react";
 import styles from "./conversation.module.css";
 import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../chat/MessageInput";
@@ -11,20 +11,20 @@ import { Msg } from "../../types/States";
 interface ConversationProps {
 	socket: Socket | null;
 }
+
 const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const [content, setContent] = useState("");
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const [isSending, setIsSending] = useState(false);
-	const { isLoading, messages, getMsgsOfChat, page } = useMsgStore();
+	const [showLoadMore, setShowLoadMore] = useState(false);
+	const { isLoading, messages, getMsgsOfChat, page, loadMoreMessages } =
+		useMsgStore();
 	const { user } = useAuthStore();
 	const friend = useMsgStore.getState().friend;
 	const chat = useMsgStore.getState().chat;
-	const loadMoreMessages = useMsgStore.getState().loadMoreMessages;
+	const chatContainerRef = useRef<HTMLDivElement>(null);
 
-	const handleLoadMore = async () => {
-		if (!isLoading) await loadMoreMessages();
-	};
-
+	// Handle sending messages
 	const handleSend = async () => {
 		if (!content.trim() || !user || isSending || !socket) return;
 		setIsSending(true);
@@ -43,21 +43,15 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}));
 
 		try {
-			// Wrap socket.emit in a Promise
 			await new Promise((resolve, reject) => {
 				socket.emit(
 					"sendMessage",
-					{
-						chatID: chat,
-						senderID: user._id,
-						content,
-					},
+					{ chatID: chat, senderID: user._id, content },
 					(response: {
 						success: boolean;
 						data?: Msg;
 						error?: string;
 					}) => {
-						console.log(response);
 						if (response.success && response.data) {
 							useMsgStore.setState((state) => ({
 								messages: state.messages.map((msg) =>
@@ -75,7 +69,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 					}
 				);
 			});
-
 			setContent("");
 		} catch (error) {
 			console.error(
@@ -94,6 +87,32 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		setContent((prev) => prev + emoji.emoji);
 	};
 
+	const handleLoadMore = async () => {
+		if (!isLoading) {
+			const scrollHeightBefore =
+				chatContainerRef.current?.scrollHeight || 0;
+			await loadMoreMessages();
+			// Maintain scroll position after loading older messages
+			requestAnimationFrame(() => {
+				if (chatContainerRef.current) {
+					const scrollHeightAfter =
+						chatContainerRef.current.scrollHeight;
+					chatContainerRef.current.scrollTop =
+						scrollHeightAfter - scrollHeightBefore;
+				}
+			});
+		}
+	};
+
+	// Scroll handler to show/hide "Load More" button
+	const handleScroll = () => {
+		if (chatContainerRef.current) {
+			const { scrollTop } = chatContainerRef.current;
+			setShowLoadMore(scrollTop === 0 && page > 0 && !isLoading);
+		}
+	};
+
+	// Initial fetch and scroll to bottom
 	useEffect(() => {
 		(async () => {
 			try {
@@ -107,6 +126,24 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 			}
 		})();
 	}, [getMsgsOfChat]);
+
+	// Scroll to bottom when messages change (e.g., new message)
+	useEffect(() => {
+		if (chatContainerRef.current && !isLoading) {
+			chatContainerRef.current.scrollTop =
+				chatContainerRef.current.scrollHeight;
+		}
+	}, [messages, isLoading]);
+
+	// Attach scroll listener
+	useEffect(() => {
+		const container = chatContainerRef.current;
+		if (container) {
+			container.addEventListener("scroll", handleScroll);
+			return () => container.removeEventListener("scroll", handleScroll);
+		}
+	}, [page, isLoading]);
+
 	return (
 		<div className={styles.conv}>
 			<div className={styles.friendHeader}>
@@ -131,11 +168,15 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 				</div>
 			</div>
 
-			<div className={styles.chatContainer}>
-				{page > 0 && !isLoading && (
-					<button onClick={handleLoadMore}>Load More Messages</button>
+			<div className={styles.chatContainer} ref={chatContainerRef}>
+				{showLoadMore && (
+					<button
+						className={styles.loadMoreButton}
+						onClick={handleLoadMore}>
+						Load More Messages
+					</button>
 				)}
-				{isLoading ? (
+				{isLoading && page === 1 ? (
 					<p>Loading messages...</p>
 				) : (
 					messages.map((msg, index) => {
@@ -184,7 +225,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 				)}
 			</div>
 
-			{/* Message Input */}
 			<div className={styles.msgIn}>
 				<span className={styles.attach}>
 					<Paperclip className={styles.attachIcon} />

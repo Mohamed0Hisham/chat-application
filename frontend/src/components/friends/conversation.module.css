@@ -237,3 +237,18 @@
 		padding: 1rem 2rem;
 	}
 }
+.loadMoreButton {
+	display: block;
+	margin: 10px auto;
+	padding: 5px 10px;
+	background-color: #f0f0f0;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-style: italic;
+	font-size: small;
+}
+
+.loadMoreButton:hover {
+	background-color: #e0e0e0;
+}
