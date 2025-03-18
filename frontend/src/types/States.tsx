@@ -42,15 +42,11 @@ export interface AuthState {
 }
 
 export interface FriendState {
-	friend: Friend | null;
 	friends: Friend[];
 	isLoading: boolean;
 	error: string | null;
 	searchHistory: number[];
 	requests: Request[];
-
-	getFriend: (x: string) => Promise<void>;
-	// setFriend: (x: Friend | null) => void;
 
 	getFriends: () => Promise<void>;
 	sendFriendRequest: (s: string) => Promise<void>;
