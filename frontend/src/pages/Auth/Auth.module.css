@@ -1,146 +1,292 @@
 .containerAuth {
-	width: 100dvw;
-	height: 100dvh;
-	background-image: url("../../assets/SeaShore.webp");
-	background-repeat: no-repeat;
-	background-size: cover;
-	position: relative;
-}
-
-.errorMessage {
-	color: red;
-	font-size: 0.9rem;
-	margin: 0.5rem 0;
+	display: flex;
+	min-height: 100dvh;
+	padding: 2rem;
+	background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+	justify-content: center;
+	align-items: center;
 }
 
 .form {
-	position: absolute;
-	left: 50%;
-	top: 50%;
-	transform: translateX(-50%) translateY(-50%);
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 18px;
-	padding: 48px;
-	background: rgba(255, 255, 255, 0.57);
-	border-radius: 16px;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(4.5px);
-	-webkit-backdrop-filter: blur(4.5px);
-	border: 1px solid rgba(255, 255, 255, 1);
+	width: 100%;
+	max-width: 480px;
+	padding: 2.5rem;
+	background: rgba(255, 255, 255, 0.95);
+	border-radius: 1.5rem;
+	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	transition: transform 0.3s ease;
 }
 
-@media (max-width: 1279px) {
-	.form {
-		gap: 14px;
-		padding: 18px;
-	}
+.title {
+	font-size: 2rem;
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+	color: #1a1a1a;
+	text-align: center;
 }
 
-@media (max-width: 499px) {
-	.form {
-		width: 95vw;
-		font-size: small;
-		font-weight: 100;
-	}
+.subtitle {
+	font-size: 1rem;
+	color: #666;
+	text-align: center;
+	margin-bottom: 2rem;
 }
 
-.formField {
-	display: flex;
-	flex-direction: column;
+.inputContainer {
+	position: relative;
+	margin: 1rem 0;
 	width: 100%;
 }
 
-.label {
-	align-self: self-start;
-	margin-bottom: 4px;
-	font-weight: 600;
-	font-size: x-large;
-}
-
-@media (max-width: 499px) {
-	.label {
-		align-self: self-start;
-		margin-bottom: 4px;
-		font-weight: 600;
-		font-size: medium;
-	}
-}
-
-.inputField {
-	width: 450px;
-	border-radius: 16px;
-	background-color: #ffffff;
-	padding: 8px 16px;
-	font: black;
-	display: flex;
-	align-items: center;
-}
-
-@media (max-width: 499px) {
-	.inputField {
-		width: 250px;
-		border-radius: 8px;
-		background-color: #ffffff;
-		padding: 8px 16px;
-		font: black;
-		display: flex;
-		align-items: center;
-	}
-}
-
-.inputField .input:focus {
-	outline: none;
+.icon {
+	position: absolute;
+	left: 1rem;
+	top: 50%;
+	transform: translateY(-50%);
+	color: #666;
+	z-index: 1;
 }
 
 .input {
 	width: 100%;
-	border: none;
-	padding: 6px 12px;
-	flex: auto;
-	font-weight: 400;
-	font-size: large;
+	padding: 1rem 1rem 1rem 3rem;
+	border: 1px solid #e0e0e0;
+	border-radius: 0.75rem;
+	font-size: 1rem;
+	transition: all 0.3s ease;
+	background: #f8f9fa;
+}
+
+.input:focus {
+	outline: none;
+	border-color: #2d79f3;
+	box-shadow: 0 0 0 3px rgba(45, 121, 243, 0.1);
+	background: white;
+}
+
+.errorMessage {
+	color: #dc3545;
+	background: #fff5f5;
+	padding: 0.75rem 1rem;
+	border-radius: 0.5rem;
+	margin: 1rem 0;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9rem;
 }
 
 .options {
-	padding: 8px;
 	display: flex;
-	width: 100%;
 	justify-content: space-between;
-	font-size: larger;
-	font-weight: 500;
+	align-items: center;
+	margin: 1.5rem 0;
+	gap: 1rem;
 }
 
-#remember {
-	transform: scale(1.5);
-	margin-right: 8px;
+.rememberMe {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	color: #666;
+	font-size: 0.9rem;
+}
+
+.checkbox {
+	width: 1.1rem;
+	height: 1.1rem;
+	accent-color: #2d79f3;
 }
 
 .resetPassword {
-	font-weight: 600;
-	font-size: large;
 	color: #2d79f3;
+	font-size: 0.9rem;
+	font-weight: 500;
 	background: none;
 	border: none;
 	cursor: pointer;
+	transition: opacity 0.3s ease;
+}
+
+.resetPassword:hover {
+	opacity: 0.8;
 }
 
 .submitButton {
-	padding: 12px 12px;
+	width: 100%;
+	padding: 1rem;
+	background: #2d79f3;
+	color: white;
 	border: none;
-	border-radius: 4px;
+	border-radius: 0.75rem;
+	font-size: 1rem;
+	font-weight: 600;
 	cursor: pointer;
-	transition: ease-in-out 250ms;
+	transition: all 0.3s ease;
 }
 
 .submitButton:hover {
-	transform: scale(1.05);
-	background: transparent;
-	font-weight: bold;
+	background: #1c5fd4;
+	transform: translateY(-1px);
 }
 
-.register {
+.submitButton:disabled {
+	background: #94a3b8;
+	cursor: not-allowed;
+}
+
+.buttonLoader {
+	width: 1.5rem;
+	height: 1.5rem;
+	border: 3px solid rgba(255, 255, 255, 0.3);
+	border-top-color: white;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin: 0 auto;
+}
+
+.registerText {
+	text-align: center;
+	margin-top: 1.5rem;
+	color: #666;
+}
+
+.registerLink {
 	color: #2d79f3;
+	font-weight: 500;
 	text-decoration: none;
+	transition: opacity 0.3s ease;
+}
+
+.registerLink:hover {
+	opacity: 0.8;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (max-width: 640px) {
+	.containerAuth {
+		padding: 1rem;
+	}
+
+	.form {
+		padding: 1.5rem;
+		border-radius: 1rem;
+	}
+
+	.title {
+		font-size: 1.75rem;
+	}
+
+	.options {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.resetPassword {
+		text-align: right;
+	}
+}
+
+@media (max-width: 400px) {
+	.input {
+		padding-left: 2.5rem;
+	}
+
+	.icon {
+		left: 0.75rem;
+	}
+}
+@media (min-width: 2560px) {
+	.containerAuth {
+		padding: 4rem;
+	}
+
+	.form {
+		max-width: 600px;
+		padding: 4rem;
+		border-radius: 2rem;
+	}
+
+	.title {
+		font-size: 3rem;
+		margin-bottom: 1rem;
+	}
+
+	.subtitle {
+		font-size: 1.5rem;
+		margin-bottom: 3rem;
+	}
+
+	.input {
+		font-size: 1.25rem;
+		padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+		border-radius: 1rem;
+	}
+
+	.icon {
+		left: 1.5rem;
+	}
+
+	.icon svg {
+		width: 28px;
+		height: 28px;
+	}
+
+	.errorMessage {
+		font-size: 1.1rem;
+		padding: 1rem 1.5rem;
+	}
+
+	.checkbox {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	.rememberMe {
+		font-size: 1.1rem;
+	}
+
+	.resetPassword {
+		font-size: 1.1rem;
+	}
+
+	.submitButton {
+		padding: 1.5rem;
+		font-size: 1.25rem;
+		border-radius: 1rem;
+	}
+
+	.buttonLoader {
+		width: 2rem;
+		height: 2rem;
+		border-width: 4px;
+	}
+
+	.registerText {
+		font-size: 1.1rem;
+		margin-top: 2rem;
+	}
+}
+
+/* Optional: Ultra-wide screens (3440px and up) */
+@media (min-width: 3440px) {
+	.form {
+		max-width: 700px;
+		padding: 5rem;
+	}
+
+	.title {
+		font-size: 3.5rem;
+	}
+
+	.subtitle {
+		font-size: 1.75rem;
+	}
 }

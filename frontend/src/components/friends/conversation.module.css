@@ -108,6 +108,7 @@
 .receiverBubble {
 	max-width: 70%;
 	padding: 0.75rem 1rem;
+	margin: 0 1rem;
 	border-radius: 20px;
 	position: relative;
 	word-wrap: break-word;

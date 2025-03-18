@@ -10,9 +10,8 @@ const Login = () => {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState<string | null>(null);
 
-	const { isLoading, isAuthenticated, login } =
-		useAuthStore();
-		
+	const { isLoading, isAuthenticated, login } = useAuthStore();
+
 	const navigate = useNavigate();
 	const location = useLocation();
 
@@ -57,62 +56,75 @@ const Login = () => {
 	return (
 		<section className={styles.containerAuth}>
 			<form className={styles.form} onSubmit={handleSubmit}>
+				<h1 className={styles.title}>Welcome Back</h1>
+				<p className={styles.subtitle}>Please sign in to continue</p>
+
 				<div className={styles.formField}>
-					<label className={styles.label} htmlFor="email">
-						E-mail
-					</label>
-					<div className={styles.inputField}>
-						<AtSign />
+					<div className={styles.inputContainer}>
+						<div className={styles.icon}>
+							<AtSign size={25} />
+						</div>
 						<input
 							type="email"
 							id="email"
-							placeholder="example@gmail.com"
+							placeholder="Enter your email"
 							onChange={(e) => setEmail(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
 						/>
 					</div>
 				</div>
+
 				<div className={styles.formField}>
-					<label className={styles.label} htmlFor="password">
-						Password
-					</label>
-					<div className={styles.inputField}>
-						<Lock />
+					<div className={styles.inputContainer}>
+						<div className={styles.icon}>
+							<Lock size={25} />
+						</div>
 						<input
 							type="password"
 							id="password"
+							placeholder="Enter your password"
 							onChange={(e) => setPassword(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
 						/>
 					</div>
 				</div>
-				{error && <p className={styles.errorMessage}>{error}</p>}
+
+				{error && <div className={styles.errorMessage}>⚠️ {error}</div>}
+
 				<div className={styles.options}>
-					<div>
+					<label className={styles.rememberMe}>
 						<input
 							type="checkbox"
 							id="remember"
 							disabled={isLoading}
-							className={styles.input}
+							className={styles.checkbox}
 						/>
 						<span>Remember me</span>
-					</div>
+					</label>
 					<button
 						className={styles.resetPassword}
-						disabled={isLoading}>
+						disabled={isLoading}
+						type="button">
 						Forgot Password?
 					</button>
 				</div>
-				<input
+
+				<button
 					className={styles.submitButton}
 					type="submit"
-					value={isLoading ? "Signing In..." : "Sign In"}
-				/>
-				<p>
+					disabled={isLoading}>
+					{isLoading ? (
+						<div className={styles.buttonLoader} />
+					) : (
+						"Sign In"
+					)}
+				</button>
+
+				<p className={styles.registerText}>
 					Don't have an account?{" "}
-					<Link className={styles.register} to={"/register"}>
+					<Link className={styles.registerLink} to={"/register"}>
 						Sign Up
 					</Link>
 				</p>

@@ -43,58 +43,73 @@ const Register = () => {
 	return (
 		<section className={styles.containerAuth}>
 			<form className={styles.form} onSubmit={handleSubmit}>
+				<h1 className={styles.title}>Create Account</h1>
+				<p className={styles.subtitle}>Join us to get started</p>
+
 				<div className={styles.formField}>
-					<label className={styles.label} htmlFor="fullname">Fullname</label>
-					<div className={styles.inputField}>
-						<SquareUserRound />
+					<div className={styles.inputContainer}>
+						<div className={styles.icon}>
+							<SquareUserRound size={20} />
+						</div>
 						<input
 							type="text"
 							id="fullname"
-							placeholder="Your fullname"
+							placeholder="Enter your full name"
 							onChange={(e) => setFullname(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
 						/>
 					</div>
 				</div>
+
 				<div className={styles.formField}>
-					<label className={styles.label} htmlFor="email">E-mail</label>
-					<div className={styles.inputField}>
-						<AtSign />
+					<div className={styles.inputContainer}>
+						<div className={styles.icon}>
+							<AtSign size={20} />
+						</div>
 						<input
 							type="email"
 							id="email"
-							placeholder="example@gmail.com"
+							placeholder="Enter your email"
 							onChange={(e) => setEmail(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
 						/>
 					</div>
 				</div>
+
 				<div className={styles.formField}>
-					<label className={styles.label} htmlFor="password">Password</label>
-					<div className={styles.inputField}>
-						<Lock />
+					<div className={styles.inputContainer}>
+						<div className={styles.icon}>
+							<Lock size={20} />
+						</div>
 						<input
 							type="password"
 							id="password"
+							placeholder="Create a password"
 							onChange={(e) => setPassword(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
 						/>
 					</div>
 				</div>
-				{error && <p className={styles.errorMessage}>{error}</p>}
-				<input
+
+				{error && <div className={styles.errorMessage}>⚠️ {error}</div>}
+
+				<button
 					className={styles.submitButton}
 					type="submit"
-					value="Sign Up"
-					disabled={isLoading}
-					
-				/>
-				<p>
+					disabled={isLoading}>
+					{isLoading ? (
+						<div className={styles.buttonLoader} />
+					) : (
+						"Sign Up"
+					)}
+				</button>
+
+				<p className={styles.registerText}>
 					Already have an account?{" "}
-					<Link className={styles.register} to="/">
+					<Link className={styles.registerLink} to="/">
 						Sign In
 					</Link>
 				</p>
