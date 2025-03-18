@@ -60,14 +60,19 @@ const useFriendStore = create<FriendState>()(
 				const { accessToken } = useAuthStore.getState();
 
 				try {
-					await api.post(
+					const response = await api.post(
 						`/friends/request/${userID}`,
 						{},
 						{
 							headers: { Authorization: `Bearer ${accessToken}` },
 						}
 					);
+					console.log(response)
+					const { success, message } = response.data;
+
+					if (!success) throw new Error(message);
 				} catch (error) {
+					console.log(error)
 					if (isError(error)) {
 						set({ error: error.message });
 					} else {

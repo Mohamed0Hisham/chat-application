@@ -5,7 +5,7 @@ import DOMPurify from "dompurify";
 import type { Person } from "../../types/User";
 
 const Find = () => {
-	const { sendFriendRequest, isLoading, findUsers } = useFriendStore();
+	const { sendFriendRequest, isLoading, findUsers, error } = useFriendStore();
 	const [result, setResult] = useState<Person[]>([]);
 	const [query, setQuery] = useState<string>("");
 	const [debouncedQuery, setDebouncedQuery] = useState<string>("");
@@ -13,40 +13,35 @@ const Find = () => {
 		new Set()
 	);
 
-	// Debounce effect: updates debouncedQuery after user stops typing for 500ms
+	// Debounce effect
 	useEffect(() => {
-		const handler = setTimeout(() => {
-			setDebouncedQuery(query);
-		}, 500);
-
+		const handler = setTimeout(() => setDebouncedQuery(query), 500);
 		return () => clearTimeout(handler);
 	}, [query]);
 
+	// Search effect
 	useEffect(() => {
 		const controller = new AbortController();
 		if (!debouncedQuery) {
-			setResult([]); // Clear results when input is empty
+			setResult([]);
 			return;
 		}
 
 		const fetchUsers = async () => {
 			try {
-				// Detect if the input is an email or a name
 				const isEmail = debouncedQuery.includes("@");
 				const params = isEmail
 					? { email: debouncedQuery }
 					: { fullname: debouncedQuery };
-
-				const result = await findUsers(params, controller.signal); // Pass the correct query param
+				const result = await findUsers(params, controller.signal);
 				setResult(result);
 			} catch (error) {
-				if (!controller.signal.aborted) {
+				if (!controller.signal.aborted)
 					console.error("Failed to fetch users:", error);
-				}
 			}
 		};
-		if (debouncedQuery) fetchUsers();
 
+		fetchUsers();
 		return () => controller.abort();
 	}, [debouncedQuery, findUsers]);
 
@@ -54,6 +49,12 @@ const Find = () => {
 		setPendingRequests((prev) => new Set(prev.add(id)));
 		try {
 			await sendFriendRequest(id);
+			// Update local state to show permanent "Sent" status
+			setResult((prev) =>
+				prev.map((user) =>
+					user._id === id ? { ...user, requestSent: true } : user
+				)
+			);
 		} finally {
 			setPendingRequests((prev) => {
 				const next = new Set(prev);
@@ -79,13 +80,13 @@ const Find = () => {
 							id="search"
 							placeholder="e.g. John Doe or john@example.com"
 							className={styles.searchInput}
-							aria-label="Search for friends by name or email"
 							value={query}
 							onChange={(e) => setQuery(e.target.value)}
 						/>
 						{isLoading && <span className={styles.spinner}></span>}
 					</div>
 				</form>
+				{error && <p className={styles.error}>{error}</p>}
 				<ul className={styles.userList}>
 					{isLoading ? (
 						<li className={styles.loading}>Loading friends...</li>
@@ -105,13 +106,18 @@ const Find = () => {
 										</p>
 									</div>
 									<button
-										disabled={pendingRequests.has(user._id)}
+										disabled={
+											pendingRequests.has(user._id) ||
+											user.requestSent
+										}
 										onClick={() =>
 											handleAddFriend(user._id)
 										}
 										className={styles.actionButton}>
-										{pendingRequests.has(user._id)
+										{user.requestSent
 											? "Sent"
+											: pendingRequests.has(user._id)
+											? "Sending..."
 											: "Add Friend"}
 									</button>
 								</div>

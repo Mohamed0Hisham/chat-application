@@ -4,6 +4,7 @@ export interface Person {
 	email: string;
 	isOnline: boolean;
 	avatar?: string ;
+	requestSent ?:boolean
 }
 
 export interface User extends Person {

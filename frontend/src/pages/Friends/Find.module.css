@@ -1,7 +1,7 @@
 .container {
 	max-width: 800px;
 	max-height: 80vh;
-	margin:0 auto;
+	margin: 0 auto;
 	/* padding: 2rem; */
 	background: #ffffff;
 	border-radius: 20px;
@@ -93,7 +93,6 @@
 	}
 }
 
-
 .searchInput::placeholder {
 	color: #94a3b8;
 }
@@ -110,7 +109,7 @@
 
 	max-width: 20%;
 }
-@media (max-width:500px) {
+@media (max-width: 500px) {
 	.searchButton {
 		padding: 4px 8px;
 		font-size: 12px;
@@ -211,7 +210,32 @@
 	color: #64748b;
 	font-style: italic;
 }
+.actionButton[disabled] {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
 
+.actionButton[disabled]:hover {
+	background: initial;
+	transform: none;
+}
+
+.spinner {
+	position: absolute;
+	right: 1rem;
+	width: 20px;
+	height: 20px;
+	border: 3px solid rgba(255, 255, 255, 0.3);
+	border-top-color: #2d79f3;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
 .noResults {
 	text-align: center;
 	padding: 2rem;
@@ -220,4 +244,17 @@
 	background: #f8fafc;
 	border-radius: 12px;
 	margin: 1rem 0;
+}
+.error {
+	padding: 1rem;
+	margin-bottom: 1rem;
+	background-color: #fee2e2; /* Light red background */
+	color: #dc2626; /* Red text for errors */
+	border-radius: 8px;
+	text-align: center;
+	font-size: 1rem;
+	font-weight: 500;
+	border-left: 4px solid #ef4444; /* Red border for emphasis */
+	box-shadow: 0 2px 5px rgba(239, 68, 68, 0.2);
+	animation: fadeIn 0.3s ease-in;
 }
