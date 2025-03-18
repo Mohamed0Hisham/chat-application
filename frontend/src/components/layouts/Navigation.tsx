@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import styles from "./navigation.module.css";
 import {
 	MessageSquare,
-	Users,
 	Plus,
 	User,
 	LucideChevronLeftCircle,
@@ -30,10 +29,6 @@ const Navigation = () => {
 			<li aria-label="Chat section">
 				<MessageSquare className={styles.icon} />
 				chat
-			</li>
-			<li aria-label="Groups section">
-				<Users className={styles.icon} />
-				groups
 			</li>
 			<Link to="/requests" className={styles.link}>
 				<li aria-label="see friends requests">
