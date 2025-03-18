@@ -20,10 +20,12 @@ export interface ChatState {
 	isLoading: boolean;
 	chat: string;
 	friend: Friend | null;
-	
-	getMsgsOfChat: (id: string) => Promise<void>;
+	page: number;
+
+	getMsgsOfChat: () => Promise<void>;
 	setChat: (id: string) => Promise<void>;
 	addMessage: (message: Msg) => void;
+	loadMoreMessages: () => void;
 }
 
 export interface AuthState {

@@ -4,27 +4,43 @@ import useAuthStore from "./Auth-Store";
 import type { ChatState } from "../types/States";
 import { persist } from "zustand/middleware";
 
+const limit = 25;
 const useMsgStore = create<ChatState>()(
 	persist(
-		(set) => ({
+		(set, get) => ({
 			messages: [],
 			isLoading: false,
 			chat: "",
 			friend: null,
+			page: 0,
 
-			getMsgsOfChat: async (chatID) => {
+			getMsgsOfChat: async () => {
 				const { accessToken } = useAuthStore.getState();
 				try {
 					set({ isLoading: true });
-					const response = await api.get(`/messages/chat/${chatID}`, {
-						headers: { Authorization: `Bearer ${accessToken}` },
-					});
+					const response = await api.get(
+						`/messages/${get().chat}?page=${
+							get().page
+						}&limit=${limit}`,
+						{
+							headers: { Authorization: `Bearer ${accessToken}` },
+						}
+					);
 
 					if (response.data.success === false)
 						throw new Error(response.data.message);
 
-					const msgs = response.data.messages;
-					set({ messages: msgs, isLoading: false });
+					const newMsgs = response.data.messages.reverse();
+					const currentPage = response.data.currentPage;
+
+					set((state) => ({
+						messages:
+							currentPage === 1
+								? newMsgs
+								: [...newMsgs, ...state.messages],
+						isLoading: false,
+						page: currentPage,
+					}));
 				} catch (error) {
 					console.log(
 						error instanceof Error ? error.message : "unknown error"
@@ -72,13 +88,17 @@ const useMsgStore = create<ChatState>()(
 					return state; // No change if message is a duplicate or for another chat
 				});
 			},
+			loadMoreMessages: async () => {
+				const next = get().page + 1;
+				set({ page: next });
+				// await get().getMsgsOfChat();
+			},
 		}),
 		{
 			name: "msg-storage",
 			partialize: (state) => ({
 				chat: state.chat,
 				friend: state.friend,
-				messages: state.messages,
 			}),
 			storage: {
 				getItem: (name) =>

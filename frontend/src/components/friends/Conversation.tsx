@@ -1,4 +1,4 @@
-import { useState, FC } from "react";
+import { useState, FC, useEffect } from "react";
 import styles from "./conversation.module.css";
 import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../chat/MessageInput";
@@ -15,10 +15,15 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const [content, setContent] = useState("");
 	const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 	const [isSending, setIsSending] = useState(false);
-	const { isLoading, messages } = useMsgStore();
+	const { isLoading, messages, getMsgsOfChat, page } = useMsgStore();
 	const { user } = useAuthStore();
 	const friend = useMsgStore.getState().friend;
 	const chat = useMsgStore.getState().chat;
+	const loadMoreMessages = useMsgStore.getState().loadMoreMessages;
+
+	const handleLoadMore = async () => {
+		if (!isLoading) await loadMoreMessages();
+	};
 
 	const handleSend = async () => {
 		if (!content.trim() || !user || isSending || !socket) return;
@@ -89,6 +94,19 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		setContent((prev) => prev + emoji.emoji);
 	};
 
+	useEffect(() => {
+		(async () => {
+			try {
+				await getMsgsOfChat();
+			} catch (error) {
+				console.log(
+					error instanceof Error
+						? error.message
+						: "Unknown error while fetching chat messages"
+				);
+			}
+		})();
+	}, [getMsgsOfChat]);
 	return (
 		<div className={styles.conv}>
 			<div className={styles.friendHeader}>
@@ -114,6 +132,9 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 			</div>
 
 			<div className={styles.chatContainer}>
+				{page > 0 && !isLoading && (
+					<button onClick={handleLoadMore}>Load More Messages</button>
+				)}
 				{isLoading ? (
 					<p>Loading messages...</p>
 				) : (
