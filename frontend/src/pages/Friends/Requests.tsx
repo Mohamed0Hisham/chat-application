@@ -1,6 +1,7 @@
 import styles from "./Requests.module.css";
 import useFriendStore from "../../store/friend";
 import { FC, useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 
 const Requests: FC = () => {
 	const {
@@ -69,9 +70,10 @@ const Requests: FC = () => {
 										{request.fullname}
 									</p>
 									<p className={styles.timestamp}>
-										{new Date(
-											request.createdAt
-										).toLocaleString()}
+										{formatDistanceToNow(
+											new Date(request.createdAt),
+											{ addSuffix: false }
+										)}
 									</p>
 								</div>
 								<div className={styles.actions}>

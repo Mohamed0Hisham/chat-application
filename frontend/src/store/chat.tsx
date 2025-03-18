@@ -47,7 +47,6 @@ const useMsgStore = create<ChatState>()(
 				}
 			},
 			setChat: async (id) => {
-				// Optionally fetch messages here or rely on Chat component
 				const { accessToken } = useAuthStore.getState();
 				try {
 					set({ isLoading: true });

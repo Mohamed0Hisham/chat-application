@@ -146,6 +146,7 @@ export const login = async (req, res) => {
 		const refreshToken = await generateRefreshToken(user);
 
 		const formattedUser = {
+			_id: user._id,
 			avatar: user.avatar,
 			fullname: user.fullname,
 			email: user.email,

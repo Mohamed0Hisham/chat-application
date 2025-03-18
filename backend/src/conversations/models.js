@@ -23,6 +23,6 @@ const ConversationSchema = new Schema(
 	},
 	{ timestamps: true }
 );
-ConversationSchema.index({ participants: 1 }, { unique: true });
+ConversationSchema.index({ participants: 1 });
 const Conversation = model("conversation", ConversationSchema);
 export default Conversation;

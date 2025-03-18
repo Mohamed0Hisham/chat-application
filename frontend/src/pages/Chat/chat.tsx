@@ -41,7 +41,8 @@ const Chat = () => {
 	}, [accessToken]);
 
 	useEffect(() => {
-		if (chat && user && socketRef.current) {
+		console.log(chat, user);
+		if (chat && user?._id && socketRef.current) {
 			socketRef.current.emit(
 				"joinConversation",
 				{ chatID: chat, userID: user._id },
@@ -61,9 +62,7 @@ const Chat = () => {
 
 	return (
 		<main className={styles.chat}>
-			{socketRef && (
-				<Conversation socket={socketRef.current} />
-			)}
+			{socketRef && <Conversation socket={socketRef.current} />}
 		</main>
 	);
 };

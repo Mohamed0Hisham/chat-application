@@ -91,7 +91,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		if (!isLoading) {
 			const scrollHeightBefore =
 				chatContainerRef.current?.scrollHeight || 0;
-			await loadMoreMessages();
+			loadMoreMessages();
 			// Maintain scroll position after loading older messages
 			requestAnimationFrame(() => {
 				if (chatContainerRef.current) {
