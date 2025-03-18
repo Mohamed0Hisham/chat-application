@@ -1,16 +1,18 @@
-// Dashboard.tsx - Updated layout container
-import Sidebar from "../../components/layouts/sidebar";
+import Navigation from "../../components/layouts/Navigation";
+import FriendsPanel from "../../components/layouts/FriendsPanel";
 import styles from "./dashboard.module.css";
-import Options from "../../components/layouts/Options";
 
 const Dashboard = () => {
 	return (
-		<section className={styles.container}>
-			<Options />
-			<aside className={styles.sidebar}>
-				<Sidebar />
+		<div className={styles.container}>
+			<nav className={styles.navigation}>
+				<Navigation />
+			</nav>
+
+			<aside className={styles.friendsPanel}>
+				<FriendsPanel />
 			</aside>
-		</section>
+		</div>
 	);
 };
 

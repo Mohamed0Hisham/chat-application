@@ -1,13 +1,13 @@
 // import { SearchIcon } from "lucide-react";
 import { Search } from "lucide-react";
-import s from "./sidebar.module.css";
+import s from "./panel.module.css";
 import useFriendStore from "../../store/friend";
 import { useEffect, useState } from "react";
 import useMsgStore from "../../store/chat";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Sidebar = () => {
+const FriendsPanel = () => {
 	const { isLoading, friends } = useFriendStore();
 	const getFriends = useFriendStore((state) => state.getFriends);
 	const { setChat } = useMsgStore();
@@ -89,4 +89,4 @@ const Sidebar = () => {
 	);
 };
 
-export default Sidebar;
+export default FriendsPanel;

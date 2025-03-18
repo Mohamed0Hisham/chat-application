@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import styles from "./Options.module.css";
+import styles from "./navigation.module.css";
 import {
 	MessageSquare,
 	Users,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import useAuthStore from "../../store/Auth-Store";
 
-const Options = () => {
+const Navigation = () => {
 	const { logout } = useAuthStore();
 
 	const handleLogout = async () => {
@@ -61,4 +61,4 @@ const Options = () => {
 	);
 };
 
-export default Options;
+export default Navigation;
