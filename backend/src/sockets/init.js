@@ -15,13 +15,12 @@ export function initializeSocket(httpServer) {
 			methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 			allowedHeaders: ["Content-Type", "Authorization"],
 		},
+		transports: ["websocket"],
 	});
 
 	io.use(authenticate);
 
 	io.on("connection", (socket) => {
-		console.log(`User ${socket.id} connected`);
-
 		socket.on("joinConversation", (data, acknowledge) =>
 			joinConversation(socket, data, acknowledge)
 		);

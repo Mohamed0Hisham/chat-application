@@ -132,9 +132,7 @@ export const login = async (req, res) => {
 				message: "invalid credentials",
 			});
 		}
-		const user = await User.findOne({ email })
-			.select("-__V -password")
-			.lean();
+		const user = await User.findOne({ email }).select("-__V -password");
 		if (!user) {
 			return res.status(400).json({
 				success: false,
@@ -145,11 +143,15 @@ export const login = async (req, res) => {
 		const accessToken = await generateAccessToken(user);
 		const refreshToken = await generateRefreshToken(user);
 
+		user.isOnline = true;
+		await user.save();
+
 		const formattedUser = {
 			_id: user._id,
 			avatar: user.avatar,
 			fullname: user.fullname,
 			email: user.email,
+			isOnline: user.isOnline,
 			createdAt: user.createdAt,
 			friendsCount: user.friends ? user.friends.length : 0,
 			groupsCount: user.groups ? user.groups.length : 0,
@@ -157,7 +159,7 @@ export const login = async (req, res) => {
 
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
-			secure: false,
+			secure: environment,
 			sameSite: "Strict",
 			path: "/api/auth/refresh",
 		});
@@ -176,16 +178,26 @@ export const login = async (req, res) => {
 	}
 };
 export const logout = async (req, res) => {
-	// const userId = req.user._id;
+	const userId = req.user._id;
 
-	// await invalidateRefreshToken(userId);
+	try {
+		const user = await User.findById(userId, { isOnline: 1 });
+		user.isOnline = false;
+		await user.save();
+	} catch (error) {
+		return res.status(500).json({
+			success: false,
+			message: error.message,
+		});
+	}
 
 	res.clearCookie("refreshToken", {
 		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
+		secure: environment,
 		sameSite: "Strict",
 		path: "/api/auth/refresh",
 	});
+
 	return res
 		.status(200)
 		.json({ success: true, message: "Logged out successfully" });
@@ -213,6 +225,7 @@ export const fetchProfile = async (req, res) => {
 			avatar: user.avatar,
 			fullname: user.fullname,
 			email: user.email,
+			isOnline:user.isOnline,
 			joinDate: user.createdAt,
 			friendsCount: user.friends ? user.friends.length : 0,
 			groupsCount: user.groups ? user.groups.length : 0,
