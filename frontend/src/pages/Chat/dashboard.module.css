@@ -8,7 +8,6 @@
 		rgba(248, 249, 250, 0.98) 0%,
 		rgba(233, 236, 239, 0.95) 100%
 	);
-	backdrop-filter: blur(10px);
 }
 
 .friendsPanel {
