@@ -56,7 +56,6 @@ const useMsgStore = create<ChatState>()(
 							headers: { Authorization: `Bearer ${accessToken}` },
 						}
 					);
-
 					if (response.data.success === false)
 						throw new Error(response.data.message);
 

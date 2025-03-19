@@ -146,18 +146,19 @@
 	margin-bottom: 1rem;
 	background: rgba(255, 255, 255, 0.9);
 	border-radius: 12px;
-	transition: all 0.3s ease;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 	border: 1px solid rgba(255, 255, 255, 0.3);
 	cursor: pointer;
 	text-decoration: none;
 	color: #1e293b;
+	/* Only transition GPU-friendly properties */
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .user:hover {
 	transform: translateX(8px);
 	box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
-	background: white;
+	background: white; /* Keep this static, no transition */
 }
 
 .avatar {

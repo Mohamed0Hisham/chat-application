@@ -157,7 +157,7 @@ export const login = async (req, res) => {
 
 		res.cookie("refreshToken", refreshToken, {
 			httpOnly: true,
-			secure: environment,
+			secure: false,
 			sameSite: "Strict",
 			path: "/api/auth/refresh",
 		});

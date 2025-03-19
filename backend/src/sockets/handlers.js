@@ -10,13 +10,11 @@ export const joinConversation = async (socket, data, acknowledge) => {
 
 	socket.join(chatID);
 	socket.to(chatID).emit("userJoined", userID);
-
 	// Fetch all/unread messages
 	const unreadMessages = await Msg.find({
 		chatID,
 		receiverID: userID,
 	}).lean();
-
 	unreadMessages.forEach((msg) => {
 		socket.emit("receiveMessage", msg);
 	});

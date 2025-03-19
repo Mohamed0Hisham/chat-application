@@ -17,13 +17,12 @@ const Chat = () => {
 				token: accessToken,
 			},
 		});
-
 		socketRef.current.on("connect", () => {
 			console.log("Connected to server");
+			console.log("Connected to server with ID:", socketRef?.current?.id);
 		});
 
 		socketRef.current.on("receiveMessage", (message) => {
-			console.log("Received message:", message);
 			useMsgStore.getState().addMessage(message);
 		});
 
@@ -34,6 +33,14 @@ const Chat = () => {
 		socketRef.current.on("connect_error", (error) => {
 			console.error("Connection error:", error);
 		});
+		
+		socketRef.current.on("reconnect_attempt", () => {
+			console.log("Reconnection attempt...");
+		});
+		
+		socketRef.current.on("reconnect_error", (error) => {
+			console.error("Reconnection error:", error);
+		});
 
 		return () => {
 			socketRef?.current?.disconnect();
@@ -41,7 +48,9 @@ const Chat = () => {
 	}, [accessToken]);
 
 	useEffect(() => {
-		console.log(chat, user);
+		console.log(chat)
+		console.log(user)
+		console.log(socketRef.current)
 		if (chat && user?._id && socketRef.current) {
 			socketRef.current.emit(
 				"joinConversation",

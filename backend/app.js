@@ -8,6 +8,7 @@ import { refreshToken } from "./utils/refreshToken.js";
 import { isAuthenticated } from "./utils/auth.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import helmet from "helmet";
 
 configDotenv();
 const app = express();
@@ -15,12 +16,30 @@ app.use(
 	cors({
 		origin: "http://localhost:5173",
 		credentials: true,
-		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], 
-		allowedHeaders: ["Content-Type", "Authorization"], 
+		methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+		allowedHeaders: ["Content-Type", "Authorization"],
 	})
 );
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+	helmet({
+		contentSecurityPolicy: {
+			directives: {
+				defaultSrc: ["'self'"], // Only allow resources from the same origin
+				scriptSrc: ["'self'"], // Adjust if you load scripts from CDNs
+				frameAncestors: ["'self'"], // Replace X-Frame-Options; adjust as needed
+			},
+		},
+		frameguard: false, // Disable X-Frame-Options since we use CSP frame-ancestors
+		xssFilter: false, // Disable X-XSS-Protection
+	})
+);
+
+app.use((req, res, next) => {
+	res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	next();
+});
 
 app.use("/api/users", userRoutes);
 app.use("/api/friends", isAuthenticated, friendRoutes);
