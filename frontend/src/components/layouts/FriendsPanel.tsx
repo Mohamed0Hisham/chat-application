@@ -1,4 +1,3 @@
-// import { SearchIcon } from "lucide-react";
 import { Search } from "lucide-react";
 import s from "./panel.module.css";
 import useFriendStore from "../../store/friend";
@@ -15,7 +14,6 @@ const FriendsPanel = () => {
 	const [set, setSet] = useState(false);
 	const navigate = useNavigate();
 
-	// Filter friends based on search
 	const filteredFriends = friends.filter((friend) =>
 		friend.fullname.toLowerCase().includes(searchQuery.toLowerCase())
 	);

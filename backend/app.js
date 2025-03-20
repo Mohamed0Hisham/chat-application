@@ -26,13 +26,13 @@ app.use(
 	helmet({
 		contentSecurityPolicy: {
 			directives: {
-				defaultSrc: ["'self'"], // Only allow resources from the same origin
-				scriptSrc: ["'self'"], // Adjust if you load scripts from CDNs
-				frameAncestors: ["'self'"], // Replace X-Frame-Options; adjust as needed
+				defaultSrc: ["'self'"],
+				scriptSrc: ["'self'"],
+				frameAncestors: ["'self'"], 
 			},
 		},
-		frameguard: false, // Disable X-Frame-Options since we use CSP frame-ancestors
-		xssFilter: false, // Disable X-XSS-Protection
+		frameguard: false,
+		xssFilter: false,
 	})
 );
 

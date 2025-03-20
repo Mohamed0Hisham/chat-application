@@ -41,7 +41,7 @@ export const findUsers = async (req, res) => {
 			});
 		}
 
-		let query = { _id: { $ne: currentUserId } }; // Exclude current user
+		let query = { _id: { $ne: currentUserId } };
 		const projection = { _id: 1, fullname: 1, avatar: 1 };
 
 		let sort = {};

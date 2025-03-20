@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import useFriendStore from "../../store/friend";
 import styles from "./Find.module.css";
-import DOMPurify from "dompurify";
 import type { Person } from "../../types/User";
 
 const Find = () => {
@@ -13,15 +12,12 @@ const Find = () => {
 		new Set()
 	);
 
-	// Debounce effect
 	useEffect(() => {
 		const handler = setTimeout(() => setDebouncedQuery(query), 500);
 		return () => clearTimeout(handler);
 	}, [query]);
 
-	// Search effect
 	useEffect(() => {
-		const controller = new AbortController();
 		if (!debouncedQuery) {
 			setResult([]);
 			return;
@@ -33,23 +29,20 @@ const Find = () => {
 				const params = isEmail
 					? { email: debouncedQuery }
 					: { fullname: debouncedQuery };
-				const result = await findUsers(params, controller.signal);
+				const result = await findUsers(params);
 				setResult(result);
 			} catch (error) {
-				if (!controller.signal.aborted)
 					console.error("Failed to fetch users:", error);
 			}
 		};
 
 		fetchUsers();
-		return () => controller.abort();
 	}, [debouncedQuery, findUsers]);
 
 	const handleAddFriend = async (id: string) => {
 		setPendingRequests((prev) => new Set(prev.add(id)));
 		try {
 			await sendFriendRequest(id);
-			// Update local state to show permanent "Sent" status
 			setResult((prev) =>
 				prev.map((user) =>
 					user._id === id ? { ...user, requestSent: true } : user
@@ -102,7 +95,7 @@ const Find = () => {
 									</div>
 									<div className={styles.description}>
 										<p className={styles.fullname}>
-											{DOMPurify.sanitize(user.fullname)}
+											{user.fullname}
 										</p>
 									</div>
 									<button

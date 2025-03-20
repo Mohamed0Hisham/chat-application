@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import axios from "axios";
 import { persist } from "zustand/middleware";
 
 import api from "../services/api";
@@ -38,11 +37,6 @@ const useFriendStore = create<FriendState>()(
 						friends,
 					});
 				} catch (error) {
-					if (axios.isCancel(error)) {
-						console.log("Request canceled");
-						return;
-					}
-
 					if (isError(error)) {
 						set({ error: error.message });
 					} else {
@@ -117,20 +111,17 @@ const useFriendStore = create<FriendState>()(
 							headers: { Authorization: `Bearer ${accessToken}` },
 						}
 					);
-					// Remove the request from state immediately
 					set((state) => ({
 						requests: state.requests.filter(
 							(req) => req._id !== id
 						),
 					}));
 				} catch (error) {
-					// Handle error and revert UI if needed
 					if (isError(error)) {
 						set({ error: error.message });
 					} else {
 						set({ error: "An unknown error occurred" });
 					}
-					// Re-fetch to sync with server
 					get().fetchRequests();
 				} finally {
 					set({ isLoading: false });
@@ -163,12 +154,11 @@ const useFriendStore = create<FriendState>()(
 				}
 			},
 
-			findUsers: async (query: SearchQuery, signal?: AbortSignal) => {
+			findUsers: async (query: SearchQuery) => {
 				const MAX_SEARCHES = 5;
 				const now = Date.now();
 				const { searchHistory } = get();
 
-				// Rate limiting check
 				const recentSearches = searchHistory.filter(
 					(t) => now - t < 60000
 				);
@@ -182,9 +172,8 @@ const useFriendStore = create<FriendState>()(
 				set({ isLoading: true, error: null });
 				try {
 					const { accessToken } = useAuthStore.getState();
-					// Update search history
 					set({ searchHistory: [...searchHistory, now] });
-					// Ensure only valid params are added
+
 					const params = new URLSearchParams();
 					if (query?.email) params.append("email", query.email);
 					if (query?.fullname)
@@ -193,7 +182,6 @@ const useFriendStore = create<FriendState>()(
 					const response = await api.get(
 						`/users/all?${params.toString()}`,
 						{
-							signal,
 							headers: { Authorization: `Bearer ${accessToken}` },
 						}
 					);
@@ -201,9 +189,6 @@ const useFriendStore = create<FriendState>()(
 					const searchResult: Friend[] = response.data.results;
 					return searchResult;
 				} catch (error) {
-					if (axios.isCancel(error)) {
-						return []; // Expected cancellation
-					}
 					if (isError(error)) {
 						set({ error: error.message });
 					} else {
@@ -214,6 +199,7 @@ const useFriendStore = create<FriendState>()(
 					return [];
 				} finally {
 					set({ isLoading: false });
+
 					// Cleanup old search history entries
 					set((state) => ({
 						searchHistory: state.searchHistory.filter(
@@ -227,6 +213,7 @@ const useFriendStore = create<FriendState>()(
 			name: "friend-storage",
 			partialize: (state) => ({
 				friends: state.friends,
+				requests: state.requests,
 			}),
 		}
 	)
