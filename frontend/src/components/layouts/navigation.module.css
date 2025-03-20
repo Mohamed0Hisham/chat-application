@@ -28,15 +28,14 @@
 	font-size: 1.1rem;
 	box-shadow: 0 2px 12px rgba(99, 102, 241, 0.1);
 	border: 1px solid rgba(255, 255, 255, 0.3);
-	/* Only transition GPU-friendly properties */
 	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .options li:hover {
 	transform: translateX(8px);
 	box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
-	background: rgba(79, 70, 229, 0.9); /* Static, no transition */
-	color: white; /* Static, no transition */
+	background: rgba(79, 70, 229, 0.9); 
+	color: white;
 }
 
 .options li:hover .icon {
