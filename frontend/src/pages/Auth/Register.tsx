@@ -58,6 +58,7 @@ const Register = () => {
 							onChange={(e) => setFullname(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
+							autoComplete="name"
 						/>
 					</div>
 				</div>
@@ -68,6 +69,7 @@ const Register = () => {
 							<AtSign size={20} />
 						</div>
 						<input
+							autoComplete="username"
 							type="email"
 							id="email"
 							placeholder="Enter your email"
@@ -90,6 +92,7 @@ const Register = () => {
 							onChange={(e) => setPassword(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
+							autoComplete="new-password"
 						/>
 					</div>
 				</div>

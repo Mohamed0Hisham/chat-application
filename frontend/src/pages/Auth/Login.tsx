@@ -15,7 +15,6 @@ const Login = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	// Determine the route the user originally wanted to visit
 	const from = location.state?.from?.pathname || "/dashboard";
 
 	const handleSubmit = async (e: FormEvent) => {
@@ -70,6 +69,7 @@ const Login = () => {
 							onChange={(e) => setEmail(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
+							autoComplete="username"
 						/>
 					</div>
 				</div>
@@ -86,6 +86,7 @@ const Login = () => {
 							onChange={(e) => setPassword(e.target.value)}
 							disabled={isLoading}
 							className={styles.input}
+							autoComplete="current-password"
 						/>
 					</div>
 				</div>
