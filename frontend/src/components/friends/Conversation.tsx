@@ -4,7 +4,7 @@ import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../chat/MessageInput";
 import useMsgStore from "../../store/chat";
 import useAuthStore from "../../store/Auth-Store";
-import EmojiPicker from "../chat/EmojiPicker";
+import EmojiPicker from "emoji-picker-react";
 import { Socket } from "socket.io-client";
 import { Msg } from "../../types/States";
 
@@ -25,8 +25,13 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const chatContainerRef = useRef<HTMLDivElement>(null);
 	const emojiPickerRef = useRef<HTMLDivElement>(null);
 
-	// Toggle emoji picker visibility
-	const toggleEmojiPicker = () => setShowEmojiPicker((prev) => !prev);
+	const handleEmojiClick = (emoji: { emoji: string }) => {
+		setContent((prev) => prev + emoji.emoji);
+	};
+
+	const toggleEmojiPicker = () => {
+		setShowEmojiPicker((prev) => !prev);
+	};
 
 	// Close emoji picker when clicking outside
 	useEffect(() => {
@@ -41,14 +46,17 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 
 		if (showEmojiPicker) {
 			document.addEventListener("mousedown", handleClickOutside);
+		} else {
+			document.removeEventListener("mousedown", handleClickOutside);
 		}
 
+		// Cleanup event listener on unmount
 		return () => {
 			document.removeEventListener("mousedown", handleClickOutside);
 		};
 	}, [showEmojiPicker]);
 
-	// Send message function
+	// Handle sending messages
 	const handleSend = async () => {
 		if (!content.trim() || !user || isSending || !socket) return;
 		setIsSending(true);
@@ -95,7 +103,10 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 			});
 			setContent("");
 		} catch (error) {
-			console.error("Failed to send message:", error);
+			console.error(
+				"Failed to send message:",
+				error instanceof Error ? error.message : error
+			);
 			useMsgStore.setState((state) => ({
 				messages: state.messages.filter((msg) => msg._id !== tempId),
 			}));
@@ -104,12 +115,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}
 	};
 
-	// Handle emoji selection
-	const handleEmojiClick = (emoji: string) => {
-		setContent((prev) => prev + emoji);
-	};
-
-	// Load older messages when scrolling to top
 	const handleLoadMore = async () => {
 		if (!isLoading) {
 			const scrollHeightBefore =
@@ -126,18 +131,20 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}
 	};
 
-	// Fetch messages when component mounts
 	useEffect(() => {
 		(async () => {
 			try {
 				await getMsgsOfChat();
 			} catch (error) {
-				console.error("Error fetching messages:", error);
+				console.log(
+					error instanceof Error
+						? error.message
+						: "Unknown error while fetching chat messages"
+				);
 			}
 		})();
 	}, [getMsgsOfChat]);
 
-	// Scroll to bottom when new messages arrive
 	useEffect(() => {
 		if (chatContainerRef.current && !isLoading) {
 			chatContainerRef.current.scrollTop =
@@ -145,7 +152,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}
 	}, [messages, isLoading]);
 
-	// Show "Load More" button when scrolled to top
+	// Attach scroll listener
 	useEffect(() => {
 		const handleScroll = () => {
 			if (chatContainerRef.current) {
@@ -153,7 +160,6 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 				setShowLoadMore(scrollTop === 0 && page > 0 && !isLoading);
 			}
 		};
-
 		const container = chatContainerRef.current;
 		if (container) {
 			container.addEventListener("scroll", handleScroll);
@@ -255,11 +261,8 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 					<Smile className={styles.smileIcon} />
 				</span>
 				{showEmojiPicker && (
-					<div className={styles.emojiPicker} ref={emojiPickerRef}>
-						<EmojiPicker
-							onSelect={handleEmojiClick}
-							onClose={() => setShowEmojiPicker(false)}
-						/>
+					<div ref={emojiPickerRef} className={styles.emojiPicker}>
+						<EmojiPicker onEmojiClick={handleEmojiClick} />
 					</div>
 				)}
 				<button
