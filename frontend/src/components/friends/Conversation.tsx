@@ -4,7 +4,7 @@ import { Paperclip, SendHorizonal, Smile } from "lucide-react";
 import { MessageInput } from "../chat/MessageInput";
 import useMsgStore from "../../store/chat";
 import useAuthStore from "../../store/Auth-Store";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker from "../chat/EmojiPicker";
 import { Socket } from "socket.io-client";
 import { Msg } from "../../types/States";
 
@@ -23,8 +23,32 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 	const friend = useMsgStore.getState().friend;
 	const chat = useMsgStore.getState().chat;
 	const chatContainerRef = useRef<HTMLDivElement>(null);
+	const emojiPickerRef = useRef<HTMLDivElement>(null);
 
-	// Handle sending messages
+	// Toggle emoji picker visibility
+	const toggleEmojiPicker = () => setShowEmojiPicker((prev) => !prev);
+
+	// Close emoji picker when clicking outside
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				emojiPickerRef.current &&
+				!emojiPickerRef.current.contains(event.target as Node)
+			) {
+				setShowEmojiPicker(false);
+			}
+		};
+
+		if (showEmojiPicker) {
+			document.addEventListener("mousedown", handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener("mousedown", handleClickOutside);
+		};
+	}, [showEmojiPicker]);
+
+	// Send message function
 	const handleSend = async () => {
 		if (!content.trim() || !user || isSending || !socket) return;
 		setIsSending(true);
@@ -71,10 +95,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 			});
 			setContent("");
 		} catch (error) {
-			console.error(
-				"Failed to send message:",
-				error instanceof Error ? error.message : error
-			);
+			console.error("Failed to send message:", error);
 			useMsgStore.setState((state) => ({
 				messages: state.messages.filter((msg) => msg._id !== tempId),
 			}));
@@ -83,16 +104,17 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}
 	};
 
-	const handleEmojiClick = (emoji: { emoji: string }) => {
-		setContent((prev) => prev + emoji.emoji);
+	// Handle emoji selection
+	const handleEmojiClick = (emoji: string) => {
+		setContent((prev) => prev + emoji);
 	};
 
+	// Load older messages when scrolling to top
 	const handleLoadMore = async () => {
 		if (!isLoading) {
 			const scrollHeightBefore =
 				chatContainerRef.current?.scrollHeight || 0;
 			loadMoreMessages();
-			// Maintain scroll position after loading older messages
 			requestAnimationFrame(() => {
 				if (chatContainerRef.current) {
 					const scrollHeightAfter =
@@ -104,22 +126,18 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}
 	};
 
-	// Initial fetch and scroll to bottom
+	// Fetch messages when component mounts
 	useEffect(() => {
 		(async () => {
 			try {
 				await getMsgsOfChat();
 			} catch (error) {
-				console.log(
-					error instanceof Error
-						? error.message
-						: "Unknown error while fetching chat messages"
-				);
+				console.error("Error fetching messages:", error);
 			}
 		})();
 	}, [getMsgsOfChat]);
 
-	// Scroll to bottom when messages change (e.g., new message)
+	// Scroll to bottom when new messages arrive
 	useEffect(() => {
 		if (chatContainerRef.current && !isLoading) {
 			chatContainerRef.current.scrollTop =
@@ -127,7 +145,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 		}
 	}, [messages, isLoading]);
 
-	// Attach scroll listener
+	// Show "Load More" button when scrolled to top
 	useEffect(() => {
 		const handleScroll = () => {
 			if (chatContainerRef.current) {
@@ -135,6 +153,7 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 				setShowLoadMore(scrollTop === 0 && page > 0 && !isLoading);
 			}
 		};
+
 		const container = chatContainerRef.current;
 		if (container) {
 			container.addEventListener("scroll", handleScroll);
@@ -232,14 +251,15 @@ const Conversation: FC<ConversationProps> = ({ socket }) => {
 					onChange={setContent}
 					placeholder="Type your message here..."
 				/>
-				<span
-					className={styles.smile}
-					onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+				<span className={styles.smile} onClick={toggleEmojiPicker}>
 					<Smile className={styles.smileIcon} />
 				</span>
 				{showEmojiPicker && (
-					<div className={styles.emojiPicker}>
-						<EmojiPicker onEmojiClick={handleEmojiClick} />
+					<div className={styles.emojiPicker} ref={emojiPickerRef}>
+						<EmojiPicker
+							onSelect={handleEmojiClick}
+							onClose={() => setShowEmojiPicker(false)}
+						/>
 					</div>
 				)}
 				<button
