@@ -26,8 +26,9 @@ const useAuthStore = create<AuthState>()(
 					if (!success) throw new Error(message);
 					set({ isLoading: false });
 				} catch (error) {
+					console.log(error);
 					const message =
-						error instanceof Error
+						error instanceof Error && error.name !== "AxiosError"
 							? error.message
 							: "failed to register the user";
 					set({ isLoading: false, error: message });
@@ -53,7 +54,7 @@ const useAuthStore = create<AuthState>()(
 					});
 				} catch (error) {
 					const message =
-						error instanceof Error
+						error instanceof Error && error.name !== "AxiosError"
 							? error.message
 							: "failed to login the user";
 					set({
@@ -82,7 +83,7 @@ const useAuthStore = create<AuthState>()(
 					if (!success) throw new Error(message);
 				} catch (error) {
 					const message =
-						error instanceof Error
+						error instanceof Error && error.name !== "AxiosError"
 							? error.message
 							: "failed to logout";
 					set({ error: message });
@@ -123,7 +124,7 @@ const useAuthStore = create<AuthState>()(
 					set({ user });
 				} catch (error) {
 					const message =
-						error instanceof Error
+						error instanceof Error && error.name !== "AxiosError"
 							? error.message
 							: "failed to fetch user profile";
 					set({ error: message });
@@ -149,7 +150,7 @@ const useAuthStore = create<AuthState>()(
 					set({ user });
 				} catch (error) {
 					const message =
-						error instanceof Error
+						error instanceof Error && error.name !== "AxiosError"
 							? error.message
 							: "update failed";
 					set({ error: message });

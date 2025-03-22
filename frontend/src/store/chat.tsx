@@ -41,7 +41,7 @@ const useMsgStore = create<ChatState>()(
 					}));
 				} catch (error) {
 					console.log(
-						error instanceof Error ? error.message : "unknown error"
+						error instanceof Error && error.name !== "AxiosError" ? error.message : "unknown error"
 					);
 					set({ isLoading: false, messages: [] });
 				}
@@ -63,7 +63,7 @@ const useMsgStore = create<ChatState>()(
 					set({ chat: chatID, isLoading: false, friend });
 				} catch (error) {
 					console.log(
-						error instanceof Error ? error.message : "unknown error"
+						error instanceof Error && error.name !== "AxiosError" ? error.message : "unknown error"
 					);
 					set({ isLoading: false });
 				}
