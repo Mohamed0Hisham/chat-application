@@ -26,7 +26,6 @@ const useAuthStore = create<AuthState>()(
 					if (!success) throw new Error(message);
 					set({ isLoading: false });
 				} catch (error) {
-					console.log(error);
 					const message =
 						error instanceof Error && error.name !== "AxiosError"
 							? error.message
