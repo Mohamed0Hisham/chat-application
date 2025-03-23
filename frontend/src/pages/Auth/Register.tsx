@@ -2,7 +2,7 @@ import { AtSign, Lock, SquareUserRound } from "lucide-react";
 import styles from "./Auth.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
-import useAuthStore from "../../store/Auth-Store";
+import useAuthStore from "../../store/auth";
 
 const Register = () => {
 	const [email, setEmail] = useState("");

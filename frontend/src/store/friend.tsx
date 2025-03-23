@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 import api from "../services/api";
-import useAuthStore from "./Auth-Store";
+import useAuthStore from "./auth";
 import { isError } from "../services/isError";
 
 import type { Person as Friend } from "../types/User";

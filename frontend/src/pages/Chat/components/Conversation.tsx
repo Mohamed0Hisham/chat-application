@@ -1,12 +1,12 @@
 import { useState, FC, useEffect, useRef } from "react";
 import styles from "./conversation.module.css";
 import { Paperclip, SendHorizonal, Smile } from "lucide-react";
-import { MessageInput } from "../chat/MessageInput";
-import useMsgStore from "../../store/chat";
-import useAuthStore from "../../store/Auth-Store";
+import { MessageInput } from "./MessageInput";
+import useMsgStore from "../../../store/chat";
+import useAuthStore from "../../../store/auth";
 import EmojiPicker from "emoji-picker-react";
 import { Socket } from "socket.io-client";
-import { Msg } from "../../types/States";
+import type { Msg } from "../../../types/States";
 
 interface ConversationProps {
 	socket: Socket | null;

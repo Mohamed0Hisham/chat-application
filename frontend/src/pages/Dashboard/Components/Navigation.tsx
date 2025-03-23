@@ -7,7 +7,7 @@ import {
 	LucideChevronLeftCircle,
 	LogOut,
 } from "lucide-react";
-import useAuthStore from "../../store/Auth-Store";
+import useAuthStore from "../../../store/auth";
 
 const Navigation = () => {
 	const { logout } = useAuthStore();

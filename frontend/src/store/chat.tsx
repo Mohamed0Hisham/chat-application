@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import api from "../services/api";
-import useAuthStore from "./Auth-Store";
+import useAuthStore from "./auth";
 import type { ChatState } from "../types/States";
 import { persist } from "zustand/middleware";
 
@@ -41,7 +41,9 @@ const useMsgStore = create<ChatState>()(
 					}));
 				} catch (error) {
 					console.log(
-						error instanceof Error && error.name !== "AxiosError" ? error.message : "unknown error"
+						error instanceof Error && error.name !== "AxiosError"
+							? error.message
+							: "unknown error"
 					);
 					set({ isLoading: false, messages: [] });
 				}
@@ -63,7 +65,9 @@ const useMsgStore = create<ChatState>()(
 					set({ chat: chatID, isLoading: false, friend });
 				} catch (error) {
 					console.log(
-						error instanceof Error && error.name !== "AxiosError" ? error.message : "unknown error"
+						error instanceof Error && error.name !== "AxiosError"
+							? error.message
+							: "unknown error"
 					);
 					set({ isLoading: false });
 				}

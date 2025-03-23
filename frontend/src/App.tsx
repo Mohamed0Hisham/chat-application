@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import useAuthStore from "./store/Auth-Store";
-import Loader from "./components/shared/Loader";
+import useAuthStore from "./store/auth";
+import Loader from "./pages/shared/Loader";
 const App = () => {
 	const { isLoggingOut } = useAuthStore();
 

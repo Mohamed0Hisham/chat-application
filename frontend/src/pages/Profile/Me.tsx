@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styles from "./me.module.css";
-import Avatar from "../../components/shared/Avatar";
-import EditableField from "../../components/layouts/EditableField";
-import PasswordChange from "../../components/layouts/PasswordChange";
-import StatsDisplay from "../../components/layouts/StatsDisplay";
-import MembershipDisplay from "../../components/layouts/Membership";
-import useAuthStore from "../../store/Auth-Store";
-import Loader from "../../components/shared/Loader";
+import Avatar from "../shared/Avatar";
+import EditableField from "./components/EditableField";
+import PasswordChange from "./components/PasswordChange";
+import StatsDisplay from "./components/StatsDisplay";
+import MembershipDisplay from "./components/Membership";
+import useAuthStore from "../../store/auth";
+import Loader from "../shared/Loader";
 
 const Me: React.FC = () => {
 	const { user, updateProfile, isLoading } = useAuthStore();

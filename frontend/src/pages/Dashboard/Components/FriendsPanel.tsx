@@ -1,8 +1,8 @@
 import { Search } from "lucide-react";
 import s from "./panel.module.css";
-import useFriendStore from "../../store/friend";
+import useFriendStore from "../../../store/friend";
 import { useEffect, useState } from "react";
-import useMsgStore from "../../store/chat";
+import useMsgStore from "../../../store/chat";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 

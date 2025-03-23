@@ -1,5 +1,5 @@
-import Navigation from "../../components/layouts/Navigation";
-import FriendsPanel from "../../components/layouts/FriendsPanel";
+import Navigation from "./Components/Navigation";
+import FriendsPanel from "./Components/FriendsPanel";
 import styles from "./dashboard.module.css";
 
 const Dashboard = () => {

@@ -2,20 +2,18 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { lazy, Suspense, FC } from "react";
 
 import App from "../App";
-import Loader from "../components/shared/Loader";
+import Loader from "../pages/shared/Loader";
 import ProtectedRoute from "./ProtectedRoute";
 import NotFound from "../pages/error/404";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 
 const Dashboard = lazy(
-	(): Promise<{ default: FC }> => import("../pages/Chat/Dashboard")
+	(): Promise<{ default: FC }> => import("../pages/Dashboard/Dashboard")
 );
-const Find = lazy(
-	(): Promise<{ default: FC }> => import("../pages/Friends/Find")
-);
+const Find = lazy((): Promise<{ default: FC }> => import("../pages/Find/Find"));
 const Requests = lazy(
-	(): Promise<{ default: FC }> => import("../pages/Friends/Requests")
+	(): Promise<{ default: FC }> => import("../pages/Find/Requests")
 );
 const Chat = lazy((): Promise<{ default: FC }> => import("../pages/Chat/chat"));
 const Me = lazy((): Promise<{ default: FC }> => import("../pages/Profile/Me"));

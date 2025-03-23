@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import Conversation from "../../components/friends/Conversation";
+import Conversation from "./components/Conversation";
 import styles from "./chat.module.css";
 import { io, Socket } from "socket.io-client";
-import useAuthStore from "../../store/Auth-Store";
+import useAuthStore from "../../store/auth";
 import useMsgStore from "../../store/chat";
-import Loader2 from "../../components/shared/Loader2";
+import Loader2 from "../shared/Loader2";
 
 const Chat = () => {
 	const { accessToken, user } = useAuthStore();

@@ -2,8 +2,8 @@ import styles from "./Auth.module.css";
 import { AtSign, Lock } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { FormEvent, useEffect, useState } from "react";
-import useAuthStore from "../../store/Auth-Store";
-import Loader from "../../components/shared/Loader";
+import useAuthStore from "../../store/auth";
+import Loader from "../shared/Loader";
 
 const Login = () => {
 	const [email, setEmail] = useState("");
